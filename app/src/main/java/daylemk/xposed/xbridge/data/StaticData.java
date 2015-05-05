@@ -11,7 +11,7 @@ import de.robv.android.xposed.XposedBridge;
  * 28-四月-2015 9:16:48
  */
 public final class StaticData {
-    public static final String THIS_PACKAGE_NAME = StaticData.class.getPackage().getName();
+    public static final String THIS_PACKAGE_NAME = XposedInit.class.getPackage().getName();
     public static final String PREFERENCE_MAIN_FILE = THIS_PACKAGE_NAME + "_main";
 
     public static final String PKG_NAME_SYSTEMUI = "com.android.systemui";

@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.UserHandle;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -22,6 +24,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import daylemk.xposed.xbridge.R;
+import daylemk.xposed.xbridge.XposedInit;
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.data.StaticData;
@@ -126,46 +130,24 @@ public class StatusBarHook extends Hook {
                 // the first child is a linearLayout in the aosp
                 final LinearLayout linearLayout = (LinearLayout) layoutGuts.getChildAt(0);
                 Log.d(TAG, "linear layout: " + linearLayout);
-                //
-                // this can't be done
-                //ImageButton imageButton = (ImageButton) LayoutInflater.from(context).inflate(R
-                // .layout.notification_inspect_item, null);
-                //Log.d(TAG, "inflate image button: " + imageButton);
+                // inflate layout from xBridge package name
+                // EDIT: finally, this can be done
+                Context xBridgeContext = Hook.getXBridgeContext(context);
+                ImageButton xBridgeButton = (ImageButton) LayoutInflater.from(xBridgeContext)
+                        .inflate(R.layout
+                        .notification_inspect_item, null);
+
+                Log.d(TAG, "inflate image button: " + xBridgeButton);
                 // set the style finally!!!
-                // TODO: the button has border, frak
-                ImageButton xBridgeButton = new ImageButton(new ContextThemeWrapper(context,
-//                        android.R.style.Widget_Material_Light_Button_Borderless_Small));
-//                        android.R.attr.selectableItemBackgroundBorderless));
-                        android.R.attr.borderlessButtonStyle));
-                //if(imageButton != null){
-                //    xBridgeButton = imageButton;
-                //}
+                // EDIT: set the style on the fly acts wired
+
                 // copy the params from the inspect item button
                 ViewGroup.LayoutParams layoutParams = imageButtonInspect.getLayoutParams();
                 Log.d(TAG, "image button inspect: " + layoutParams.toString());
                 // set the height equals to the width
 //                layoutParams.height = layoutParams.width;
                 xBridgeButton.setLayoutParams(layoutParams);
-
-                // set the button background
-//                xBridgeButton.setBackgroundResource(android.R.attr
-// .selectableItemBackgroundBorderless);
-//                xBridgeButton.setBackground(context.getDrawable(and/roid.R.drawable.));
-//                xBridgeButton.setBackground(null);
-                // set the scale type
-                xBridgeButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
-                // set the padding to 8dp
-                // EDIT: need convert to the px
-                int paddingValue = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                        8, res.getDisplayMetrics());
-                Log.d(TAG, "the button padding value is: " + paddingValue);
-                xBridgeButton.setPadding(paddingValue, paddingValue, paddingValue, paddingValue);
-
                 xBridgeButton.setContentDescription("null for now");
-                // set the background to null
-                // remove this
-//                xBridgeButton.setBackground(null);
 
                 // get package manager
                 final int userId = (int) XposedHelpers.callMethod(XposedHelpers.callMethod

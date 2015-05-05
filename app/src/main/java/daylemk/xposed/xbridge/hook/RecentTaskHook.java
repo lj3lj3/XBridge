@@ -1,5 +1,7 @@
 package daylemk.xposed.xbridge.hook;
 
+import android.graphics.drawable.RippleDrawable;
+
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -16,5 +18,8 @@ public class RecentTaskHook extends Hook {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws
             Throwable {
         super.handleLoadPackage(loadPackageParam);
+
+        RippleDrawable drawable;
+
     }
 }
