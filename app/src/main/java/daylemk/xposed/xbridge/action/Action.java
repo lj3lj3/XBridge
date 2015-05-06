@@ -38,11 +38,9 @@ public abstract class Action {
 
     /**
      * set the click action of this action
-     *
-     * @param image
      */
     public abstract void setAction(Hook hook, Context context, String pkgName,
-                                   ImageButton image);
+                                   View view);
 
     /*public static boolean isNeed2Add(ViewGroup viewGroup) {
         Log.i(TAG, "the action menu id is: " + );

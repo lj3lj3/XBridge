@@ -62,13 +62,13 @@ public class PlayAction extends Action {
     @Override
     public void setAction(final Hook hook, final Context context,
                           final String pkgName,
-                          ImageButton imageButton) {
+                          View view) {
 //        super.setAction(hook, context, pkgName, imageButton);
         // set the button id first
         // the button id can be the same within the different notification
-        imageButton.setId(PlayAction.sIdBox.value);
-        Log.d(TAG, "set click action");
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        view.setId(PlayAction.sIdBox.value);
+        Log.d(TAG, "set click action, pkg: " + pkgName);
+        view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "on click play action, hook: " + hook);

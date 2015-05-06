@@ -3,6 +3,7 @@ package daylemk.xposed.xbridge.action;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageButton;
 
 import daylemk.xposed.xbridge.hook.Hook;
@@ -21,7 +22,7 @@ public class AppSettingsAction extends Action {
     }
 
     @Override
-    public void setAction(Hook hook, Context context, String pkgName, ImageButton image) {
+    public void setAction(Hook hook, Context context, String pkgName, View view) {
 
     }
 
