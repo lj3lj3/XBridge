@@ -4,7 +4,7 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/daylemk/xposed/xbridge/data/IntegerBox.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/daylemk/xposed/xbridge/hook/AppInfoHook.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/daylemk/xposed/xbridge/hook/Hook.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/daylemk/xposed/xbridge/hook/RecentTaskHook.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/daylemk/xposed/xbridge/hook/StatusBarHook.java" charset="UTF-8" />
   </component>
 </project>
-

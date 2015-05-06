@@ -2,6 +2,7 @@ package daylemk.xposed.xbridge;
 
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
+import daylemk.xposed.xbridge.hook.RecentTaskHook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -22,6 +23,7 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
     private AppInfoHook appInfoHook;
     private StatusBarHook statusBarHook;
+    private RecentTaskHook recentTaskHook;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -32,10 +34,12 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
         // init the hook object first
         statusBarHook = new StatusBarHook();
         appInfoHook = new AppInfoHook();
+        recentTaskHook = new RecentTaskHook();
 
         // call the initZyote method
         statusBarHook.initZygote(startupParam);
         appInfoHook.initZygote(startupParam);
+        recentTaskHook.initZygote(startupParam);
     }
 
     @Override
@@ -54,6 +58,7 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
         if (loadPackageParam.packageName.equals("com.android.systemui")) {
             Log.d(TAG, "found systemui");
             statusBarHook.handleLoadPackage(loadPackageParam);
+            recentTaskHook.handleLoadPackage(loadPackageParam);
         } else if (loadPackageParam.packageName.equals("com.android.settings")) {
             Log.d(TAG, "found settings");
             appInfoHook.handleLoadPackage(loadPackageParam);
