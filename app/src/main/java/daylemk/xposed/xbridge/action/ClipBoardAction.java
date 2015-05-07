@@ -1,6 +1,7 @@
 package daylemk.xposed.xbridge.action;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -17,13 +18,13 @@ public class ClipBoardAction extends Action {
 
 
     @Override
-    public Drawable getIcon(PackageManager packageManager) {
+    protected Intent getIntent(Hook hook, String pkgName) {
         return null;
     }
 
     @Override
-    public void setAction(Hook hook, Context context, String pkgName, View view) {
-
+    public Drawable getIcon(PackageManager packageManager) {
+        return null;
     }
 
 }

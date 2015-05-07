@@ -36,6 +36,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
+ * Status bar hook
  * Created by DayLemK on 2015/4/30.
  */
 public class StatusBarHook extends Hook {
@@ -49,10 +50,6 @@ public class StatusBarHook extends Hook {
     private PackageManager packageManager = null;
     // the OnDismissActionInterface
     private Class<?> onDismissActionInterface = null;
-    // the class loader need for dynamic proxy
-    private ClassLoader classLoader;
-
-    private ImageButton inspectItemButton = null;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -76,7 +73,7 @@ public class StatusBarHook extends Hook {
                 // set the statusBar everytime
                 // TODO: needed? when system ui crash, this code will be cleaned too
                 if (!param.thisObject.equals(statusBarObject)) {
-                    Log.e(TAG, "statusBar is different: " + statusBarObject);
+                    Log.w(TAG, "statusBar is different: " + statusBarObject);
                     statusBarObject = param.thisObject;
                     context = (Context) XposedHelpers.getObjectField
                             (statusBarObject, "mContext");
@@ -103,7 +100,7 @@ public class StatusBarHook extends Hook {
 
                 // check if need to add action
                 // TODO: add the preference check
-                if (!PlayAction.isNeed2Add(layoutGuts)) {
+                if (!PlayAction.isNeed2Add(layoutGuts, PlayAction.class)) {
                     Log.d(TAG, "play action alread added");
                     return;
                 }
@@ -138,16 +135,14 @@ public class StatusBarHook extends Hook {
                         .notification_inspect_item, null);
 
                 Log.d(TAG, "inflate image button: " + xBridgeButton);
+
                 // set the style finally!!!
                 // EDIT: set the style on the fly acts wired
 
                 // copy the params from the inspect item button
                 ViewGroup.LayoutParams layoutParams = imageButtonInspect.getLayoutParams();
                 Log.d(TAG, "image button inspect: " + layoutParams.toString());
-                // set the height equals to the width
-//                layoutParams.height = layoutParams.width;
                 xBridgeButton.setLayoutParams(layoutParams);
-                xBridgeButton.setContentDescription("null for now");
 
                 // get package manager
                 final int userId = (int) XposedHelpers.callMethod(XposedHelpers.callMethod
@@ -161,18 +156,11 @@ public class StatusBarHook extends Hook {
 
                 // init play action for demo
                 Action action = new PlayAction();
-                // set the action icon
-                xBridgeButton.setImageDrawable(action.getIcon(packageManager));
                 // set the action event
                 action.setAction(StatusBarHook.this, context, pkgName, xBridgeButton);
 
                 // 5) add the button to the guts layout
                 linearLayout.addView(xBridgeButton);
-
-//                xBridgeButton.setImageResource();
-
-
-                //XposedHelpers.callMethod(expandableNotificationRow, "findViewById", "");
             }
         });
 
@@ -180,35 +168,17 @@ public class StatusBarHook extends Hook {
                 ".KeyguardHostView.OnDismissAction", loadPackageParam.classLoader);
         Log.d(TAG, "onDismissActionInterface: " + onDismissActionInterface);
 
-        classLoader = loadPackageParam.classLoader;
-
     }
 
-    public void dismissKeyguardAndStartIntent(final Intent intent, String pkgName) {
+    public void dismissKeyguardAndStartIntent(final Action action, final Intent intent, final String pkgName) {
         if (statusBarObject == null) {
             Log.e(TAG, "baseStatusBar is null, give up");
             return;
         }
         Log.i(TAG, "dismiss keyguard");
 
-        // get the appUid
-        int appUid = -1;
-        try {
-            final ApplicationInfo info = packageManager.getApplicationInfo(pkgName,
-                    PackageManager.GET_UNINSTALLED_PACKAGES
-                            | PackageManager.GET_DISABLED_COMPONENTS);
-            if (info != null) {
-                appUid = info.uid;
-                Log.d(TAG, "info is ok, and uid is: " + appUid);
-            }
-        } catch (Exception e) {
-            // output log
-            XposedBridge.log(e);
-        }
-
-        final int sUid = appUid;
-
         // dismiss and start intent
+        // EDIT: super abstract private method can't be called?
 //        Method method;
 //        try {
 //            method = statusBarObject.getClass().getSuperclass().getDeclaredMethod(
@@ -220,21 +190,13 @@ public class StatusBarHook extends Hook {
 //            XposedBridge.log(e);
 //        }
 
-//        XposedHelpers.callMethod(statusBarObject, "startNotificationGutsIntent",
-//                intent, appUid);
-
         Object mStatusBarKeyguardViewManager = XposedHelpers.
                 getObjectField(statusBarObject, "mStatusBarKeyguardViewManager");
         Log.d(TAG, "get the keyguardViewManager: " + mStatusBarKeyguardViewManager);
         final boolean keyguardShowing = (boolean) XposedHelpers.callMethod
                 (mStatusBarKeyguardViewManager, "isShowing");
         Log.d(TAG, "keyguardShowing: " + keyguardShowing);
-        // find
-//        XposedHelpers.findc
 
-//        XposedHelpers.callMethod(statusBarObject, "dismissKeyguardThenExecute", );
-
-        // maybe classloader is not
         Object onDismissAction = Proxy.newProxyInstance(onDismissActionInterface.getClassLoader()
                 , new Class<?>[]{onDismissActionInterface}, new InvocationHandler() {
 
@@ -263,50 +225,7 @@ public class StatusBarHook extends Hook {
                             }
                             // end of keyguard showing
 
-                            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create
-                                    (context).addNextIntentWithParentStack
-                                    (intent);
-                            Log.d(TAG, "taskStackBuilder: " + taskStackBuilder);
-
-                            int userId = (int) XposedHelpers.callStaticMethod(UserHandle
-                                    .class, "getUserId", sUid);
-                            Log.d(TAG, "userId: " + userId);
-
-                            Object userHandle = null;
-                            try {
-                                    /*Constructor<?> userHandleConstructor = null;
-                                    Constructor[] cons = UserHandle.class.getDeclaredConstructors();
-                                    for (int i = 0 ; i < cons.length; i ++){
-                                        Class[] params = cons[i].getParameterTypes();
-                                        Log.d(TAG, "cons: " + cons[i].toString());
-
-                                        if(params.length == 1){
-                                            Log.d(TAG, "param type: " + params[0].getName());
-                                            if(params[0].getName().equals(Integer.class.getName())){
-                                                // right constructor
-                                                userHandleConstructor = cons[i];
-                                            }
-                                        }
-                                    }*/
-                                // here should use int.class
-                                Constructor<?> userHandleConstructor = UserHandle.class
-                                        .getDeclaredConstructor(int.class);
-                                userHandleConstructor.setAccessible(true);
-                                userHandle = userHandleConstructor.newInstance(userId);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                XposedBridge.log(e);
-                            }
-                            Log.d(TAG, "userHandle: " + userHandle);
-
-                            // call startActivities method
-                            // FIXED: should use the empty Bundle object not null
-                            XposedHelpers.callMethod(taskStackBuilder, "startActivities",
-                                    new Bundle(), userHandle);
-                            Log.d(TAG, "start activities");
-
-//                                startActivities(null, new UserHandle(UserHandle
-//                                        .getUserId(sUid)));
+                            action.startIntentAsUser(context, intent, pkgName);
 
                         }
                     });

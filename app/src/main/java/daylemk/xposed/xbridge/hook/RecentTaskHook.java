@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import java.lang.reflect.Constructor;
 
+import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -25,15 +26,16 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
+ * Recent task screen hook
  * Created by DayLemK on 2015/5/4.
  */
 public class RecentTaskHook extends Hook {
     public static final String TAG = "RecentTaskHook";
     // the guts view id
     private static final int ID_GUTS = View.generateViewId();
-    // the icon id
+    // the header icon id
     private int idIcon = 0;
-    // the desc id
+    // the header desc id
     private int idDesc = 0;
 
 
@@ -79,7 +81,7 @@ public class RecentTaskHook extends Hook {
 
                 // EDIT: need to set the guts to invisible
                 View gutsView = ((ViewGroup) mHeaderView.getParent()).findViewById(ID_GUTS);
-                Log.d(TAG, "the gutsView on unloaded is: " + gutsView);
+                Log.d(TAG, "the guts view on unloaded is: " + gutsView);
                 if (gutsView != null) {
                     gutsView.setVisibility(View.INVISIBLE);
                 }
@@ -99,7 +101,7 @@ public class RecentTaskHook extends Hook {
                         final View longClickedView = (View) param.args[0];
                         Log.d(TAG, "long click original result: " + result);
                         Log.d(TAG, "long clicked view: " + longClickedView);
-                        if (result == true) {
+                        if (result) {
                             Log.d(TAG, "already handled, do nothing");
                             return;
                         }
@@ -112,12 +114,11 @@ public class RecentTaskHook extends Hook {
                             final Context context = taskViewObject.getContext();
                             final Resources res = context.getResources();
                             // the guts view
-                            FrameLayout headerGutsView = null;
+                            FrameLayout headerGutsView;
                             // this for now is jus play image view
-                            ImageView fixedSizeImageView = null;
-                            if (PlayAction.isNeed2Add((ViewGroup) mHeaderView.getParent())) {
-                                // need to add, there is nothing before
-
+                            ImageView fixedSizeImageView;
+                            if (PlayAction.isNeed2Add((ViewGroup) mHeaderView.getParent(),
+                                    PlayAction.class)) {
                                 // use package name on get identifier
                                 int viewHeaderId = context.getResources().getIdentifier
                                         ("recents_task_view_header", "layout", "com.android" +
@@ -128,6 +129,7 @@ public class RecentTaskHook extends Hook {
                                         (context).inflate(viewHeaderId, null);
                                 // set the gut id for later retrieve from layout
                                 headerGutsView.setId(ID_GUTS);
+                                // TODO: set the color on the fly
                                 headerGutsView.setBackgroundColor(Color.BLUE);
 
                                 // we don't need dismiss task view, so dismiss it
@@ -142,9 +144,9 @@ public class RecentTaskHook extends Hook {
                                 // set the layout params
                                 ViewGroup.LayoutParams dismissViewLayoutParams = dismissTaskView
                                         .getLayoutParams();
-                                if (dismissTaskView != null) {
-                                    dismissTaskView.setVisibility(View.GONE);
-                                }
+//                                if (dismissTaskView != null) {
+                                dismissTaskView.setVisibility(View.GONE);
+//                                }
                                 // add ImageView here
                                 Class<?> fixedSizeImageViewClass = XposedHelpers.findClass("com" +
                                         ".android.systemui" +
@@ -152,8 +154,8 @@ public class RecentTaskHook extends Hook {
                                         .classLoader);
                                 Log.d(TAG, "fixedSizeImageView: " + fixedSizeImageViewClass);
                                 Constructor<?> fixedSizeImageViewConstructor = XposedHelpers
-                                        .findConstructorBestMatch(fixedSizeImageViewClass, new
-                                                Class<?>[]{Context.class});
+                                        .findConstructorBestMatch(fixedSizeImageViewClass,
+                                                Context.class);
                                 Log.d(TAG, "fixedSizeImageView constructor: " +
                                         fixedSizeImageViewConstructor);
                                 fixedSizeImageView = (ImageView)
@@ -191,7 +193,7 @@ public class RecentTaskHook extends Hook {
                                 Log.d(TAG, "get the headerGutsView: " + headerGutsView);
 
                                 // EDIT: if we already show it, we just invisible it
-                                if(headerGutsView.getVisibility() == View.VISIBLE){
+                                if (headerGutsView.getVisibility() == View.VISIBLE) {
                                     Log.d(TAG, "the guts is visible, dismiss it");
                                     // copy guts view to a final one
                                     final View gutsViewFinal = headerGutsView;
@@ -200,16 +202,19 @@ public class RecentTaskHook extends Hook {
                                     if (headerGutsView.getWindowToken() == null) return;
 
                                     // use header view width and height
-                                    Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() + ", " +
+                                    Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() +
+                                            ", " +
                                             headerGutsView.getHeight());
                                     final double horz = Math.max(headerGutsView.getWidth() / 2, 2);
                                     final double vert = Math.max(headerGutsView.getHeight() / 2, 2);
                                     final float r = (float) Math.hypot(horz, vert);
                                     Log.d(TAG, "ripple r: " + r);
                                     final Animator a
-                                            = ViewAnimationUtils.createCircularReveal(headerGutsView,
-                                            headerGutsView.getWidth() / 2, headerGutsView.getHeight() / 2,
-                                            r, 0);
+                                            = ViewAnimationUtils.createCircularReveal
+                                            (headerGutsView,
+                                                    headerGutsView.getWidth() / 2, headerGutsView
+                                                            .getHeight() / 2,
+                                                    r, 0);
                                     a.setDuration(400);
                                     a.addListener(new AnimatorListenerAdapter() {
                                         @Override
@@ -230,7 +235,7 @@ public class RecentTaskHook extends Hook {
 
                                 // else we need to show it
                                 fixedSizeImageView = (ImageView) headerGutsView.findViewById
-                                        (PlayAction.sIdBox.value);
+                                        (Action.getViewId(PlayAction.class));
                                 Log.d(TAG, "get the fixedSizeImageView: " + fixedSizeImageView);
                                 // set here or at end???
                                 headerGutsView.setVisibility(View.VISIBLE);
@@ -256,8 +261,6 @@ public class RecentTaskHook extends Hook {
 
                             // set the action up
                             PlayAction playAction = new PlayAction();
-                            fixedSizeImageView.setImageDrawable(playAction.getIcon(context
-                                    .getPackageManager()));
                             // get the package name
                             Object task = XposedHelpers.callMethod(taskViewObject, "getTask");
                             Object key = XposedHelpers.getObjectField(task, "key");
@@ -266,6 +269,7 @@ public class RecentTaskHook extends Hook {
                                     "baseIntent");
                             Log.d(TAG, "base intent: " + intent);
                             final String pkgName = intent.getComponent().getPackageName();
+
                             playAction.setAction(RecentTaskHook.this, context, pkgName,
                                     fixedSizeImageView);
 
@@ -298,7 +302,10 @@ public class RecentTaskHook extends Hook {
 
                             // set that this action we will handle it
                             param.setResult(true);
+                            return;
                         }
+                        // set the original result back which is false
+                        param.setResult(false);
                     }
                 });
     }

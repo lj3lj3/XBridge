@@ -14,6 +14,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
+ * App info screen hook
  * Created by DayLemK on 2015/4/28.
  */
 public class AppInfoHook extends Hook {
@@ -50,22 +51,9 @@ public class AppInfoHook extends Hook {
                         Menu menu = (Menu) param.args[0];
                         Log.d(TAG, "the menu is: " + menu);
                         final PlayAction playAction = new PlayAction();
-                        MenuItem playMenuItem = menu.add(PlayAction.STR_VIEW_IN_PLAY_STORE);
-                        // show action if room
-                        playMenuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                        playMenuItem.setIcon(playAction.getIcon(pm));
-                        playMenuItem.setOnMenuItemClickListener(new MenuItem
-                                .OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                Log.d(TAG, "on menu click: " + item);
-                                //TODO: start activity as user, maybe
-                                activity.startActivity(playAction.getIntent(pkgInfo.packageName));
-
-                                return true;
-                            }
-                        });
-
+                        MenuItem playMenuItem = menu.add(playAction.getMenuTitle());
+                        playAction.setAction(AppInfoHook.this, activity.getApplicationContext(),
+                                pkgInfo.packageName, playMenuItem);
                     }
                 });
     }
