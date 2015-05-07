@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
@@ -34,8 +35,14 @@ public class AppInfoHook extends Hook {
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        if(!MainPreferences.isShowInAppInfo){
+                            // if don't, return
+                            return;
+                        }
+
                         Log.d(TAG, "after onCreateOptionsMenu hooked");
                         super.afterHookedMethod(param);
+
                         final Object installedAppDetails = param.thisObject;
                         // get the package manager
                         PackageManager pm = (PackageManager) XposedHelpers.getObjectField

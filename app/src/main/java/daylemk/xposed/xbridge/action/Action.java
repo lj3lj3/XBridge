@@ -26,6 +26,7 @@ import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
 import daylemk.xposed.xbridge.utils.Log;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
@@ -40,6 +41,11 @@ public abstract class Action {
      * The map contain the action view id *
      */
     private static Map<Class<? extends Action>, Integer> viewIdMap = new HashMap<>();
+
+    /** load all action related preference */
+    public static void loadPreference (XSharedPreferences preferences){
+        PlayAction.loadPreference(preferences);
+    }
 
     public static boolean isNeed2Add(ViewGroup viewGroup, Class<? extends Action> actionClass) {
         Log.d(TAG, "the check map class is: " + actionClass);
@@ -59,7 +65,7 @@ public abstract class Action {
             // the id is not here, so we generate it and put it in the map
             viewIdMap.put(actionClass, View.generateViewId());
             // --------- debug map content begin ---------
-            Log.d(TAG, "map,keys" + viewIdMap.keySet());
+            Log.d(TAG, "map,keys: " + viewIdMap.keySet());
             Set<Class<? extends Action>> keySet = viewIdMap.keySet();
             Iterator<Class<? extends Action>> iterator = keySet.iterator();
             Class<? extends Action> key;
@@ -68,7 +74,7 @@ public abstract class Action {
             while (iterator.hasNext()) {
                 key = iterator.next();
                 value = viewIdMap.get(key);
-                sb.append(key).append("-").append(value).append(",");
+                sb.append(key).append(" - ").append(value).append(",");
             }
             Log.d(TAG, "map: " + sb.toString());
             // --------- debug map content end ---------

@@ -12,10 +12,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import daylemk.xposed.xbridge.data.IntegerBox;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
 import daylemk.xposed.xbridge.utils.Log;
+import de.robv.android.xposed.XSharedPreferences;
 
 /**
  * @author DayLemK
@@ -25,13 +27,35 @@ import daylemk.xposed.xbridge.utils.Log;
 public class PlayAction extends Action {
     public static final String TAG = "PlayAction";
     public static final String STR_VIEW_IN_PLAY_STORE = "View in Play Store";
-
     public static final String PKG_NAME_PLAY_STORE = "com.android.vending";
+
+    public static final String CLASS_NAME = PlayAction.class.getCanonicalName();
+    public static final String PREF_SHOW_IN_RECENT_TASK = MainPreferences.PREF_SHOW_IN_RECENT_TASK +
+            CLASS_NAME;
+    public static final boolean PREF_SHOW_IN_RECENT_TASK_DEFAULT = true;
+    public static final String PREF_SHOW_IN_STATUS_BAR = MainPreferences.PREF_SHOW_IN_STATUS_BAR +
+            CLASS_NAME;
+    public static final boolean PREF_SHOW_IN_STATUS_BAR_DEFAULT = true;
+    public static final String PREF_SHOW_IN_APP_INFO = MainPreferences.PREF_SHOW_IN_APP_INFO +
+            CLASS_NAME;
+    public static final boolean PREF_SHOW_IN_APP_INFO_DEFAULT = true;
+    public static boolean isShowInRecentTask = true;
+    public static boolean isShowInStatusBar = true;
+    public static boolean isShowInAppInfo = true;
     // just need to init the icon and listener once
     // EDIT: maybe the icon is already one instance in the system
     public static Drawable sIcon = null;
     //public static View.OnClickListener sOnClickListener = null;
     // EDIT: the on click listener should be different
+
+    public static void loadPreference(XSharedPreferences preferences) {
+        isShowInRecentTask = preferences.getBoolean(PREF_SHOW_IN_RECENT_TASK,
+                PREF_SHOW_IN_RECENT_TASK_DEFAULT);
+        isShowInStatusBar = preferences.getBoolean(PREF_SHOW_IN_STATUS_BAR,
+                PREF_SHOW_IN_STATUS_BAR_DEFAULT);
+        isShowInAppInfo = preferences.getBoolean(PREF_SHOW_IN_APP_INFO,
+                PREF_SHOW_IN_APP_INFO_DEFAULT);
+    }
 
     @Override
     protected Drawable getIcon(PackageManager packageManager) {

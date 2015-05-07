@@ -1,5 +1,6 @@
 package daylemk.xposed.xbridge;
 
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.RecentTaskHook;
@@ -8,6 +9,9 @@ import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
+import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -30,6 +34,12 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
         Log.d(TAG, "init zygote");
         Log.d(TAG, "the package name: " + StaticData.THIS_PACKAGE_NAME);
         Log.d(TAG, "module path: " + startupParam.modulePath);
+
+        // call this method to init shared preference
+        MainPreferences.getSharedPreference();
+        // call this to load hub switch
+        MainPreferences.loadPreference();
+
 //        startupParam.modulePath
         // init the hook object first
         statusBarHook = new StatusBarHook();

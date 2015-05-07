@@ -28,6 +28,7 @@ import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.XposedInit;
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -68,6 +69,10 @@ public class StatusBarHook extends Hook {
         XposedBridge.hookAllMethods(baseStatusBarClass, "inflateGuts", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if(!MainPreferences.isShowInStatusBar){
+                    return;
+                }
+
                 Log.v(TAG, "after inflateGuts method hooked");
                 super.afterHookedMethod(param);
                 // set the statusBar everytime

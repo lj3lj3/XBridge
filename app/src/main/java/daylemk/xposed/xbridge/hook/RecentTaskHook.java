@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
@@ -57,6 +58,12 @@ public class RecentTaskHook extends Hook {
         XposedHelpers.findAndHookMethod(taskViewClass, "onTaskDataLoaded", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!MainPreferences.isShowInRecentTask) {
+                    // call the original method
+                    param.getResult();
+                    return;
+                }
+
                 super.beforeHookedMethod(param);
                 // get this every time???
                 FrameLayout taskViewObject = (FrameLayout) param.thisObject;
@@ -73,6 +80,12 @@ public class RecentTaskHook extends Hook {
         XposedHelpers.findAndHookMethod(taskViewClass, "onTaskDataUnloaded", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if(!MainPreferences.isShowInRecentTask){
+                    // call the original method
+                    param.getResult();
+                    return;
+                }
+
                 super.beforeHookedMethod(param);
                 FrameLayout taskViewObject = (FrameLayout) param.thisObject;
                 View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
@@ -95,6 +108,12 @@ public class RecentTaskHook extends Hook {
                 XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        if(!MainPreferences.isShowInRecentTask){
+                            // need?
+//                            param.setResult(param.getResult());
+                            return;
+                        }
+
                         super.afterHookedMethod(param);
                         // get original result
                         boolean result = (boolean) param.getResult();
