@@ -27,4 +27,9 @@ public class ClipBoardAction extends Action {
         return null;
     }
 
+    @Override
+    public String getMenuTitle() {
+        return null;
+    }
+
 }

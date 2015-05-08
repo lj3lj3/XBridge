@@ -41,10 +41,17 @@ public abstract class Action {
      * The map contain the action view id *
      */
     private static Map<Class<? extends Action>, Integer> viewIdMap = new HashMap<>();
+    // not use this, 'cause we need read value at the begin of injection. so, the static boolean
+    // value is faster.
+//    private static Map<String, Boolean> prefItem;
+//    private static Map<String, Map<String, Object>> prefMap = new HashMap();
 
-    /** load all action related preference */
-    public static void loadPreference (XSharedPreferences preferences){
+    /**
+     * load all action related preference
+     */
+    public static void loadPreference(XSharedPreferences preferences) {
         PlayAction.loadPreference(preferences);
+        AppOpsAction.loadPreference(preferences);
     }
 
     public static boolean isNeed2Add(ViewGroup viewGroup, Class<? extends Action> actionClass) {
@@ -94,12 +101,27 @@ public abstract class Action {
         return viewIdMap.get(actionClass);
     }
 
+    protected Drawable getPackageIcon(PackageManager packageManager, String pkgName) {
+        Drawable drawable;
+        try {
+            drawable = packageManager.getApplicationIcon(pkgName);
+            Log.d(TAG, "play store icon is found: " + drawable);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "play store icon can't be found, use generic icon");
+            // app is gone, just show package name and generic icon
+            drawable = packageManager.getDefaultActivityIcon();
+        }
+
+        return drawable;
+    }
+
     private Intent getFinalIntent(Hook hook, String pkgName) {
         Intent intent = getIntent(hook, pkgName);
         // this is just need for appInfo screen for now, not in status bar
         if (hook instanceof AppInfoHook) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
         }
+        Log.d(TAG, "final intent: " + intent);
         return intent;
     }
 
@@ -112,11 +134,9 @@ public abstract class Action {
     protected abstract Drawable getIcon(PackageManager packageManager);
 
     /**
-     * get the String that represent this action, recommend overwrite this in the subclass
+     * get the String that represent this action, overwrite this in the subclass
      */
-    public String getMenuTitle() {
-        return "";
-    }
+    public abstract String getMenuTitle();
 
     public void setAction(final Hook hook, final Context context,
                           final String pkgName,
@@ -132,6 +152,8 @@ public abstract class Action {
         // set the button id first
         // the button id can be the same within the different notification
         view.setId(getViewId(Action.this.getClass()));
+        // set the package name as tag of this view
+        view.setTag(pkgName);
         Log.d(TAG, "set click action, pkg: " + pkgName);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,7 +182,7 @@ public abstract class Action {
         menuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         // set the icon
         menuItem.setIcon(getIcon(context.getPackageManager()));
-        Log.d(TAG, "set click action, pkg: " + pkgName);
+        Log.d(TAG, "pkg: " + pkgName);
         menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -180,8 +202,9 @@ public abstract class Action {
 
     /**
      * start intent as user
+     *
      * @param context context
-     * @param intent the Action intent
+     * @param intent  the Action intent
      * @param pkgName clicked package name
      */
     public void startIntentAsUser(Context context, Intent intent, String pkgName) {

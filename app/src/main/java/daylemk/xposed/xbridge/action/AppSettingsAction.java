@@ -15,6 +15,7 @@ import daylemk.xposed.xbridge.hook.Hook;
  * 28-四月-2015 9:16:48
  */
 public class AppSettingsAction extends Action {
+    public static final String TAG = "AppSettingsAction";
 
 
     @Override
@@ -27,5 +28,9 @@ public class AppSettingsAction extends Action {
         return null;
     }
 
+    @Override
+    public String getMenuTitle() {
+        return null;
+    }
 
 }

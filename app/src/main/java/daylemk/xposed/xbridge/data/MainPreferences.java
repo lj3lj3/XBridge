@@ -1,11 +1,6 @@
 package daylemk.xposed.xbridge.data;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.Preference;
-
-import java.util.prefs.Preferences;
-
+import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XSharedPreferences;
 
@@ -37,7 +32,6 @@ public class MainPreferences {
      * get the xBridge shared preference
      */
     public static XSharedPreferences getSharedPreference() {
-        Log.d(TAG, "Cano name: " + MainPreferences.class.getCanonicalName());
         if (sharedPreferences == null) {
             sharedPreferences = new XSharedPreferences(StaticData
                     .THIS_PACKAGE_NAME, NAME_PREFERENCE);
@@ -50,10 +44,12 @@ public class MainPreferences {
         isShowInStatusBar = sharedPreferences.getBoolean(PREF_SHOW_IN_STATUS_BAR,
                 PREF_SHOW_IN_STATUS_BAR_DEFAULT);
         isShowInRecentTask = sharedPreferences.getBoolean(PREF_SHOW_IN_RECENT_TASK,
-                PREF_SHOW_IN_STATUS_BAR_DEFAULT);
+                PREF_SHOW_IN_RECENT_TASK_DEFAULT);
         isShowInAppInfo = sharedPreferences.getBoolean(PREF_SHOW_IN_APP_INFO,
                 PREF_SHOW_IN_APP_INFO_DEFAULT);
         Log.d(TAG, "pref: isShowInStatusBar: " + isShowInStatusBar + ",isShowInRecentTask: " +
                 isShowInRecentTask + ", isShowInAppInfo: " + isShowInAppInfo);
+        // load action preference
+        Action.loadPreference(sharedPreferences);
     }
 }

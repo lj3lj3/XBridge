@@ -1,12 +1,15 @@
 package daylemk.xposed.xbridge.hook;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import daylemk.xposed.xbridge.action.Action;
+import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
@@ -39,6 +42,10 @@ public class AppInfoHook extends Hook {
                             // if don't, return
                             return;
                         }
+                        if(!(PlayAction.isShowInAppInfo /*|| AppOpsAction.isShowInAppInfo*/)){
+                            // do nothing
+                            return;
+                        }
 
                         Log.d(TAG, "after onCreateOptionsMenu hooked");
                         super.afterHookedMethod(param);
@@ -53,14 +60,26 @@ public class AppInfoHook extends Hook {
                         final Activity activity = (Activity) XposedHelpers.callMethod
                                 (installedAppDetails,
                                         "getActivity");
+                        final String pkgName = pkgInfo.packageName;
+                        final Context context = activity.getApplicationContext();
 
                         // find the menu layout
                         Menu menu = (Menu) param.args[0];
                         Log.d(TAG, "the menu is: " + menu);
-                        final PlayAction playAction = new PlayAction();
-                        MenuItem playMenuItem = menu.add(playAction.getMenuTitle());
-                        playAction.setAction(AppInfoHook.this, activity.getApplicationContext(),
-                                pkgInfo.packageName, playMenuItem);
+
+                        if(PlayAction.isShowInAppInfo) {
+                            final Action action = new PlayAction();
+                            MenuItem playMenuItem = menu.add(action.getMenuTitle());
+                            action.setAction(AppInfoHook.this, context,
+                                    pkgName, playMenuItem);
+                        }
+                        // app Ops already show in app info
+                        /*if(AppOpsAction.isShowInAppInfo) {
+                            final Action action = new AppOpsAction();
+                            MenuItem playMenuItem = menu.add(action.getMenuTitle());
+                            action.setAction(AppInfoHook.this, context,
+                                    pkgName, playMenuItem);
+                        }*/
                     }
                 });
     }
