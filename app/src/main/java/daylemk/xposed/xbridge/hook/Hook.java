@@ -17,6 +17,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
  * Created by DayLemK on 5/1/2015.
+ * Hook super-class
  */
 public abstract class Hook implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         IXposedHookInitPackageResources {
@@ -60,4 +61,5 @@ public abstract class Hook implements IXposedHookZygoteInit, IXposedHookLoadPack
         Log.d(TAG, "the XBridge context: " + mContext);
         return mContext;
     }
+
 }

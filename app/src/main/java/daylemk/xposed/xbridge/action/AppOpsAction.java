@@ -1,5 +1,6 @@
 package daylemk.xposed.xbridge.action;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -19,7 +20,7 @@ public class AppOpsAction extends Action{
     public static final String TAG = "AppOpsAction";
     public static final String STR_DESC = "View in App Ops";
     public static final String PKG_NAME = "at.jclehner.appopsxposed";
-    public static final String ACTIVITY_CLASS_NAME = "at.jclehner.appopsxposed.AppOpsActivity";
+    public static final String ACTIVITY_CLASS_NAME =  PKG_NAME + ".AppOpsActivity";
     public static final String DETAILS_CLASS_NAME = "com.android.settings.applications.AppOpsDetails";
     public static final String ARG_PACKAGE_NAME = "package";
 
@@ -62,6 +63,10 @@ public class AppOpsAction extends Action{
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, bundle);
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, DETAILS_CLASS_NAME);
         return intent;
+    }
+
+    @Override
+    protected void handleData(Context context, String pkgName) {
     }
 
     @Override

@@ -2,4 +2,6 @@
     <string name="app_name">XBridge</string>
     <string name="action_settings">Settings</string>
     <string name="xposed_description">XBridge</string>
+    <string name="package_name">Package name&#160;</string>
+    <string name="copied">copied</string>
 </resources>

@@ -3,6 +3,7 @@ package daylemk.xposed.xbridge;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
+import daylemk.xposed.xbridge.hook.FrameworksHook;
 import daylemk.xposed.xbridge.hook.RecentTaskHook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
 import daylemk.xposed.xbridge.utils.Log;
@@ -28,6 +29,7 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
     private AppInfoHook appInfoHook;
     private StatusBarHook statusBarHook;
     private RecentTaskHook recentTaskHook;
+    private FrameworksHook frameworksHook;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -45,20 +47,23 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
         statusBarHook = new StatusBarHook();
         appInfoHook = new AppInfoHook();
         recentTaskHook = new RecentTaskHook();
+        frameworksHook = new FrameworksHook();
 
         // call the initZyote method
         statusBarHook.initZygote(startupParam);
         appInfoHook.initZygote(startupParam);
         recentTaskHook.initZygote(startupParam);
+        frameworksHook.initZygote(startupParam);
     }
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam
                                                    initPackageResourcesParam) throws Throwable {
-//        Log.d(TAG, "handle package resource: " + initPackageResourcesParam.packageName);
-//        if(initPackageResourcesParam.packageName.equals("daylemk.xposed.xbridge")){
-//            initPackageResourcesParam.res.
-//        }
+        Log.d(TAG, "handle package resource: " + initPackageResourcesParam.packageName);
+        if(initPackageResourcesParam.packageName.equals("android")){
+            frameworksHook.handleInitPackageResources(initPackageResourcesParam);
+        }
+
     }
 
     @Override

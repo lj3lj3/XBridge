@@ -10,6 +10,7 @@ import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.UserHandle;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -29,7 +30,10 @@ import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.XposedInit;
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppOpsAction;
+import daylemk.xposed.xbridge.action.AppSettingsAction;
+import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
@@ -53,10 +57,14 @@ public class StatusBarHook extends Hook {
     private PackageManager packageManager = null;
     // the OnDismissActionInterface
     private Class<?> onDismissActionInterface = null;
-    /** notification guts id show always be the same, so, just get once */
+    /**
+     * notification guts id show always be the same, so, just get once
+     */
     private int idGuts = -1;
-    /** inspect item layout params should get once too */
-    private ViewGroup.LayoutParams inspectLayoutParams;
+    /**
+     * inspect item layout params should get once too
+     */
+    private LinearLayout.LayoutParams inspectLayoutParams;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -78,7 +86,7 @@ public class StatusBarHook extends Hook {
                 if (!MainPreferences.isShowInStatusBar) {
                     return;
                 }
-                if (!(PlayAction.isShowInStatusBar || AppOpsAction.isShowInStatusBar)) {
+                if (Action.isActionsShowInStatusBar()) {
                     // if none of this is showed here, do nothing
                     return;
                 }
@@ -86,7 +94,6 @@ public class StatusBarHook extends Hook {
                 Log.v(TAG, "after inflateGuts method hooked");
                 super.afterHookedMethod(param);
                 // set the statusBar everytime
-                // TODO: needed? when system ui crash, this code will be cleaned too
                 if (!param.thisObject.equals(statusBarObject)) {
                     Log.w(TAG, "statusBar is different: " + statusBarObject);
                     statusBarObject = param.thisObject;
@@ -97,7 +104,7 @@ public class StatusBarHook extends Hook {
                 final Resources res = context.getResources();
 
                 // 1) get the notification guts id
-                if(idGuts == -1){
+                if (idGuts == -1) {
                     // ignore: and inspect item id
                     // EDIT: get guts view here
                     idGuts = res.getIdentifier("notification_guts", "id",
@@ -118,26 +125,28 @@ public class StatusBarHook extends Hook {
 
                 boolean isPlayNeed2Add = false;
                 boolean isOpsNeed2Add = false;
+                boolean isAppSetNeed2Add = false;
+                boolean isClipBoardNeed2Add = false;
+                boolean isSearchNeed2Add = false;
                 // check if need to add action
                 if (PlayAction.isShowInStatusBar) {
-                    if (!PlayAction.isNeed2Add(layoutGuts, PlayAction.class)) {
-                        Log.d(TAG, "play is already added");
-                        return;
-                    } else {
-                        // we need add play action
-                        isPlayNeed2Add = true;
-                    }
+                    isPlayNeed2Add = checkIfNeed2Add(layoutGuts, PlayAction.class);
                 }
                 if (AppOpsAction.isShowInStatusBar) {
-                    if (!AppOpsAction.isNeed2Add(layoutGuts, AppOpsAction.class)) {
-                        Log.d(TAG, "appOps is already added");
-                        return;
-                    } else {
-                        isOpsNeed2Add = true;
-                    }
+                    isOpsNeed2Add = checkIfNeed2Add(layoutGuts, AppOpsAction.class);
+                }
+                if (AppSettingsAction.isShowInStatusBar) {
+                    isAppSetNeed2Add = checkIfNeed2Add(layoutGuts, AppSettingsAction.class);
+                }
+                if (ClipBoardAction.isShowInStatusBar) {
+                    isClipBoardNeed2Add = checkIfNeed2Add(layoutGuts, ClipBoardAction.class);
+                }
+                if (SearchAction.isShowInStatusBar) {
+                    isSearchNeed2Add = checkIfNeed2Add(layoutGuts, SearchAction.class);
                 }
 
-                if (!(isPlayNeed2Add || isOpsNeed2Add)) {
+                if (!(isPlayNeed2Add || isOpsNeed2Add || isAppSetNeed2Add || isClipBoardNeed2Add
+                        || isSearchNeed2Add)) {
                     Log.d(TAG, "need add nothing");
                     return;
                 }
@@ -145,19 +154,7 @@ public class StatusBarHook extends Hook {
                 // get layout params etc.
 
                 // here we just need layout params
-                if(inspectLayoutParams == null) {
-                    final int idInspectItemId = res.getIdentifier("notification_inspect_item", "id",
-                            StaticData.PKG_NAME_SYSTEMUI);
-                    Log.d(TAG, "inspect item id: " + idInspectItemId);
-
-                    // 2) get the guts view and inspect item button view
-                    final ImageButton imageButtonInspect = (ImageButton) layoutGuts.findViewById
-                            (idInspectItemId);
-                    Log.d(TAG, "the inspect image button: " + imageButtonInspect);
-                    inspectLayoutParams = imageButtonInspect.getLayoutParams();
-
-                    Log.d(TAG, "image button inspect: " + inspectLayoutParams.toString());
-                }
+                getInspectLayoutParams(res, layoutGuts);
 
                 // 3) get the package name
                 Object statusBarNotificationObject = XposedHelpers.callMethod(expandNotiRowObject,
@@ -183,21 +180,26 @@ public class StatusBarHook extends Hook {
                                 userId);
                 Log.d(TAG, "packageManager: " + packageManager);*/
 
-                if(isPlayNeed2Add) {
-                    // init play action for demo
+                // 5) add the button to the guts layout
+                if (isPlayNeed2Add) {
                     Action action = new PlayAction();
-                    // set the action event
-                    ImageButton xBridgeButton = createXBridgeButton(context, inspectLayoutParams);
-                    action.setAction(StatusBarHook.this, context, pkgName, xBridgeButton);
-
-                    // 5) add the button to the guts layout
-                    linearLayout.addView(xBridgeButton);
+                    addViewAndSetAction(action, linearLayout, pkgName);
                 }
-                if(isOpsNeed2Add){
+                if (isOpsNeed2Add) {
                     Action action = new AppOpsAction();
-                    ImageButton xBridgeButton = createXBridgeButton(context, inspectLayoutParams);
-                    action.setAction(StatusBarHook.this, context, pkgName, xBridgeButton);
-                    linearLayout.addView(xBridgeButton);
+                    addViewAndSetAction(action, linearLayout, pkgName);
+                }
+                if (isAppSetNeed2Add) {
+                    Action action = new AppSettingsAction();
+                    addViewAndSetAction(action, linearLayout, pkgName);
+                }
+                if (isClipBoardNeed2Add) {
+                    Action action = new ClipBoardAction();
+                    addViewAndSetAction(action, linearLayout, pkgName);
+                }
+                if (isSearchNeed2Add) {
+                    Action action = new SearchAction();
+                    addViewAndSetAction(action, linearLayout, pkgName);
                 }
             }
         });
@@ -206,6 +208,47 @@ public class StatusBarHook extends Hook {
                 ".KeyguardHostView.OnDismissAction", loadPackageParam.classLoader);
         Log.d(TAG, "onDismissActionInterface: " + onDismissActionInterface);
 
+    }
+
+    private boolean checkIfNeed2Add(FrameLayout layoutGuts, Class<? extends Action>
+            classAction) {
+        boolean isNeed2Add;
+        if (!Action.isNeed2Add(layoutGuts, classAction)) {
+            Log.d(TAG, classAction.getSimpleName() + " is already added");
+            isNeed2Add = false;
+        } else {
+            // we need add play action
+            isNeed2Add = true;
+        }
+        return isNeed2Add;
+    }
+
+    private void getInspectLayoutParams(Resources res, FrameLayout layoutGuts) {
+        if (inspectLayoutParams == null) {
+            final int idInspectItemId = res.getIdentifier("notification_inspect_item", "id",
+                    StaticData.PKG_NAME_SYSTEMUI);
+            Log.d(TAG, "inspect item id: " + idInspectItemId);
+
+            // 2) get the guts view and inspect item button view
+            final ImageButton imageButtonInspect = (ImageButton) layoutGuts.findViewById
+                    (idInspectItemId);
+            Log.d(TAG, "the inspect image button: " + imageButtonInspect);
+            inspectLayoutParams = new LinearLayout.LayoutParams(imageButtonInspect
+                    .getLayoutParams());
+            // set the width to the 3/4 of the original width
+            // EDIT: 3/4 is just fine
+            inspectLayoutParams.width = inspectLayoutParams.width * 3 / 4;
+
+            Log.d(TAG, "image button inspect: " + StatusBarHook.this.inspectLayoutParams
+                    .toString());
+        }
+    }
+
+    private void addViewAndSetAction(Action action, LinearLayout linearLayout, String pkgName) {
+        ImageButton xBridgeButton = createXBridgeButton(context, inspectLayoutParams);
+        action.setAction(StatusBarHook.this, context, pkgName, xBridgeButton);
+        // add the view to the last-1
+        linearLayout.addView(xBridgeButton, linearLayout.getChildCount() - 1);
     }
 
     private ImageButton createXBridgeButton(Context context, ViewGroup.LayoutParams layoutParams) {
@@ -222,6 +265,9 @@ public class StatusBarHook extends Hook {
         // EDIT: set the style on the fly acts wired
         // copy the params from the inspect item button
         xBridgeButton.setLayoutParams(layoutParams);
+        // set padding here, half of padding
+        xBridgeButton.setPadding(xBridgeButton.getPaddingLeft() / 2, xBridgeButton.getPaddingTop
+                () / 2, xBridgeButton.getPaddingRight() / 2, xBridgeButton.getPaddingBottom() / 2);
 
         return xBridgeButton;
     }

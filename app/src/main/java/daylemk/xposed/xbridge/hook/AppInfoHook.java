@@ -10,7 +10,10 @@ import android.view.MenuItem;
 
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppOpsAction;
+import daylemk.xposed.xbridge.action.AppSettingsAction;
+import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -42,7 +45,7 @@ public class AppInfoHook extends Hook {
                             // if don't, return
                             return;
                         }
-                        if(!(PlayAction.isShowInAppInfo /*|| AppOpsAction.isShowInAppInfo*/)){
+                        if(Action.isActionsShowInAppInfo()){
                             // do nothing
                             return;
                         }
@@ -67,20 +70,39 @@ public class AppInfoHook extends Hook {
                         Menu menu = (Menu) param.args[0];
                         Log.d(TAG, "the menu is: " + menu);
 
-                        if(PlayAction.isShowInAppInfo) {
-                            final Action action = new PlayAction();
-                            MenuItem playMenuItem = menu.add(action.getMenuTitle());
-                            action.setAction(AppInfoHook.this, context,
-                                    pkgName, playMenuItem);
-                        }
-                        // app Ops already show in app info
+                        handleAllAction(menu, context, pkgName);
+                    }
+                });
+    }
+
+    private void handleAllAction (Menu menu, Context context, String pkgName){
+        if(PlayAction.isShowInAppInfo) {
+            final Action action = new PlayAction();
+            addMenuAndSetAction(menu,action, context, pkgName);
+        }
+        // app Ops already show in app info
                         /*if(AppOpsAction.isShowInAppInfo) {
                             final Action action = new AppOpsAction();
                             MenuItem playMenuItem = menu.add(action.getMenuTitle());
                             action.setAction(AppInfoHook.this, context,
                                     pkgName, playMenuItem);
                         }*/
-                    }
-                });
+        if(AppSettingsAction.isShowInAppInfo){
+            final Action action = new AppSettingsAction();
+            addMenuAndSetAction(menu,action, context, pkgName);
+        }
+        if(ClipBoardAction.isShowInAppInfo){
+            final Action action = new ClipBoardAction();
+            addMenuAndSetAction(menu,action, context, pkgName);
+        }
+        if(SearchAction.isShowInAppInfo) {
+            final Action action = new SearchAction();
+            addMenuAndSetAction(menu,action, context, pkgName);
+        }
+    }
+
+    private void addMenuAndSetAction (Menu menu, Action action, Context context, String pkgName){
+        MenuItem xBridgeMenuItem = menu.add(action.getMenuTitle());
+        action.setAction(AppInfoHook.this, context, pkgName, xBridgeMenuItem);
     }
 }

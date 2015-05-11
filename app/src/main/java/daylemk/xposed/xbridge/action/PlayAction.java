@@ -1,5 +1,6 @@
 package daylemk.xposed.xbridge.action;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -72,5 +73,9 @@ public class PlayAction extends Action {
         intent.setData(Uri.parse("http://play.google.com/store/apps/details?id="
                 + pkgName));
         return intent;
+    }
+
+    @Override
+    protected void handleData(Context context, String pkgName) {
     }
 }

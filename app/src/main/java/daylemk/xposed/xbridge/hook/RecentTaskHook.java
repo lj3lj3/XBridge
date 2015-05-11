@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.view.LayoutInflater;
@@ -22,7 +23,10 @@ import java.lang.reflect.InvocationTargetException;
 
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppOpsAction;
+import daylemk.xposed.xbridge.action.AppSettingsAction;
+import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -45,7 +49,9 @@ public class RecentTaskHook extends Hook {
      * the header id of this task view, we use this to create a clone one
      */
     private int viewHeaderId = -1;
-    /** button background id, 'cause we need set every button a drawable */
+    /**
+     * button background id, 'cause we need set every button a drawable
+     */
     private int buttonBgId = -1;
     private FrameLayout.LayoutParams headerViewLayoutParams;
     private FrameLayout.LayoutParams dismissViewLayoutParams;
@@ -75,7 +81,9 @@ public class RecentTaskHook extends Hook {
                     param.getResult();
                     return;
                 }
-                if (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask)) {
+                if (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
+                        AppSettingsAction.isShowInRecentTask || ClipBoardAction
+                        .isShowInRecentTask || SearchAction.isShowInRecentTask)) {
                     return;
                 }
 
@@ -100,7 +108,9 @@ public class RecentTaskHook extends Hook {
                     param.getResult();
                     return;
                 }
-                if (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask)) {
+                if (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
+                        AppSettingsAction.isShowInRecentTask || ClipBoardAction
+                        .isShowInRecentTask || SearchAction.isShowInRecentTask)) {
                     return;
                 }
 
@@ -131,7 +141,7 @@ public class RecentTaskHook extends Hook {
 //                            param.setResult(param.getResult());
                             return;
                         }
-                        if (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask)) {
+                        if (Action.isActionsShowInRecentTask()) {
                             return;
                         }
 
@@ -161,6 +171,7 @@ public class RecentTaskHook extends Hook {
                         FrameLayout headerGutsView;
                         ViewGroup headerParent = null;
                         final Context context = taskViewObject.getContext();
+                        final Resources res = context.getResources();
                         headerGutsView = (FrameLayout) ((ViewGroup) mHeaderView.getParent
                                 ()).findViewById(ID_GUTS);
                         Log.d(TAG, "get the headerGutsView: " + headerGutsView);
@@ -196,6 +207,12 @@ public class RecentTaskHook extends Hook {
                                         .getLayoutParams();
                             }
                             dismissTaskView.setVisibility(View.GONE);
+                            if (idDesc == 0) {
+                                idDesc = res.getIdentifier("activity_description", "id", "com" +
+                                        ".android.systemui");
+                            }
+                            // we don't need this text views
+                            headerGutsView.findViewById(idDesc).setVisibility(View.GONE);
 
                             if (headerViewLayoutParams == null) {
                                 // add the guts to the headerParent
@@ -254,8 +271,6 @@ public class RecentTaskHook extends Hook {
                         }
 
                         // the guts view is ok now, and is not showing
-                        final Resources res = context.getResources();
-
                         // get the package name
                         final Object task = XposedHelpers.callMethod(taskViewObject, "getTask");
                         final Object key = XposedHelpers.getObjectField(task, "key");
@@ -323,6 +338,82 @@ public class RecentTaskHook extends Hook {
                             }
                             actionCount++;
                         }
+                        if (AppSettingsAction.isShowInRecentTask) {
+                            if (AppSettingsAction.isNeed2Add(headerParent, AppSettingsAction
+                                    .class)) {
+                                Log.d(TAG, "add new AppSettingsAction");
+                                ImageView xBridgeView = getXBridgeView(context, res,
+                                        loadPackageParam
+
+                                                .classLoader, actionCount);
+                                // set the action up
+                                Action xBridgeAction = new AppSettingsAction();
+                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                        xBridgeView);
+                                // add layoutParams
+                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                            } else if (!compName.equals(headerGutsView.getTag())) {
+                                Log.d(TAG, "add different AppOpsAction");
+                                // this action need to be reset
+                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
+                                        (Action
+                                                .getViewId(AppSettingsAction.class));
+                                Action xBridgeAction = new AppSettingsAction();
+                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                        xBridgeView);
+                            }
+                            actionCount++;
+                        }
+                        if (ClipBoardAction.isShowInRecentTask) {
+                            if (ClipBoardAction.isNeed2Add(headerParent, ClipBoardAction.class)) {
+                                Log.d(TAG, "add new ClipBoardAction");
+                                ImageView xBridgeView = getXBridgeView(context, res,
+                                        loadPackageParam
+
+                                                .classLoader, actionCount);
+                                // set the action up
+                                Action xBridgeAction = new ClipBoardAction();
+                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                        xBridgeView);
+                                // add layoutParams
+                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                            } else if (!compName.equals(headerGutsView.getTag())) {
+                                Log.d(TAG, "add different AppOpsAction");
+                                // this action need to be reset
+                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
+                                        (Action
+                                                .getViewId(ClipBoardAction.class));
+                                Action xBridgeAction = new ClipBoardAction();
+                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                        xBridgeView);
+                            }
+                            actionCount++;
+                        }
+                        if (SearchAction.isShowInRecentTask) {
+                            if (SearchAction.isNeed2Add(headerParent, SearchAction.class)) {
+                                Log.d(TAG, "add new SearchAction");
+                                ImageView xBridgeView = getXBridgeView(context, res,
+                                        loadPackageParam
+
+                                                .classLoader, actionCount);
+                                // set the action up
+                                Action xBridgeAction = new SearchAction();
+                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                        xBridgeView);
+                                // add layoutParams
+                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                            } else if (!compName.equals(headerGutsView.getTag())) {
+                                Log.d(TAG, "add different SearchAction");
+                                // this action need to be reset
+                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
+                                        (Action
+                                                .getViewId(SearchAction.class));
+                                Action xBridgeAction = new SearchAction();
+                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                        xBridgeView);
+                            }
+                            actionCount++;
+                        }
 
                         // check if the guts view is NOT the right one, some cycle stuff
                         if (!compName.equals(headerGutsView.getTag())) {
@@ -333,16 +424,18 @@ public class RecentTaskHook extends Hook {
                                 idIcon = res.getIdentifier("application_icon", "id", "com.android" +
                                         ".systemui");
                             }
-                            if (idDesc == 0) {
-                                idDesc = res.getIdentifier("activity_description", "id", "com" +
-                                        ".android.systemui");
-                            }
+
                             Log.d(TAG, "icon id: " + idIcon + ", desc id: " + idDesc);
                             // this is needed every time
-                            ((ImageView) headerGutsView.findViewById(idIcon)).setImageDrawable((
-                                    (ImageView) mHeaderView.findViewById(idIcon)).getDrawable());
-                            ((TextView) headerGutsView.findViewById(idDesc)).setText(((TextView)
-                                    mHeaderView.findViewById(idDesc)).getText());
+                            // call mutate method and clone a new drawable
+                            Drawable drawable = ((ImageView) mHeaderView.findViewById(idIcon))
+                                    .getDrawable().getConstantState().newDrawable().mutate();
+                            // set the color filter to grey
+                            drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+                            ((ImageView) headerGutsView.findViewById(idIcon)).setImageDrawable
+                                    (drawable
+                                    );
+
                         }
 
                         // set the animation

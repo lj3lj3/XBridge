@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import daylemk.xposed.xbridge.data.IntegerBox;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
@@ -37,6 +38,23 @@ import de.robv.android.xposed.XposedHelpers;
  */
 public abstract class Action {
     public static final String TAG = "Action";
+
+    /* the key should the sub class overwrite ------------begin */
+    public static final String CLASS_NAME = AppOpsAction.class.getSimpleName();
+    public static final String PREF_SHOW_IN_RECENT_TASK = MainPreferences.PREF_SHOW_IN_RECENT_TASK +
+            CLASS_NAME;
+    public static final boolean PREF_SHOW_IN_RECENT_TASK_DEFAULT = true;
+    public static final String PREF_SHOW_IN_STATUS_BAR = MainPreferences.PREF_SHOW_IN_STATUS_BAR +
+            CLASS_NAME;
+    public static final boolean PREF_SHOW_IN_STATUS_BAR_DEFAULT = true;
+    public static final String PREF_SHOW_IN_APP_INFO = MainPreferences.PREF_SHOW_IN_APP_INFO +
+            CLASS_NAME;
+    public static final boolean PREF_SHOW_IN_APP_INFO_DEFAULT = true;
+    // TODO: true for testing
+    public static boolean isShowInRecentTask = true;
+    public static boolean isShowInStatusBar = true;
+    public static boolean isShowInAppInfo = true;
+    /* the key should the sub class overwrite ------------end */
     /**
      * The map contain the action view id *
      */
@@ -52,6 +70,24 @@ public abstract class Action {
     public static void loadPreference(XSharedPreferences preferences) {
         PlayAction.loadPreference(preferences);
         AppOpsAction.loadPreference(preferences);
+    }
+
+    public static boolean isActionsShowInAppInfo() {
+        return (!(PlayAction.isShowInAppInfo /*|| AppOpsAction.isShowInAppInfo*/ ||
+                AppSettingsAction.isShowInAppInfo || ClipBoardAction.isShowInAppInfo ||
+                SearchAction.isShowInAppInfo));
+    }
+
+    public static boolean isActionsShowInRecentTask() {
+        return (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
+                AppSettingsAction.isShowInRecentTask || ClipBoardAction
+                .isShowInRecentTask || SearchAction.isShowInRecentTask));
+    }
+
+    public static boolean isActionsShowInStatusBar() {
+        return (!(PlayAction.isShowInStatusBar || AppOpsAction.isShowInStatusBar ||
+                AppSettingsAction.isShowInStatusBar || ClipBoardAction.isShowInStatusBar ||
+                SearchAction.isShowInStatusBar));
     }
 
     public static boolean isNeed2Add(ViewGroup viewGroup, Class<? extends Action> actionClass) {
@@ -118,7 +154,7 @@ public abstract class Action {
     private Intent getFinalIntent(Hook hook, String pkgName) {
         Intent intent = getIntent(hook, pkgName);
         // this is just need for appInfo screen for now, not in status bar
-        if (hook instanceof AppInfoHook) {
+        if (intent != null && hook instanceof AppInfoHook) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
         }
         Log.d(TAG, "final intent: " + intent);
@@ -126,7 +162,16 @@ public abstract class Action {
     }
 
 
+    /**
+     * subclass should overwrite this method or handleData method
+     * this method will be called first, if the result is null, will call handleData method
+     */
     protected abstract Intent getIntent(Hook hook, String pkgName);
+
+    /**
+     * subclass should overwrite this method or getIntent method
+     */
+    protected abstract void handleData(Context context, String pkgName);
 
     /**
      * get the icon of this action
@@ -158,9 +203,12 @@ public abstract class Action {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "on click play action, hook: " + hook);
+                Log.d(TAG, "on click action is + " + Action.this.getClass() + ", hook: " + hook);
                 Intent intent = getFinalIntent(hook, pkgName);
-                if (hook instanceof StatusBarHook) {
+                if (intent == null) {
+                    // if the intent is null, we need to call handleData method
+                    handleData(context, pkgName);
+                } else if (hook instanceof StatusBarHook) {
                     // dismiss the keyguard adn collapse panels
                     ((StatusBarHook) hook).dismissKeyguardAndStartIntent(Action.this, intent,
                             pkgName);
@@ -179,22 +227,26 @@ public abstract class Action {
                           final String pkgName,
                           MenuItem menuItem) {
         // set the show flag
-        menuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        // EDIT: set to always show
+        menuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
         // set the icon
         menuItem.setIcon(getIcon(context.getPackageManager()));
-        Log.d(TAG, "pkg: " + pkgName);
+        Log.d(TAG, "set click action, pkg: " + pkgName);
         menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Log.d(TAG, "on click play action, hook: " + hook);
+                Log.d(TAG, "on click action is: " + Action.this.getClass() + ", hook: " + hook);
                 Intent intent = getFinalIntent(hook, pkgName);
-                if (hook instanceof AppInfoHook) {
+                if (intent == null) {
+                    // if the intent is null, we need to call handleData method
+                    handleData(context, pkgName);
+                } else if (hook instanceof AppInfoHook) {
                     // no need to start as user, 'cause when the appInfo screen is called, it
                     // already signed to a user
                     context.startActivity(intent);
                 }
 
-                Log.d(TAG, "play action done");
+                Log.d(TAG, "menu action done");
                 return true;
             }
         });
