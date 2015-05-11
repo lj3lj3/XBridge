@@ -10,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -58,6 +59,8 @@ public class RecentTaskHook extends Hook {
 
     private Constructor<?> fixedSizeImageViewConstructor;
 
+    private HeaderViewTouchListener listener;
+
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         super.initZygote(startupParam);
@@ -93,6 +96,11 @@ public class RecentTaskHook extends Hook {
                 View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
                         "mHeaderView");
                 mHeaderView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
+                if (listener == null) {
+                    listener = new HeaderViewTouchListener();
+                }
+                // set on touch listener
+                mHeaderView.setOnTouchListener(listener);
 
                 // call the original method
                 param.getResult();
@@ -100,42 +108,50 @@ public class RecentTaskHook extends Hook {
         });
         // unset the long press listener and unset the view
         // this is a data recycler
-        XposedHelpers.findAndHookMethod(taskViewClass, "onTaskDataUnloaded", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!MainPreferences.isShowInRecentTask) {
-                    // call the original method
-                    param.getResult();
-                    return;
-                }
-                if (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
-                        AppSettingsAction.isShowInRecentTask || ClipBoardAction
-                        .isShowInRecentTask || SearchAction.isShowInRecentTask)) {
-                    return;
-                }
+        XposedHelpers.findAndHookMethod(taskViewClass, "onTaskDataUnloaded", new
+                XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws
+                            Throwable {
+                        if (!MainPreferences.isShowInRecentTask) {
+                            // call the original method
+                            param.getResult();
+                            return;
+                        }
+                        if (!(PlayAction.isShowInRecentTask || AppOpsAction
+                                .isShowInRecentTask ||
+                                AppSettingsAction.isShowInRecentTask || ClipBoardAction
+                                .isShowInRecentTask || SearchAction.isShowInRecentTask)) {
+                            return;
+                        }
 
-                super.beforeHookedMethod(param);
-                FrameLayout taskViewObject = (FrameLayout) param.thisObject;
-                View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
-                        "mHeaderView");
-                mHeaderView.setOnLongClickListener(null);
+                        super.beforeHookedMethod(param);
+                        FrameLayout taskViewObject = (FrameLayout) param.thisObject;
+                        View mHeaderView = (View) XposedHelpers.getObjectField
+                                (taskViewObject,
+                                        "mHeaderView");
+                        mHeaderView.setOnLongClickListener(null);
+                        // set the on touch listener to null
+                        mHeaderView.setOnTouchListener(null);
 
-                // EDIT: need to set the guts to invisible
-                View gutsView = ((ViewGroup) mHeaderView.getParent()).findViewById(ID_GUTS);
-                Log.d(TAG, "the guts view on unloaded is: " + gutsView);
-                if (gutsView != null) {
-                    gutsView.setVisibility(View.INVISIBLE);
-                }
+                        // EDIT: need to set the guts to invisible
+                        View gutsView = ((ViewGroup) mHeaderView.getParent())
+                                .findViewById(ID_GUTS);
+                        Log.d(TAG, "the guts view on unloaded is: " + gutsView);
+                        if (gutsView != null) {
+                            gutsView.setVisibility(View.INVISIBLE);
+                        }
 
-                // call the original method
-                param.getResult();
-            }
-        });
+                        // call the original method
+                        param.getResult();
+                    }
+                });
 
         XposedHelpers.findAndHookMethod(taskViewClass, "onLongClick", View.class, new
                 XC_MethodHook() {
                     @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    protected void afterHookedMethod(MethodHookParam param) throws
+                            Throwable {
                         if (!MainPreferences.isShowInRecentTask) {
                             // need?
 //                            param.setResult(param.getResult());
@@ -156,8 +172,9 @@ public class RecentTaskHook extends Hook {
                             return;
                         }
                         final FrameLayout taskViewObject = (FrameLayout) param.thisObject;
-                        final View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
-                                "mHeaderView");
+                        final View mHeaderView = (View) XposedHelpers.getObjectField
+                                (taskViewObject,
+                                        "mHeaderView");
                         Log.d(TAG, "hearView: " + mHeaderView);
                         if (longClickedView != mHeaderView) {
                             // set the original result back which is false
@@ -180,7 +197,8 @@ public class RecentTaskHook extends Hook {
                             if (viewHeaderId == -1) {
                                 // use package name on get identifier
                                 viewHeaderId = context.getResources().getIdentifier
-                                        ("recents_task_view_header", "layout", "com.android" +
+                                        ("recents_task_view_header", "layout", "com" +
+                                                ".android" +
                                                 ".systemui");
                                 Log.d(TAG, "view header view: " + viewHeaderId);
                             }
@@ -203,25 +221,29 @@ public class RecentTaskHook extends Hook {
                             Log.d(TAG, "dismiss guts view: " + dismissTaskView);
                             // set the layout params
                             if (dismissViewLayoutParams == null) {
-                                dismissViewLayoutParams = (FrameLayout.LayoutParams) dismissTaskView
-                                        .getLayoutParams();
+                                dismissViewLayoutParams = (FrameLayout.LayoutParams)
+                                        dismissTaskView
+                                                .getLayoutParams();
                             }
                             dismissTaskView.setVisibility(View.GONE);
                             if (idDesc == 0) {
-                                idDesc = res.getIdentifier("activity_description", "id", "com" +
-                                        ".android.systemui");
+                                idDesc = res.getIdentifier("activity_description", "id",
+                                        "com" +
+                                                ".android.systemui");
                             }
                             // we don't need this text views
                             headerGutsView.findViewById(idDesc).setVisibility(View.GONE);
 
                             if (headerViewLayoutParams == null) {
                                 // add the guts to the headerParent
-                                headerViewLayoutParams = (FrameLayout.LayoutParams) mHeaderView
-                                        .getLayoutParams();
+                                headerViewLayoutParams = (FrameLayout.LayoutParams)
+                                        mHeaderView
+                                                .getLayoutParams();
                             }
                             // add view to the last position, and with layoutParams
                             headerParent = (ViewGroup) mHeaderView.getParent();
-                            Log.d(TAG, "header view parent: " + headerParent + ", children: " +
+                            Log.d(TAG, "header view parent: " + headerParent + ", " +
+                                    "children: " +
                                     headerParent.getChildCount());
                             headerParent.addView(headerGutsView,
                                     headerParent.getChildCount(), headerViewLayoutParams);
@@ -241,15 +263,16 @@ public class RecentTaskHook extends Hook {
                                 Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() +
                                         ", " +
                                         headerGutsView.getHeight());
-                                final double horz = Math.max(headerGutsView.getWidth() / 2, 2);
-                                final double vert = Math.max(headerGutsView.getHeight() / 2, 2);
+                                Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
+                                final double horz = Math.max(headerGutsView.getRight() - listener.getX(), listener.getX() - headerGutsView.getLeft());
+                                final double vert = Math.max(headerGutsView.getTop() - listener.getY(), listener.getY() - headerGutsView.getBottom());
                                 final float r = (float) Math.hypot(horz, vert);
                                 Log.d(TAG, "ripple r: " + r);
                                 final Animator a
                                         = ViewAnimationUtils.createCircularReveal
                                         (headerGutsView,
-                                                headerGutsView.getWidth() / 2, headerGutsView
-                                                        .getHeight() / 2,
+                                                listener.getX(),
+                                                listener.getY(),
                                                 r, 0);
                                 a.setDuration(400);
                                 a.addListener(new AnimatorListenerAdapter() {
@@ -272,7 +295,8 @@ public class RecentTaskHook extends Hook {
 
                         // the guts view is ok now, and is not showing
                         // get the package name
-                        final Object task = XposedHelpers.callMethod(taskViewObject, "getTask");
+                        final Object task = XposedHelpers.callMethod(taskViewObject,
+                                "getTask");
                         final Object key = XposedHelpers.getObjectField(task, "key");
                         Log.d(TAG, "task: " + task + ", key: " + key);
                         final Intent intent = (Intent) XposedHelpers.getObjectField(key,
@@ -284,7 +308,8 @@ public class RecentTaskHook extends Hook {
 
                         if (headerParent == null) {
                             headerParent = (ViewGroup) mHeaderView.getParent();
-                            Log.d(TAG, "header view parent: " + headerParent + ", children: " +
+                            Log.d(TAG, "header view parent: " + headerParent + ", " +
+                                    "children: " +
                                     headerParent.getChildCount());
                         }
                         int actionCount = 0;
@@ -297,18 +322,22 @@ public class RecentTaskHook extends Hook {
                                                 .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new PlayAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                                 // add layoutParams
-                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                                headerGutsView.addView(xBridgeView/*,
+                                        dismissViewLayoutParams*/);
                             } else if (!compName.equals(headerGutsView.getTag())) {
                                 Log.d(TAG, "add different PlayAction");
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
-                                        (Action
-                                                .getViewId(PlayAction.class));
+                                ImageView xBridgeView = (ImageView) headerGutsView
+                                        .findViewById
+                                                (Action
+                                                        .getViewId(PlayAction.class));
                                 Action xBridgeAction = new PlayAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                             }
                             actionCount++;
@@ -322,18 +351,22 @@ public class RecentTaskHook extends Hook {
                                                 .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new AppOpsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                                 // add layoutParams
-                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                                headerGutsView.addView(xBridgeView/*,
+                                        dismissViewLayoutParams*/);
                             } else if (!compName.equals(headerGutsView.getTag())) {
                                 Log.d(TAG, "add different AppOpsAction");
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
-                                        (Action
-                                                .getViewId(AppOpsAction.class));
+                                ImageView xBridgeView = (ImageView) headerGutsView
+                                        .findViewById
+                                                (Action
+                                                        .getViewId(AppOpsAction.class));
                                 Action xBridgeAction = new AppOpsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                             }
                             actionCount++;
@@ -348,24 +381,30 @@ public class RecentTaskHook extends Hook {
                                                 .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new AppSettingsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                                 // add layoutParams
-                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                                headerGutsView.addView(xBridgeView/*,
+                                        dismissViewLayoutParams*/);
                             } else if (!compName.equals(headerGutsView.getTag())) {
                                 Log.d(TAG, "add different AppOpsAction");
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
-                                        (Action
-                                                .getViewId(AppSettingsAction.class));
+                                ImageView xBridgeView = (ImageView) headerGutsView
+                                        .findViewById
+                                                (Action
+                                                        .getViewId(AppSettingsAction
+                                                                .class));
                                 Action xBridgeAction = new AppSettingsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                             }
                             actionCount++;
                         }
                         if (ClipBoardAction.isShowInRecentTask) {
-                            if (ClipBoardAction.isNeed2Add(headerParent, ClipBoardAction.class)) {
+                            if (ClipBoardAction.isNeed2Add(headerParent, ClipBoardAction
+                                    .class)) {
                                 Log.d(TAG, "add new ClipBoardAction");
                                 ImageView xBridgeView = getXBridgeView(context, res,
                                         loadPackageParam
@@ -373,18 +412,22 @@ public class RecentTaskHook extends Hook {
                                                 .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new ClipBoardAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                                 // add layoutParams
-                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                                headerGutsView.addView(xBridgeView/*,
+                                        dismissViewLayoutParams*/);
                             } else if (!compName.equals(headerGutsView.getTag())) {
                                 Log.d(TAG, "add different AppOpsAction");
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
-                                        (Action
-                                                .getViewId(ClipBoardAction.class));
+                                ImageView xBridgeView = (ImageView) headerGutsView
+                                        .findViewById
+                                                (Action
+                                                        .getViewId(ClipBoardAction.class));
                                 Action xBridgeAction = new ClipBoardAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                             }
                             actionCount++;
@@ -398,18 +441,22 @@ public class RecentTaskHook extends Hook {
                                                 .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new SearchAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                                 // add layoutParams
-                                headerGutsView.addView(xBridgeView/*, dismissViewLayoutParams*/);
+                                headerGutsView.addView(xBridgeView/*,
+                                        dismissViewLayoutParams*/);
                             } else if (!compName.equals(headerGutsView.getTag())) {
                                 Log.d(TAG, "add different SearchAction");
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView.findViewById
-                                        (Action
-                                                .getViewId(SearchAction.class));
+                                ImageView xBridgeView = (ImageView) headerGutsView
+                                        .findViewById
+                                                (Action
+                                                        .getViewId(SearchAction.class));
                                 Action xBridgeAction = new SearchAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context, pkgName,
+                                xBridgeAction.setAction(RecentTaskHook.this, context,
+                                        pkgName,
                                         xBridgeView);
                             }
                             actionCount++;
@@ -421,20 +468,24 @@ public class RecentTaskHook extends Hook {
                             headerGutsView.setTag(compName);
                             // get the views id so we can set the content
                             if (idIcon == 0) {
-                                idIcon = res.getIdentifier("application_icon", "id", "com.android" +
+                                idIcon = res.getIdentifier("application_icon", "id", "com" +
+                                        ".android" +
                                         ".systemui");
                             }
 
                             Log.d(TAG, "icon id: " + idIcon + ", desc id: " + idDesc);
                             // this is needed every time
                             // call mutate method and clone a new drawable
-                            Drawable drawable = ((ImageView) mHeaderView.findViewById(idIcon))
-                                    .getDrawable().getConstantState().newDrawable().mutate();
+                            Drawable drawable = ((ImageView) mHeaderView.findViewById
+                                    (idIcon))
+                                    .getDrawable().getConstantState().newDrawable()
+                                    .mutate();
                             // set the color filter to grey
                             drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
-                            ((ImageView) headerGutsView.findViewById(idIcon)).setImageDrawable
-                                    (drawable
-                                    );
+                            ((ImageView) headerGutsView.findViewById(idIcon))
+                                    .setImageDrawable
+                                            (drawable
+                                            );
 
                         }
 
@@ -445,13 +496,14 @@ public class RecentTaskHook extends Hook {
                         // use header view width and height
                         Log.d(TAG, "mHeaderView,w,h: " + mHeaderView.getWidth() + ", " +
                                 mHeaderView.getHeight());
-                        final double horz = Math.max(mHeaderView.getWidth() / 2, 2);
-                        final double vert = Math.max(mHeaderView.getHeight() / 2, 2);
+                        Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
+                        final double horz = Math.max(headerGutsView.getRight() - listener.getX(), listener.getX() - headerGutsView.getLeft());
+                        final double vert = Math.max(headerGutsView.getTop() - listener.getY(), listener.getY() - headerGutsView.getBottom());
                         final float r = (float) Math.hypot(horz, vert);
                         Log.d(TAG, "ripple r: " + r);
                         final Animator a
                                 = ViewAnimationUtils.createCircularReveal(headerGutsView,
-                                mHeaderView.getWidth() / 2, mHeaderView.getHeight() / 2,
+                                listener.getX(), listener.getY(),
                                 0, r);
                         a.setDuration(400);
                         a.addListener(new AnimatorListenerAdapter() {
@@ -472,8 +524,9 @@ public class RecentTaskHook extends Hook {
                 });
     }
 
-    private ImageView getXBridgeView(Context context, Resources res, ClassLoader classLoader, int
-            actionCount) throws
+    private ImageView getXBridgeView(Context context, Resources res, ClassLoader
+            classLoader, int
+                                             actionCount) throws
             IllegalAccessException, InvocationTargetException, InstantiationException {
         if (fixedSizeImageViewConstructor == null) {
             Class<?> fixedSizeImageViewClass = XposedHelpers.findClass("com" +
@@ -494,7 +547,8 @@ public class RecentTaskHook extends Hook {
         //TODO: get the layout padding
         xBridgeView.setPadding(12, 12, 12, 12);
         if (actionCount != 0) {
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(dismissViewLayoutParams);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams
+                    (dismissViewLayoutParams);
             params.setMarginEnd(params.getMarginEnd() +
                     actionCount * params.width);
             // set the layout params back
@@ -512,5 +566,32 @@ public class RecentTaskHook extends Hook {
         // the background drawable should used one time
         xBridgeView.setBackground(res.getDrawable(buttonBgId));
         return xBridgeView;
+    }
+
+    class HeaderViewTouchListener implements View.OnTouchListener {
+        // the touched point on the header view
+        private int x = 0;
+        private int y = 0;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            final int action = event.getAction();
+            switch (action & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN: {
+                    x = (int) event.getX();
+                    y = (int) event.getY();
+                    break;
+                }
+            }
+            return false;
+        }
+
+        int getX() {
+            return x;
+        }
+
+        int getY() {
+            return y;
+        }
     }
 }

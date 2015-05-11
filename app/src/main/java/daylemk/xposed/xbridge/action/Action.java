@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.UserHandle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import daylemk.xposed.xbridge.data.IntegerBox;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.Hook;
