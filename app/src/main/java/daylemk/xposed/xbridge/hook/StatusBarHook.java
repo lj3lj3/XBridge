@@ -86,7 +86,7 @@ public class StatusBarHook extends Hook {
                 if (!MainPreferences.isShowInStatusBar) {
                     return;
                 }
-                if (Action.isActionsShowInStatusBar()) {
+                if (!Action.isActionsShowInStatusBar()) {
                     // if none of this is showed here, do nothing
                     return;
                 }
@@ -130,19 +130,19 @@ public class StatusBarHook extends Hook {
                 boolean isSearchNeed2Add = false;
                 // check if need to add action
                 if (PlayAction.isShowInStatusBar) {
-                    isPlayNeed2Add = checkIfNeed2Add(layoutGuts, PlayAction.class);
+                    isPlayNeed2Add = Action.isNeed2Add(layoutGuts, PlayAction.class);
                 }
                 if (AppOpsAction.isShowInStatusBar) {
-                    isOpsNeed2Add = checkIfNeed2Add(layoutGuts, AppOpsAction.class);
+                    isOpsNeed2Add = Action.isNeed2Add(layoutGuts, AppOpsAction.class);
                 }
                 if (AppSettingsAction.isShowInStatusBar) {
-                    isAppSetNeed2Add = checkIfNeed2Add(layoutGuts, AppSettingsAction.class);
+                    isAppSetNeed2Add = Action.isNeed2Add(layoutGuts, AppSettingsAction.class);
                 }
                 if (ClipBoardAction.isShowInStatusBar) {
-                    isClipBoardNeed2Add = checkIfNeed2Add(layoutGuts, ClipBoardAction.class);
+                    isClipBoardNeed2Add = Action.isNeed2Add(layoutGuts, ClipBoardAction.class);
                 }
                 if (SearchAction.isShowInStatusBar) {
-                    isSearchNeed2Add = checkIfNeed2Add(layoutGuts, SearchAction.class);
+                    isSearchNeed2Add = Action.isNeed2Add(layoutGuts, SearchAction.class);
                 }
 
                 if (!(isPlayNeed2Add || isOpsNeed2Add || isAppSetNeed2Add || isClipBoardNeed2Add
@@ -208,19 +208,6 @@ public class StatusBarHook extends Hook {
                 ".KeyguardHostView.OnDismissAction", loadPackageParam.classLoader);
         Log.d(TAG, "onDismissActionInterface: " + onDismissActionInterface);
 
-    }
-
-    private boolean checkIfNeed2Add(FrameLayout layoutGuts, Class<? extends Action>
-            classAction) {
-        boolean isNeed2Add;
-        if (!Action.isNeed2Add(layoutGuts, classAction)) {
-            Log.d(TAG, classAction.getSimpleName() + " is already added");
-            isNeed2Add = false;
-        } else {
-            // we need add play action
-            isNeed2Add = true;
-        }
-        return isNeed2Add;
     }
 
     private void getInspectLayoutParams(Resources res, FrameLayout layoutGuts) {

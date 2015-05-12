@@ -14,9 +14,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.lang.reflect.Constructor;
@@ -40,6 +43,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class RecentTaskHook extends Hook {
     public static final String TAG = "RecentTaskHook";
+    // animation time
+    public static final int TIME_ANIMATION = 400;
     // the guts view id
     private static final int ID_GUTS = View.generateViewId();
     // the header icon id
@@ -60,6 +65,8 @@ public class RecentTaskHook extends Hook {
     private Constructor<?> fixedSizeImageViewConstructor;
 
     private HeaderViewTouchListener listener;
+    // animation interpolator
+    private Interpolator interpolator = new AccelerateDecelerateInterpolator();
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -84,9 +91,9 @@ public class RecentTaskHook extends Hook {
                     param.getResult();
                     return;
                 }
-                if (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
-                        AppSettingsAction.isShowInRecentTask || ClipBoardAction
-                        .isShowInRecentTask || SearchAction.isShowInRecentTask)) {
+                if (!Action.isActionsShowInRecentTask()) {
+                    // call the original method
+                    param.getResult();
                     return;
                 }
 
@@ -118,10 +125,9 @@ public class RecentTaskHook extends Hook {
                             param.getResult();
                             return;
                         }
-                        if (!(PlayAction.isShowInRecentTask || AppOpsAction
-                                .isShowInRecentTask ||
-                                AppSettingsAction.isShowInRecentTask || ClipBoardAction
-                                .isShowInRecentTask || SearchAction.isShowInRecentTask)) {
+                        if (!Action.isActionsShowInRecentTask()) {
+                            // call the original method
+                            param.getResult();
                             return;
                         }
 
@@ -157,7 +163,7 @@ public class RecentTaskHook extends Hook {
 //                            param.setResult(param.getResult());
                             return;
                         }
-                        if (Action.isActionsShowInRecentTask()) {
+                        if (!Action.isActionsShowInRecentTask()) {
                             return;
                         }
 
@@ -186,65 +192,21 @@ public class RecentTaskHook extends Hook {
                         Log.d(TAG, "begin long click handle");
                         // the guts view
                         FrameLayout headerGutsView;
-                        ViewGroup headerParent = null;
+                        ViewGroup headerParent;
                         final Context context = taskViewObject.getContext();
                         final Resources res = context.getResources();
                         headerGutsView = (FrameLayout) ((ViewGroup) mHeaderView.getParent
                                 ()).findViewById(ID_GUTS);
                         Log.d(TAG, "get the headerGutsView: " + headerGutsView);
+                        // move header parent here
+                        headerParent = (ViewGroup) mHeaderView.getParent();
+                        Log.d(TAG, "header view parent: " + headerParent + ", " +
+                                "children: " +
+                                headerParent.getChildCount());
                         // the header guts is null, we need create it
                         if (headerGutsView == null) {
-                            if (viewHeaderId == -1) {
-                                // use package name on get identifier
-                                viewHeaderId = context.getResources().getIdentifier
-                                        ("recents_task_view_header", "layout", "com" +
-                                                ".android" +
-                                                ".systemui");
-                                Log.d(TAG, "view header view: " + viewHeaderId);
-                            }
-                            // inflate the guts view
-                            headerGutsView = (FrameLayout) LayoutInflater.from
-                                    (context).inflate(viewHeaderId, null);
-                            // set the gut id for later retrieve from layout
-                            headerGutsView.setId(ID_GUTS);
-                            // TODO: set the color on the fly
-                            headerGutsView.setBackgroundColor(Color.BLUE);
-
-                            // we don't need dismiss task view, so dismiss it
-                            // TODO: get the dismiss task view id
-                            Log.d(TAG, "headerGutsView: " + headerGutsView);
-                            Log.d(TAG, "headerGutsView counts: " + headerGutsView
-                                    .getChildCount());
-                            View dismissTaskView = headerGutsView.getChildAt(headerGutsView
-                                    .getChildCount
-                                            () - 1);
-                            Log.d(TAG, "dismiss guts view: " + dismissTaskView);
-                            // set the layout params
-                            if (dismissViewLayoutParams == null) {
-                                dismissViewLayoutParams = (FrameLayout.LayoutParams)
-                                        dismissTaskView
-                                                .getLayoutParams();
-                            }
-                            dismissTaskView.setVisibility(View.GONE);
-                            if (idDesc == 0) {
-                                idDesc = res.getIdentifier("activity_description", "id",
-                                        "com" +
-                                                ".android.systemui");
-                            }
-                            // we don't need this text views
-                            headerGutsView.findViewById(idDesc).setVisibility(View.GONE);
-
-                            if (headerViewLayoutParams == null) {
-                                // add the guts to the headerParent
-                                headerViewLayoutParams = (FrameLayout.LayoutParams)
-                                        mHeaderView
-                                                .getLayoutParams();
-                            }
+                            headerGutsView = createHeaderGutsView(context, res, mHeaderView);
                             // add view to the last position, and with layoutParams
-                            headerParent = (ViewGroup) mHeaderView.getParent();
-                            Log.d(TAG, "header view parent: " + headerParent + ", " +
-                                    "children: " +
-                                    headerParent.getChildCount());
                             headerParent.addView(headerGutsView,
                                     headerParent.getChildCount(), headerViewLayoutParams);
                         } else {
@@ -253,39 +215,7 @@ public class RecentTaskHook extends Hook {
                             // EDIT: if we already show it, we just invisible it
                             if (headerGutsView.getVisibility() == View.VISIBLE) {
                                 Log.d(TAG, "the guts is visible, dismiss it");
-                                // copy guts view to a final one
-                                final View gutsViewFinal = headerGutsView;
-                                // set the animation
-                                // TODO: what is this for?
-                                if (headerGutsView.getWindowToken() == null) return;
-
-                                // use header view width and height
-                                Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() +
-                                        ", " +
-                                        headerGutsView.getHeight());
-                                Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
-                                final double horz = Math.max(headerGutsView.getRight() - listener.getX(), listener.getX() - headerGutsView.getLeft());
-                                final double vert = Math.max(headerGutsView.getTop() - listener.getY(), listener.getY() - headerGutsView.getBottom());
-                                final float r = (float) Math.hypot(horz, vert);
-                                Log.d(TAG, "ripple r: " + r);
-                                final Animator a
-                                        = ViewAnimationUtils.createCircularReveal
-                                        (headerGutsView,
-                                                listener.getX(),
-                                                listener.getY(),
-                                                r, 0);
-                                a.setDuration(400);
-                                a.addListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-//                                    mHeaderView.setVisibility(View.INVISIBLE);
-                                        gutsViewFinal.setVisibility(View.INVISIBLE);
-                                        Log.d(TAG, "dismiss animation done");
-                                    }
-                                });
-                                a.setInterpolator(new LinearInterpolator());
-                                a.start();
+                                startDismissAnimation(headerGutsView);
 
                                 // we handled it
                                 param.setResult(true);
@@ -306,222 +236,166 @@ public class RecentTaskHook extends Hook {
                         final String compName = intent.getComponent().toString();
                         final String pkgName = intent.getComponent().getPackageName();
 
-                        if (headerParent == null) {
-                            headerParent = (ViewGroup) mHeaderView.getParent();
-                            Log.d(TAG, "header view parent: " + headerParent + ", " +
-                                    "children: " +
-                                    headerParent.getChildCount());
-                        }
                         int actionCount = 0;
                         if (PlayAction.isShowInRecentTask) {
                             if (PlayAction.isNeed2Add(headerParent,
                                     PlayAction.class)) {
-                                Log.d(TAG, "add new PlayAction");
-                                ImageView xBridgeView = getXBridgeView(context, res,
-                                        loadPackageParam
-                                                .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new PlayAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
-                                // add layoutParams
-                                headerGutsView.addView(xBridgeView/*,
-                                        dismissViewLayoutParams*/);
-                            } else if (!compName.equals(headerGutsView.getTag())) {
-                                Log.d(TAG, "add different PlayAction");
+                                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                                        pkgName, loadPackageParam.classLoader, actionCount);
+                            } else if (checkIfNeed2Change(headerGutsView, compName)) {
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView
-                                        .findViewById
-                                                (Action
-                                                        .getViewId(PlayAction.class));
                                 Action xBridgeAction = new PlayAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
+                                resetAction(context, xBridgeAction, headerGutsView, pkgName);
                             }
                             actionCount++;
                         }
                         if (AppOpsAction.isShowInRecentTask) {
                             if (AppOpsAction.isNeed2Add(headerParent, AppOpsAction.class)) {
                                 Log.d(TAG, "add new AppOpsAction");
-                                ImageView xBridgeView = getXBridgeView(context, res,
-                                        loadPackageParam
-
-                                                .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new AppOpsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
-                                // add layoutParams
-                                headerGutsView.addView(xBridgeView/*,
-                                        dismissViewLayoutParams*/);
-                            } else if (!compName.equals(headerGutsView.getTag())) {
-                                Log.d(TAG, "add different AppOpsAction");
+                                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                                        pkgName, loadPackageParam.classLoader, actionCount);
+                            } else if (checkIfNeed2Change(headerGutsView, compName)) {
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView
-                                        .findViewById
-                                                (Action
-                                                        .getViewId(AppOpsAction.class));
                                 Action xBridgeAction = new AppOpsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
+                                resetAction(context, xBridgeAction, headerGutsView, pkgName);
                             }
                             actionCount++;
                         }
                         if (AppSettingsAction.isShowInRecentTask) {
                             if (AppSettingsAction.isNeed2Add(headerParent, AppSettingsAction
                                     .class)) {
-                                Log.d(TAG, "add new AppSettingsAction");
-                                ImageView xBridgeView = getXBridgeView(context, res,
-                                        loadPackageParam
-
-                                                .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new AppSettingsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
-                                // add layoutParams
-                                headerGutsView.addView(xBridgeView/*,
-                                        dismissViewLayoutParams*/);
-                            } else if (!compName.equals(headerGutsView.getTag())) {
-                                Log.d(TAG, "add different AppOpsAction");
+                                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                                        pkgName, loadPackageParam.classLoader, actionCount);
+                            } else if (checkIfNeed2Change(headerGutsView, compName)) {
                                 // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView
-                                        .findViewById
-                                                (Action
-                                                        .getViewId(AppSettingsAction
-                                                                .class));
                                 Action xBridgeAction = new AppSettingsAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
+                                resetAction(context, xBridgeAction, headerGutsView, pkgName);
                             }
                             actionCount++;
                         }
                         if (ClipBoardAction.isShowInRecentTask) {
                             if (ClipBoardAction.isNeed2Add(headerParent, ClipBoardAction
                                     .class)) {
-                                Log.d(TAG, "add new ClipBoardAction");
-                                ImageView xBridgeView = getXBridgeView(context, res,
-                                        loadPackageParam
-
-                                                .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new ClipBoardAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
-                                // add layoutParams
-                                headerGutsView.addView(xBridgeView/*,
-                                        dismissViewLayoutParams*/);
-                            } else if (!compName.equals(headerGutsView.getTag())) {
-                                Log.d(TAG, "add different AppOpsAction");
-                                // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView
-                                        .findViewById
-                                                (Action
-                                                        .getViewId(ClipBoardAction.class));
+                                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                                        pkgName, loadPackageParam.classLoader, actionCount);
+                            } else if (checkIfNeed2Change(headerGutsView, compName)) {
                                 Action xBridgeAction = new ClipBoardAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
+                                resetAction(context, xBridgeAction, headerGutsView, pkgName);
                             }
                             actionCount++;
                         }
                         if (SearchAction.isShowInRecentTask) {
                             if (SearchAction.isNeed2Add(headerParent, SearchAction.class)) {
-                                Log.d(TAG, "add new SearchAction");
-                                ImageView xBridgeView = getXBridgeView(context, res,
-                                        loadPackageParam
-
-                                                .classLoader, actionCount);
                                 // set the action up
                                 Action xBridgeAction = new SearchAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
-                                // add layoutParams
-                                headerGutsView.addView(xBridgeView/*,
-                                        dismissViewLayoutParams*/);
-                            } else if (!compName.equals(headerGutsView.getTag())) {
-                                Log.d(TAG, "add different SearchAction");
-                                // this action need to be reset
-                                ImageView xBridgeView = (ImageView) headerGutsView
-                                        .findViewById
-                                                (Action
-                                                        .getViewId(SearchAction.class));
+                                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                                        pkgName, loadPackageParam.classLoader, actionCount);
+                            } else if (checkIfNeed2Change(headerGutsView, compName)) {
                                 Action xBridgeAction = new SearchAction();
-                                xBridgeAction.setAction(RecentTaskHook.this, context,
-                                        pkgName,
-                                        xBridgeView);
+                                resetAction(context, xBridgeAction, headerGutsView, pkgName);
                             }
                             actionCount++;
                         }
+                        Log.d(TAG, "count:" + actionCount);
 
                         // check if the guts view is NOT the right one, some cycle stuff
-                        if (!compName.equals(headerGutsView.getTag())) {
-                            Log.d(TAG, "reset the guts view: " + headerGutsView);
-                            headerGutsView.setTag(compName);
-                            // get the views id so we can set the content
-                            if (idIcon == 0) {
-                                idIcon = res.getIdentifier("application_icon", "id", "com" +
-                                        ".android" +
-                                        ".systemui");
-                            }
+                        setTagAndEffect(res, mHeaderView, headerGutsView, compName);
 
-                            Log.d(TAG, "icon id: " + idIcon + ", desc id: " + idDesc);
-                            // this is needed every time
-                            // call mutate method and clone a new drawable
-                            Drawable drawable = ((ImageView) mHeaderView.findViewById
-                                    (idIcon))
-                                    .getDrawable().getConstantState().newDrawable()
-                                    .mutate();
-                            // set the color filter to grey
-                            drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
-                            ((ImageView) headerGutsView.findViewById(idIcon))
-                                    .setImageDrawable
-                                            (drawable
-                                            );
-
-                        }
-
-                        // set the animation
-                        // TODO: what is this for?
-                        if (headerGutsView.getWindowToken() == null) return;
-
-                        // use header view width and height
-                        Log.d(TAG, "mHeaderView,w,h: " + mHeaderView.getWidth() + ", " +
-                                mHeaderView.getHeight());
-                        Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
-                        final double horz = Math.max(headerGutsView.getRight() - listener.getX(), listener.getX() - headerGutsView.getLeft());
-                        final double vert = Math.max(headerGutsView.getTop() - listener.getY(), listener.getY() - headerGutsView.getBottom());
-                        final float r = (float) Math.hypot(horz, vert);
-                        Log.d(TAG, "ripple r: " + r);
-                        final Animator a
-                                = ViewAnimationUtils.createCircularReveal(headerGutsView,
-                                listener.getX(), listener.getY(),
-                                0, r);
-                        a.setDuration(400);
-                        a.addListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-//                                    mHeaderView.setVisibility(View.INVISIBLE);
-                                Log.d(TAG, "show animation done");
-                            }
-                        });
-                        a.setInterpolator(new LinearInterpolator());
-                        headerGutsView.setVisibility(View.VISIBLE);
-                        a.start();
+                        startShowingAnimation(headerGutsView);
 
                         // set that this action we will handle it
                         param.setResult(true);
                     }
                 });
+    }
+
+    private FrameLayout createHeaderGutsView(Context context, Resources res, View mHeaderView) {
+        if (viewHeaderId == -1) {
+            // use package name on get identifier
+            viewHeaderId = context.getResources().getIdentifier
+                    ("recents_task_view_header", "layout", "com" +
+                            ".android" +
+                            ".systemui");
+            Log.d(TAG, "view header view: " + viewHeaderId);
+        }
+        // inflate the guts view
+        FrameLayout headerGutsView = (FrameLayout) LayoutInflater.from
+                (context).inflate(viewHeaderId, null);
+        // set the gut id for later retrieve from layout
+        headerGutsView.setId(ID_GUTS);
+        // TODO: set the color on the fly
+        headerGutsView.setBackgroundColor(Color.BLUE);
+
+        // we don't need dismiss task view, so dismiss it
+        // TODO: get the dismiss task view id
+        Log.d(TAG, "headerGutsView: " + headerGutsView);
+        Log.d(TAG, "headerGutsView counts: " + headerGutsView
+                .getChildCount());
+        View dismissTaskView = headerGutsView.getChildAt(headerGutsView
+                .getChildCount
+                        () - 1);
+        Log.d(TAG, "dismiss guts view: " + dismissTaskView);
+        // set the layout params
+        if (dismissViewLayoutParams == null) {
+            dismissViewLayoutParams = (FrameLayout.LayoutParams)
+                    dismissTaskView
+                            .getLayoutParams();
+        }
+        dismissTaskView.setVisibility(View.GONE);
+        if (idDesc == 0) {
+            idDesc = res.getIdentifier("activity_description", "id",
+                    "com" +
+                            ".android.systemui");
+        }
+        // we don't need this text views
+        headerGutsView.findViewById(idDesc).setVisibility(View.GONE);
+
+        if (headerViewLayoutParams == null) {
+            // add the guts to the headerParent
+            headerViewLayoutParams = (FrameLayout.LayoutParams)
+                    mHeaderView
+                            .getLayoutParams();
+        }
+        return headerGutsView;
+    }
+
+    private void addViewAndSetAction(Context context, Resources res, Action action, ViewGroup
+            headerGutsView, String pkgName, ClassLoader classLoader, int actionCount) throws
+            IllegalAccessException, InstantiationException, InvocationTargetException {
+        Log.d(TAG, "add new Action: " + action);
+        ImageView xBridgeView = getXBridgeView(context, res,
+                classLoader, actionCount);
+        action.setAction(RecentTaskHook.this, context,
+                pkgName,
+                xBridgeView);
+        // add layoutParams
+        headerGutsView.addView(xBridgeView/*,
+                                        dismissViewLayoutParams*/);
+    }
+
+    private void resetAction(Context context, Action action, ViewGroup headerGutsView, String
+            pkgName) {
+        Log.d(TAG, "reset action: " + action);
+        // this action need to be reset
+        ImageView xBridgeView = (ImageView) headerGutsView
+                .findViewById
+                        (Action
+                                .getViewId(PlayAction.class));
+        action.setAction(RecentTaskHook.this, context,
+                pkgName,
+                xBridgeView);
+    }
+
+    private boolean checkIfNeed2Change(View headerGutsView, String compName) {
+        return !compName.equals(headerGutsView.getTag());
     }
 
     private ImageView getXBridgeView(Context context, Resources res, ClassLoader
@@ -566,6 +440,103 @@ public class RecentTaskHook extends Hook {
         // the background drawable should used one time
         xBridgeView.setBackground(res.getDrawable(buttonBgId));
         return xBridgeView;
+    }
+
+    private void setTagAndEffect (Resources res, View mHeaderView, ViewGroup headerGutsView, String compName){
+        // check if the guts view is NOT the right one, some cycle stuff
+        if (!compName.equals(headerGutsView.getTag())) {
+            Log.d(TAG, "reset the guts view: " + headerGutsView);
+            headerGutsView.setTag(compName);
+            // get the views id so we can set the content
+            if (idIcon == 0) {
+                idIcon = res.getIdentifier("application_icon", "id", "com" +
+                        ".android" +
+                        ".systemui");
+            }
+
+            Log.d(TAG, "icon id: " + idIcon + ", desc id: " + idDesc);
+            // this is needed every time
+            // call mutate method and clone a new drawable
+            Drawable drawable = ((ImageView) mHeaderView.findViewById
+                    (idIcon))
+                    .getDrawable().getConstantState().newDrawable()
+                    .mutate();
+            // set the color filter to grey
+            drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+            ((ImageView) headerGutsView.findViewById(idIcon))
+                    .setImageDrawable
+                            (drawable
+                            );
+        }
+    }
+
+    private void startDismissAnimation(final View headerGutsView) {
+        // set the animation
+        // TODO: what is this for?
+        if (headerGutsView.getWindowToken() == null) return;
+
+        // use header view width and height
+        Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() +
+                ", " +
+                headerGutsView.getHeight());
+        Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
+        final double horz = Math.max(headerGutsView.getRight() - listener
+                .getX(), listener.getX() - headerGutsView.getLeft());
+        final double vert = Math.max(headerGutsView.getTop() - listener
+                .getY(), listener.getY() - headerGutsView.getBottom());
+        final float r = (float) Math.hypot(horz, vert);
+        Log.d(TAG, "ripple r: " + r);
+        final Animator a
+                = ViewAnimationUtils.createCircularReveal
+                (headerGutsView,
+                        listener.getX(),
+                        listener.getY(),
+                        r, 0);
+        a.setDuration(TIME_ANIMATION);
+        a.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+//                                    mHeaderView.setVisibility(View.INVISIBLE);
+                headerGutsView.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "dismiss animation done");
+            }
+        });
+        a.setInterpolator(interpolator);
+        a.start();
+    }
+
+    private void startShowingAnimation (final View headerGutsView){
+        // set the animation
+        // TODO: what is this for?
+        if (headerGutsView.getWindowToken() == null) return;
+
+        // use header view width and height
+        Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() + ", " +
+                headerGutsView.getHeight());
+        Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
+        final double horz = Math.max(headerGutsView.getRight() - listener.getX(),
+                listener.getX() - headerGutsView.getLeft());
+        final double vert = Math.max(headerGutsView.getTop() - listener.getY(),
+                listener.getY() - headerGutsView.getBottom());
+        final float r = (float) Math.hypot(horz, vert);
+        Log.d(TAG, "ripple r: " + r);
+        final Animator a
+                = ViewAnimationUtils.createCircularReveal(headerGutsView,
+                listener.getX(), listener.getY(),
+                0, r);
+        a.setDuration(TIME_ANIMATION);
+        a.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+//                                    mHeaderView.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "show animation done");
+            }
+        });
+        a.setInterpolator(interpolator);
+        headerGutsView.setVisibility(View.VISIBLE);
+        a.start();
     }
 
     class HeaderViewTouchListener implements View.OnTouchListener {

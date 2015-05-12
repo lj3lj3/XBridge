@@ -71,21 +71,21 @@ public abstract class Action {
     }
 
     public static boolean isActionsShowInAppInfo() {
-        return (!(PlayAction.isShowInAppInfo /*|| AppOpsAction.isShowInAppInfo*/ ||
+        return PlayAction.isShowInAppInfo /*|| AppOpsAction.isShowInAppInfo*/ ||
                 AppSettingsAction.isShowInAppInfo || ClipBoardAction.isShowInAppInfo ||
-                SearchAction.isShowInAppInfo));
+                SearchAction.isShowInAppInfo;
     }
 
     public static boolean isActionsShowInRecentTask() {
-        return (!(PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
+        return PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
                 AppSettingsAction.isShowInRecentTask || ClipBoardAction
-                .isShowInRecentTask || SearchAction.isShowInRecentTask));
+                .isShowInRecentTask || SearchAction.isShowInRecentTask;
     }
 
     public static boolean isActionsShowInStatusBar() {
-        return (!(PlayAction.isShowInStatusBar || AppOpsAction.isShowInStatusBar ||
+        return PlayAction.isShowInStatusBar || AppOpsAction.isShowInStatusBar ||
                 AppSettingsAction.isShowInStatusBar || ClipBoardAction.isShowInStatusBar ||
-                SearchAction.isShowInStatusBar));
+                SearchAction.isShowInStatusBar;
     }
 
     public static boolean isNeed2Add(ViewGroup viewGroup, Class<? extends Action> actionClass) {

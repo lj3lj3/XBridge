@@ -45,7 +45,7 @@ public class AppInfoHook extends Hook {
                             // if don't, return
                             return;
                         }
-                        if(Action.isActionsShowInAppInfo()){
+                        if(!Action.isActionsShowInAppInfo()){
                             // do nothing
                             return;
                         }
