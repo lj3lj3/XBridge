@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="Show in notification long click view"
+        android:title="Show in notification"
+        android:key="@string/key_play_status_bar"
+        >
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="add copy to clipboard button in the system"
+        android:title="Copy to clipboard"
+        android:key="@string/key_clipboard">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="add search button in the system"
+        android:title="Search"
+        android:key="@string/key_search">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="Show in notification long click view"
+        android:title="Show in notification"
+        android:key="@string/key_play_status_bar">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="add copy to clipboard button in the system"
+        android:title="Copy to clipboard"
+        android:key="@string/key_clipboard">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="add search button in the system"
+        android:title="Search"
+        android:key="@string/key_search">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="Show in notification long click view"
+        android:title="Show in notification"
+        android:key="@string/key_play_status_bar">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="add copy to clipboard button in the system"
+        android:title="Copy to clipboard"
+        android:key="@string/key_clipboard">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:summary="add search button in the system"
+        android:title="Search"
+        android:key="@string/key_search">
+    </SwitchPreference>
+</PreferenceScreen>
