@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.android.settings">
+
+    <application android:allowBackup="true"
+        >
+
+    </application>
+
+</manifest>
