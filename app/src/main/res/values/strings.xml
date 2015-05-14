@@ -4,4 +4,28 @@
     <string name="xposed_description">XBridge</string>
     <string name="package_name">Package name&#160;</string>
     <string name="copied">copied</string>
+
+    <string translatable="false" name="key_play">key_play</string>
+    <string translatable="false" name="key_clipboard">key_clipboard</string>
+    <string translatable="false" name="key_search">key_search</string>
+    <string translatable="false" name="key_appops">key_appops</string>
+    <string translatable="false" name="key_appsettings">key_appsettings</string>
+
+
+    <string translatable="false" name="key_play_status_bar">key_play_status_bar</string>
+    <string translatable="false" name="key_play_recent_task">key_play_recent_task</string>
+    <string translatable="false" name="key_play_app_info">key_play_app_info</string>
+    <string translatable="false" name="key_clipboard_status_bar">key_clipboard_status_bar</string>
+    <string translatable="false" name="key_clipboard_recent_task">key_clipboard_recent_task</string>
+    <string translatable="false" name="key_clipboard_app_info">key_clipboard_app_info</string>
+    <string translatable="false" name="key_search_status_bar">key_search_status_bar</string>
+    <string translatable="false" name="key_search_recent_task">key_search_recent_task</string>
+    <string translatable="false" name="key_search_app_info">key_search_app_info</string>
+    <string translatable="false" name="key_appops_status_bar">key_appops_status_bar</string>
+    <string translatable="false" name="key_appops_recent_task">key_appops_recent_task</string>
+    <string translatable="false" name="key_appops_app_info">key_appops_app_info</string>
+    <string translatable="false" name="key_appsettings_status_bar">key_appsettings_status_bar</string>
+    <string translatable="false" name="key_appsettings_recent_task">key_appsettings_recent_task</string>
+    <string translatable="false" name="key_appsettings_app_info">key_appsettings_app_info</string>
+
 </resources>

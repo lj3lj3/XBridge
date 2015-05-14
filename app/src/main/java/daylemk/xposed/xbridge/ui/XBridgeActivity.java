@@ -15,9 +15,10 @@ import daylemk.xposed.xbridge.R;
 /**
  * @author DayLemK
  * @version 1.0
- * 28-四月-2015 9:16:48
+ *          28-四月-2015 9:16:48
  */
 public class XBridgeActivity extends Activity {
+    public static final String TAG = "XBridgeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +26,7 @@ public class XBridgeActivity extends Activity {
         setContentView(R.layout.activity_xbridge);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, XBridgeFragment.getFragment(null))
                     .commit();
         }
     }
@@ -51,21 +52,5 @@ public class XBridgeActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_xbridge, container, false);
-            return rootView;
-        }
     }
 }

@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/XBridge.iml" filepath="$PROJECT_DIR$/XBridge.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/switchbar/switchbar.iml" filepath="$PROJECT_DIR$/switchbar/switchbar.iml" />
     </modules>
   </component>
 </project>
-
