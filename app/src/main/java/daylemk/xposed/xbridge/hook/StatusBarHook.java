@@ -83,9 +83,6 @@ public class StatusBarHook extends Hook {
         XposedBridge.hookAllMethods(baseStatusBarClass, "inflateGuts", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!MainPreferences.isShowInStatusBar) {
-                    return;
-                }
                 if (!Action.isActionsShowInStatusBar()) {
                     // if none of this is showed here, do nothing
                     return;
@@ -129,19 +126,19 @@ public class StatusBarHook extends Hook {
                 boolean isClipBoardNeed2Add = false;
                 boolean isSearchNeed2Add = false;
                 // check if need to add action
-                if (PlayAction.isShowInStatusBar) {
+                if (PlayAction.isShow && PlayAction.isShowInStatusBar) {
                     isPlayNeed2Add = Action.isNeed2Add(layoutGuts, PlayAction.class);
                 }
-                if (AppOpsAction.isShowInStatusBar) {
+                if (AppOpsAction.isShow && AppOpsAction.isShowInStatusBar) {
                     isOpsNeed2Add = Action.isNeed2Add(layoutGuts, AppOpsAction.class);
                 }
-                if (AppSettingsAction.isShowInStatusBar) {
+                if (AppSettingsAction.isShow && AppSettingsAction.isShowInStatusBar) {
                     isAppSetNeed2Add = Action.isNeed2Add(layoutGuts, AppSettingsAction.class);
                 }
-                if (ClipBoardAction.isShowInStatusBar) {
+                if (ClipBoardAction.isShow && ClipBoardAction.isShowInStatusBar) {
                     isClipBoardNeed2Add = Action.isNeed2Add(layoutGuts, ClipBoardAction.class);
                 }
-                if (SearchAction.isShowInStatusBar) {
+                if (SearchAction.isShow && SearchAction.isShowInStatusBar) {
                     isSearchNeed2Add = Action.isNeed2Add(layoutGuts, SearchAction.class);
                 }
 

@@ -9,50 +9,15 @@
     </SwitchPreference>
     <SwitchPreference
         android:defaultValue="false"
-        android:summary="add copy to clipboard button in the system"
-        android:title="Copy to clipboard"
-        android:key="@string/key_clipboard">
+        android:summary="Show in recent task header long click view"
+        android:title="Show in recent"
+        android:key="@string/key_play_recent_task">
     </SwitchPreference>
     <SwitchPreference
         android:defaultValue="false"
-        android:summary="add search button in the system"
-        android:title="Search"
-        android:key="@string/key_search">
+        android:summary="Show in the action bar of app info settings"
+        android:title="Show in app info"
+        android:key="@string/key_play_app_info">
     </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:summary="Show in notification long click view"
-        android:title="Show in notification"
-        android:key="@string/key_play_status_bar">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add copy to clipboard button in the system"
-        android:title="Copy to clipboard"
-        android:key="@string/key_clipboard">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add search button in the system"
-        android:title="Search"
-        android:key="@string/key_search">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:summary="Show in notification long click view"
-        android:title="Show in notification"
-        android:key="@string/key_play_status_bar">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add copy to clipboard button in the system"
-        android:title="Copy to clipboard"
-        android:key="@string/key_clipboard">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add search button in the system"
-        android:title="Search"
-        android:key="@string/key_search">
-    </SwitchPreference>
+
 </PreferenceScreen>

@@ -86,11 +86,6 @@ public class RecentTaskHook extends Hook {
         XposedHelpers.findAndHookMethod(taskViewClass, "onTaskDataLoaded", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!MainPreferences.isShowInRecentTask) {
-                    // call the original method
-                    param.getResult();
-                    return;
-                }
                 if (!Action.isActionsShowInRecentTask()) {
                     // call the original method
                     param.getResult();
@@ -120,11 +115,6 @@ public class RecentTaskHook extends Hook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws
                             Throwable {
-                        if (!MainPreferences.isShowInRecentTask) {
-                            // call the original method
-                            param.getResult();
-                            return;
-                        }
                         if (!Action.isActionsShowInRecentTask()) {
                             // call the original method
                             param.getResult();
@@ -158,11 +148,6 @@ public class RecentTaskHook extends Hook {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws
                             Throwable {
-                        if (!MainPreferences.isShowInRecentTask) {
-                            // need?
-//                            param.setResult(param.getResult());
-                            return;
-                        }
                         if (!Action.isActionsShowInRecentTask()) {
                             return;
                         }
@@ -237,7 +222,7 @@ public class RecentTaskHook extends Hook {
                         final String pkgName = intent.getComponent().getPackageName();
 
                         int actionCount = 0;
-                        if (PlayAction.isShowInRecentTask) {
+                        if (PlayAction.isShow && PlayAction.isShowInRecentTask) {
                             if (PlayAction.isNeed2Add(headerParent,
                                     PlayAction.class)) {
                                 // set the action up
@@ -251,7 +236,7 @@ public class RecentTaskHook extends Hook {
                             }
                             actionCount++;
                         }
-                        if (AppOpsAction.isShowInRecentTask) {
+                        if (AppOpsAction.isShow && AppOpsAction.isShowInRecentTask) {
                             if (AppOpsAction.isNeed2Add(headerParent, AppOpsAction.class)) {
                                 Log.d(TAG, "add new AppOpsAction");
                                 // set the action up
@@ -265,7 +250,7 @@ public class RecentTaskHook extends Hook {
                             }
                             actionCount++;
                         }
-                        if (AppSettingsAction.isShowInRecentTask) {
+                        if (AppSettingsAction.isShow && AppSettingsAction.isShowInRecentTask) {
                             if (AppSettingsAction.isNeed2Add(headerParent, AppSettingsAction
                                     .class)) {
                                 // set the action up
@@ -279,7 +264,7 @@ public class RecentTaskHook extends Hook {
                             }
                             actionCount++;
                         }
-                        if (ClipBoardAction.isShowInRecentTask) {
+                        if (ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask) {
                             if (ClipBoardAction.isNeed2Add(headerParent, ClipBoardAction
                                     .class)) {
                                 // set the action up
@@ -292,7 +277,7 @@ public class RecentTaskHook extends Hook {
                             }
                             actionCount++;
                         }
-                        if (SearchAction.isShowInRecentTask) {
+                        if (SearchAction.isShow && SearchAction.isShowInRecentTask) {
                             if (SearchAction.isNeed2Add(headerParent, SearchAction.class)) {
                                 // set the action up
                                 Action xBridgeAction = new SearchAction();
@@ -472,7 +457,6 @@ public class RecentTaskHook extends Hook {
 
     private void startDismissAnimation(final View headerGutsView) {
         // set the animation
-        // TODO: what is this for?
         if (headerGutsView.getWindowToken() == null) return;
 
         // use header view width and height
@@ -508,7 +492,6 @@ public class RecentTaskHook extends Hook {
 
     private void startShowingAnimation (final View headerGutsView){
         // set the animation
-        // TODO: what is this for?
         if (headerGutsView.getWindowToken() == null) return;
 
         // use header view width and height

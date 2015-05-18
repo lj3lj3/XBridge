@@ -10,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import daylemk.xposed.xbridge.R;
+import daylemk.xposed.xbridge.action.Action;
+import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
+import daylemk.xposed.xbridge.utils.Log;
 
 
 /**
@@ -25,8 +29,9 @@ public class XBridgeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbridge);
         if (savedInstanceState == null) {
+            // add tag, so we can get this fragment
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, XBridgeFragment.getFragment(null))
+                    .add(R.id.container, XBridgeFragment.getFragment(null), XBridgeFragment.TAG)
                     .commit();
         }
     }

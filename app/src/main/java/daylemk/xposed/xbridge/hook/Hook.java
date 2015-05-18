@@ -27,14 +27,14 @@ public abstract class Hook implements IXposedHookZygoteInit, IXposedHookLoadPack
     /**
      * this module resource
      */
-    protected static XModuleResources sModuleRes = null;
+//    protected static XModuleResources sModuleRes = null;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
-        if (sModuleRes == null) {
-            Log.i(TAG, "init the module resource");
-            sModuleRes = XModuleResources.createInstance("daylemk.xposed.xbridge", null);
-        }
+//        if (sModuleRes == null) {
+//            Log.i(TAG, "init the module resource");
+//            sModuleRes = XModuleResources.createInstance("daylemk.xposed.xbridge", null);
+//        }
     }
 
     @Override

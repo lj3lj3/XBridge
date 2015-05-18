@@ -1,55 +1,95 @@
 package daylemk.xposed.xbridge.data;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.content.res.XModuleResources;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
+
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.utils.Log;
+import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XSharedPreferences;
 
 /**
  * @author DayLemK
  * @version 1.0
- * 28-四月-2015 9:16:48
+ *          28-四月-2015 9:16:48
  */
 public class MainPreferences {
     public static final String TAG = "MainPreferences";
 
-    // these are the hub switch
-    public static final String PREF_SHOW_IN_STATUS_BAR = "show_in_status_bar";
-    public static final boolean PREF_SHOW_IN_STATUS_BAR_DEFAULT = true;
-    public static final String PREF_SHOW_IN_RECENT_TASK = "show_in_recent_task";
-    public static final boolean PREF_SHOW_IN_RECENT_TASK_DEFAULT = true;
-    public static final String PREF_SHOW_IN_APP_INFO = "show_in_app_info";
-    public static final boolean PREF_SHOW_IN_APP_INFO_DEFAULT = true;
-    private static final String NAME_PREFERENCE = "xbridge_preference";
+    public static String NAME_PREFERENCE = "xbridge_preference";
 
-    public static boolean isShowInStatusBar = true;
-    public static boolean isShowInRecentTask = true;
-    public static boolean isShowInAppInfo = true;
-
+    private static XModuleResources sModRes;
     // the hook pref show be PREF_SHOW_IN_STATUS_BAR + Hook.class
     private static XSharedPreferences sharedPreferences;
+    private static SharedPreferences editablePreferences;
+
+    public static void initZygote(IXposedHookZygoteInit.StartupParam startupParam) {
+        sModRes = XModuleResources.createInstance(startupParam.modulePath, null);
+        loadPreferenceKeys(sModRes);
+        // call this method to init shared preference
+        getSharedPreference();
+        // call this to load hub switch
+//        loadPreference();
+    }
 
     /**
      * get the xBridge shared preference
+     * NOTE: this only used to get the preference from teh xposed init
      */
     public static XSharedPreferences getSharedPreference() {
         if (sharedPreferences == null) {
+            Log.w(TAG, "sharedPreference is null");
             sharedPreferences = new XSharedPreferences(StaticData
                     .THIS_PACKAGE_NAME, NAME_PREFERENCE);
+            // call reload when the data has changed
+            sharedPreferences.reload();
         }
-        Log.i(TAG, "sharedPreference: " + sharedPreferences);
         return sharedPreferences;
     }
 
+    /**
+     * every preference should call this method to set the name of the preference file
+     *
+     * @param preferenceManager preference manager of this fragment
+     */
+    public static void setSharedPreferences(PreferenceManager preferenceManager) {
+        preferenceManager.setSharedPreferencesName(NAME_PREFERENCE);
+        preferenceManager.setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
+    }
+
+    public static SharedPreferences getEditablePreferences(PreferenceManager preferenceManager) {
+        if (editablePreferences == null) {
+            Log.w(TAG, "editable sharedPreference is null");
+            editablePreferences = preferenceManager.getSharedPreferences();
+        }
+
+        return editablePreferences;
+    }
+
+    public static void loadPreferenceKeys(Resources resources) {
+        Action.loadPreferenceKeys(resources);
+    }
+
+    /**
+     * this CAN'T be called within the activity cycle, use loadPreference(PreferenceManager) instead
+     */
     public static void loadPreference() {
-        isShowInStatusBar = sharedPreferences.getBoolean(PREF_SHOW_IN_STATUS_BAR,
-                PREF_SHOW_IN_STATUS_BAR_DEFAULT);
-        isShowInRecentTask = sharedPreferences.getBoolean(PREF_SHOW_IN_RECENT_TASK,
-                PREF_SHOW_IN_RECENT_TASK_DEFAULT);
-        isShowInAppInfo = sharedPreferences.getBoolean(PREF_SHOW_IN_APP_INFO,
-                PREF_SHOW_IN_APP_INFO_DEFAULT);
-        Log.d(TAG, "pref: isShowInStatusBar: " + isShowInStatusBar + ",isShowInRecentTask: " +
-                isShowInRecentTask + ", isShowInAppInfo: " + isShowInAppInfo);
+        if (sharedPreferences == null) {
+            getSharedPreference();
+        }
         // load action preference
         Action.loadPreference(sharedPreferences);
+    }
+
+    /** use this method on the activity side */
+    public static void loadPreference(PreferenceManager preferenceManager) {
+        if (editablePreferences == null) {
+            getEditablePreferences(preferenceManager);
+        }
+        Action.loadPreference(editablePreferences);
     }
 }

@@ -37,11 +37,6 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
         Log.d(TAG, "the package name: " + StaticData.THIS_PACKAGE_NAME);
         Log.d(TAG, "module path: " + startupParam.modulePath);
 
-        // call this method to init shared preference
-        MainPreferences.getSharedPreference();
-        // call this to load hub switch
-        MainPreferences.loadPreference();
-
 //        startupParam.modulePath
         // init the hook object first
         statusBarHook = new StatusBarHook();
@@ -50,6 +45,7 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
         frameworksHook = new FrameworksHook();
 
         // call the initZyote method
+        MainPreferences.initZygote(startupParam);
         statusBarHook.initZygote(startupParam);
         appInfoHook.initZygote(startupParam);
         recentTaskHook.initZygote(startupParam);
@@ -74,9 +70,13 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
             Log.d(TAG, "found systemui");
             statusBarHook.handleLoadPackage(loadPackageParam);
             recentTaskHook.handleLoadPackage(loadPackageParam);
+            // add this for systemui process
+            MainPreferences.loadPreference();
         } else if (loadPackageParam.packageName.equals("com.android.settings")) {
             Log.d(TAG, "found settings");
             appInfoHook.handleLoadPackage(loadPackageParam);
+            // add this for settings process
+            MainPreferences.loadPreference();
         }
 
         //appInfoHook = new AppInfoHook();

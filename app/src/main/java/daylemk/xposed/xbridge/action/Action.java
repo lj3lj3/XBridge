@@ -3,11 +3,15 @@ package daylemk.xposed.xbridge.action;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.content.res.XModuleResources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.UserHandle;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,20 +42,20 @@ public abstract class Action {
     public static final String TAG = "Action";
 
     /* the key should the sub class overwrite ------------begin */
-    public static final String CLASS_NAME = AppOpsAction.class.getSimpleName();
-    public static final String PREF_SHOW_IN_RECENT_TASK = MainPreferences.PREF_SHOW_IN_RECENT_TASK +
-            CLASS_NAME;
-    public static final boolean PREF_SHOW_IN_RECENT_TASK_DEFAULT = true;
-    public static final String PREF_SHOW_IN_STATUS_BAR = MainPreferences.PREF_SHOW_IN_STATUS_BAR +
-            CLASS_NAME;
+    public static String keyShowInStatusBar;
+    public static String keyShowInRecentTask;
+    public static String keyShowInAppInfo;
+    public static String keyShow;
+
     public static final boolean PREF_SHOW_IN_STATUS_BAR_DEFAULT = true;
-    public static final String PREF_SHOW_IN_APP_INFO = MainPreferences.PREF_SHOW_IN_APP_INFO +
-            CLASS_NAME;
+    public static final boolean PREF_SHOW_IN_RECENT_TASK_DEFAULT = true;
     public static final boolean PREF_SHOW_IN_APP_INFO_DEFAULT = true;
-    // TODO: true for testing
+    public static final boolean PREF_SHOW = true;
+
     public static boolean isShowInRecentTask = true;
     public static boolean isShowInStatusBar = true;
     public static boolean isShowInAppInfo = true;
+    public static boolean isShow = true;
     /* the key should the sub class overwrite ------------end */
     /**
      * The map contain the action view id *
@@ -63,29 +67,55 @@ public abstract class Action {
 //    private static Map<String, Map<String, Object>> prefMap = new HashMap();
 
     /**
+     * load the key from the string resource
+     * @param sModRes the module resource of package
+     */
+    public static void loadPreferenceKeys (Resources sModRes){
+        PlayAction.loadPreferenceKeys(sModRes);
+        AppOpsAction.loadPreferenceKeys(sModRes);
+        AppSettingsAction.loadPreferenceKeys(sModRes);
+        SearchAction.loadPreferenceKeys(sModRes);
+        ClipBoardAction.loadPreferenceKeys(sModRes);
+        Log.d(TAG, "load preference key done");
+    }
+
+    /**
      * load all action related preference
      */
-    public static void loadPreference(XSharedPreferences preferences) {
+    public static void loadPreference(SharedPreferences preferences) {
         PlayAction.loadPreference(preferences);
         AppOpsAction.loadPreference(preferences);
+        AppSettingsAction.loadPreference(preferences);
+        SearchAction.loadPreference(preferences);
+        ClipBoardAction.loadPreference(preferences);
+        Log.d(TAG, "load preference done");
     }
 
     public static boolean isActionsShowInAppInfo() {
-        return PlayAction.isShowInAppInfo /*|| AppOpsAction.isShowInAppInfo*/ ||
-                AppSettingsAction.isShowInAppInfo || ClipBoardAction.isShowInAppInfo ||
-                SearchAction.isShowInAppInfo;
+        return PlayAction.isShow && PlayAction.isShowInAppInfo
+                || AppOpsAction.isShow && AppOpsAction.isShowInAppInfo
+                || AppSettingsAction.isShow && AppSettingsAction.isShowInAppInfo
+                || SearchAction.isShow && SearchAction.isShowInAppInfo
+                || ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo;
+
     }
 
     public static boolean isActionsShowInRecentTask() {
-        return PlayAction.isShowInRecentTask || AppOpsAction.isShowInRecentTask ||
-                AppSettingsAction.isShowInRecentTask || ClipBoardAction
-                .isShowInRecentTask || SearchAction.isShowInRecentTask;
+        return PlayAction.isShow && PlayAction.isShowInRecentTask
+                || AppOpsAction.isShow && AppOpsAction.isShowInRecentTask
+                || AppSettingsAction.isShow && AppSettingsAction.isShowInRecentTask
+                || SearchAction.isShow && SearchAction.isShowInRecentTask
+                || ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask;
+
     }
 
     public static boolean isActionsShowInStatusBar() {
-        return PlayAction.isShowInStatusBar || AppOpsAction.isShowInStatusBar ||
-                AppSettingsAction.isShowInStatusBar || ClipBoardAction.isShowInStatusBar ||
-                SearchAction.isShowInStatusBar;
+        return PlayAction.isShow && PlayAction.isShowInStatusBar
+                || AppOpsAction.isShow && AppOpsAction.isShowInStatusBar
+                || AppSettingsAction.isShow && AppSettingsAction.isShowInStatusBar
+                || SearchAction.isShow && SearchAction.isShowInStatusBar
+                || ClipBoardAction.isShow && ClipBoardAction.isShowInStatusBar;
+
     }
 
     public static boolean isNeed2Add(ViewGroup viewGroup, Class<? extends Action> actionClass) {

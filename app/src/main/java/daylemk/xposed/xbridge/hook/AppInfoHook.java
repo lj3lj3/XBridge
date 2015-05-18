@@ -41,10 +41,6 @@ public class AppInfoHook extends Hook {
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        if(!MainPreferences.isShowInAppInfo){
-                            // if don't, return
-                            return;
-                        }
                         if(!Action.isActionsShowInAppInfo()){
                             // do nothing
                             return;
@@ -76,7 +72,7 @@ public class AppInfoHook extends Hook {
     }
 
     private void handleAllAction (Menu menu, Context context, String pkgName){
-        if(PlayAction.isShowInAppInfo) {
+        if(PlayAction.isShow && PlayAction.isShowInAppInfo) {
             final Action action = new PlayAction();
             addMenuAndSetAction(menu,action, context, pkgName);
         }
@@ -87,15 +83,15 @@ public class AppInfoHook extends Hook {
                             action.setAction(AppInfoHook.this, context,
                                     pkgName, playMenuItem);
                         }*/
-        if(AppSettingsAction.isShowInAppInfo){
+        if(AppSettingsAction.isShow && AppSettingsAction.isShowInAppInfo){
             final Action action = new AppSettingsAction();
             addMenuAndSetAction(menu,action, context, pkgName);
         }
-        if(ClipBoardAction.isShowInAppInfo){
+        if(ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo){
             final Action action = new ClipBoardAction();
             addMenuAndSetAction(menu,action, context, pkgName);
         }
-        if(SearchAction.isShowInAppInfo) {
+        if(SearchAction.isShow && SearchAction.isShowInAppInfo) {
             final Action action = new SearchAction();
             addMenuAndSetAction(menu,action, context, pkgName);
         }
