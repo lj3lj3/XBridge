@@ -16,7 +16,6 @@ import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
-import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 
 /**
@@ -34,8 +33,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference ClipBoardPreference;
     private SwitchPreference SearchPreference;
 
-    // the first time open, should load values
-    private boolean need2Load = true;
+    private boolean need2Load = false;
 
     public static XBridgeFragment getFragment(Bundle bundle) {
         XBridgeFragment fragment = new XBridgeFragment();
@@ -90,7 +88,6 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         super.onPreferenceTreeClick(preferenceScreen, preference);
         String prefKey = preference.getKey();
 
-        Log.d(TAG, "here");
         Log.d(TAG, "clicked preference: " + prefKey);
         PreferenceFragment fragment = null;
         String tag = null;
@@ -98,19 +95,25 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             fragment = PlayFragment.getFragment(null);
             tag = PlayFragment.TAG;
         } else if (AppOpsAction.keyShow.equals(prefKey)) {
-
+            fragment = AppOpsFragment.getFragment(null);
+            tag = AppOpsFragment.TAG;
         } else if (AppSettingsAction.keyShow.equals(prefKey)) {
-
+            fragment = AppSettingsFragment.getFragment(null);
+            tag = AppSettingsFragment.TAG;
         } else if (ClipBoardAction.keyShow.equals(prefKey)) {
-
+            fragment = ClipBoardFragment.getFragment(null);
+            tag = ClipBoardFragment.TAG;
         } else if (SearchAction.keyShow.equals(prefKey)) {
-
+            fragment = SearchFragment.getFragment(null);
+            tag = SearchFragment.TAG;
         }
 
         if (fragment != null) {
             Log.d(TAG, "fragment is ok: " + fragment);
             this.getFragmentManager().beginTransaction().replace(
                     R.id.container, fragment, tag).addToBackStack(tag).commit();
+        } else {
+            Log.w(TAG, "on click fragment is null, key: " + prefKey);
         }
         return true;
     }

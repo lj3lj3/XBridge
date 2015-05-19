@@ -1,8 +1,8 @@
 package daylemk.xposed.xbridge.hook;
 
-import android.content.res.XResources;
 import android.graphics.drawable.Drawable;
 
+import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 
 /**
@@ -18,10 +18,21 @@ public class FrameworksHook extends Hook {
     private static Drawable iconCopy;
     private static Drawable iconSearch;
 
+    public static Drawable getIconCopy() {
+        Log.d(TAG, "get icon copy: " + iconCopy);
+        return iconCopy;
+    }
+
+    public static Drawable getIconSearch() {
+        Log.d(TAG, "get icon search: " + iconSearch);
+        return iconSearch;
+    }
+
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam
                                                    initPackageResourcesParam) throws Throwable {
         super.handleInitPackageResources(initPackageResourcesParam);
+        Log.d(TAG, "load framework resource");
         // get the icon copy icon
         int iconCopyId = initPackageResourcesParam.res.getIdentifier(STR_ICON_COPY_NAME,
                 STR_DRAWABLE,
@@ -29,13 +40,6 @@ public class FrameworksHook extends Hook {
         iconCopy = initPackageResourcesParam.res.getDrawable(iconCopyId);
         int iconSearchId = initPackageResourcesParam.res.getIdentifier(STR_ICON_SEARCH_NAME, STR_DRAWABLE, initPackageResourcesParam.packageName);
         iconSearch = initPackageResourcesParam.res.getDrawable(iconSearchId);
-    }
-
-    public static Drawable getIconCopy() {
-        return iconCopy;
-    }
-
-    public static Drawable getIconSearch(){
-        return iconSearch;
+        Log.d(TAG, "iocnCopy: " + iconCopy + "iconSearch: " + iconSearch);
     }
 }

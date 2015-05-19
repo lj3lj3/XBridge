@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add view in Play store button in the system"
-        android:title="View in Play store"
+        android:defaultValue="@bool/play_default"
         android:key="@string/key_play"
+        android:summary="@string/summary_play"
+        android:title="@string/title_play"
         >
     </SwitchPreference>
     <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add copy to clipboard button in the system"
-        android:title="Copy to clipboard"
-        android:key="@string/key_clipboard">
+        android:defaultValue="@bool/clipboard_default"
+        android:key="@string/key_clipboard"
+        android:summary="@string/summary_clipboard"
+        android:title="@string/title_clipboard">
     </SwitchPreference>
     <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add search button in the system"
-        android:title="Search"
-        android:key="@string/key_search">
+        android:defaultValue="@bool/search_default"
+        android:key="@string/key_search"
+        android:summary="@string/summary_search"
+        android:title="@string/title_search">
     </SwitchPreference>
     <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add view in AppOps button in the system"
-        android:title="View in AppOps"
-        android:key="@string/key_appops">
+        android:defaultValue="@bool/appops_default"
+        android:key="@string/key_appops"
+        android:summary="@string/summary_appops"
+        android:title="@string/title_appops">
     </SwitchPreference>
     <SwitchPreference
-        android:defaultValue="false"
-        android:summary="add view in AppSettings button in the system"
-        android:title="View in AppSettings"
-        android:key="@string/key_appsettings">
+        android:defaultValue="@bool/appsettings_default"
+        android:key="@string/key_appsettings"
+        android:summary="@string/summary_appsettings"
+        android:title="@string/title_appsettings">
     </SwitchPreference>
 
     <PreferenceCategory android:title="About" >
         <Preference
             android:selectable="false"
-            android:summary=""
-            android:title="XBridge" />
+            android:title="@string/app_name"/>
         <Preference
             android:icon="@drawable/xda_icon"
-            android:summary=""
-            android:title="XDA thread" />
+            android:title="@string/title_xda"/>
     </PreferenceCategory>
 </PreferenceScreen>

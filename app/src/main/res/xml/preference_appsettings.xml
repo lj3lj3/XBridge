@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
-        android:defaultValue="@bool/play_status_bar_default"
-        android:key="@string/key_play_status_bar"
+        android:defaultValue="@bool/appsettings_status_bar_default"
+        android:key="@string/key_appsettings_status_bar"
         android:summary="@string/summary_show_in_status_bar"
         android:title="@string/title_show_in_status_bar"
         >
     </SwitchPreference>
     <SwitchPreference
-        android:defaultValue="@bool/play_recent_task_default"
-        android:key="@string/key_play_recent_task"
+        android:defaultValue="@bool/appsettings_recent_task_default"
+        android:key="@string/key_appsettings_recent_task"
         android:summary="@string/summary_show_in_recent_task"
         android:title="@string/title_show_in_recent_task">
     </SwitchPreference>
     <SwitchPreference
-        android:defaultValue="@bool/play_app_info_default"
-        android:key="@string/key_play_app_info"
+        android:defaultValue="@bool/appsettings_app_info_default"
+        android:key="@string/key_appsettings_app_info"
         android:summary="@string/summary_show_in_app_info"
         android:title="@string/title_show_in_app_info">
     </SwitchPreference>

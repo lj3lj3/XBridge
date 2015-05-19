@@ -29,17 +29,17 @@ public class AppOpsAction extends Action {
     /* the key should the sub class overwrite ------------begin */
     public static String keyShowInStatusBar;
     public static String keyShowInRecentTask;
-//    public static String keyShowInAppInfo;
+    //    public static String keyShowInAppInfo;
     public static String keyShow;
 
     public static boolean showInStatusBarDefault = true;
     public static boolean showInRecentTaskDefault = true;
-//    public static boolean showInAppInfoDefault = true;
+    //    public static boolean showInAppInfoDefault = true;
     public static boolean showDefault = true;
 
     public static boolean isShowInRecentTask = true;
     public static boolean isShowInStatusBar = true;
-//    public static boolean isShowInAppInfo = true;
+    //    public static boolean isShowInAppInfo = true;
     public static boolean isShow = true;
     /* the key should the sub class overwrite ------------end */
 
@@ -71,6 +71,9 @@ public class AppOpsAction extends Action {
 //                PREF_SHOW_IN_APP_INFO_DEFAULT);
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
+        Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
+                "isShowInRecentTask:" + isShowInRecentTask
+                + "isShow:" + isShow);
     }
 
     @Override

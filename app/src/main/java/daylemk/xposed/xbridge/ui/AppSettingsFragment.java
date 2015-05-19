@@ -10,21 +10,21 @@ import android.view.ViewGroup;
 import android.widget.Switch;
 
 import daylemk.xposed.xbridge.R;
-import daylemk.xposed.xbridge.action.PlayAction;
+import daylemk.xposed.xbridge.action.AppSettingsAction;
 
 /**
  * Created by DayLemK on 2015/5/14.
  * Play Action settings fragment
  */
-public class PlayFragment extends HeaderPreferenceFragment {
-    public static final String TAG = "PlayFragment";
+public class AppSettingsFragment extends HeaderPreferenceFragment {
+    public static final String TAG = "AppSettingsFragment";
 
     private SwitchPreference preferenceStatusBar;
     private SwitchPreference preferenceRecentTask;
     private SwitchPreference preferenceAppInfo;
 
-    public static PlayFragment getFragment(Bundle bundle) {
-        PlayFragment fragment = new PlayFragment();
+    public static AppSettingsFragment getFragment(Bundle bundle) {
+        AppSettingsFragment fragment = new AppSettingsFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -32,16 +32,18 @@ public class PlayFragment extends HeaderPreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.addPreferencesFromResource(R.xml.preference_play);
+        this.addPreferencesFromResource(R.xml.preference_appsettings);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        preferenceStatusBar = (SwitchPreference) this.findPreference(PlayAction.keyShowInStatusBar);
-        preferenceRecentTask = (SwitchPreference) this.findPreference(PlayAction
+        preferenceStatusBar = (SwitchPreference) this.findPreference(AppSettingsAction
+                .keyShowInStatusBar);
+        preferenceRecentTask = (SwitchPreference) this.findPreference(AppSettingsAction
                 .keyShowInRecentTask);
-        preferenceAppInfo = (SwitchPreference) this.findPreference(PlayAction.keyShowInAppInfo);
+        preferenceAppInfo = (SwitchPreference) this.findPreference(AppSettingsAction
+                .keyShowInAppInfo);
         preferenceStatusBar.setOnPreferenceChangeListener(this);
         preferenceRecentTask.setOnPreferenceChangeListener(this);
         preferenceAppInfo.setOnPreferenceChangeListener(this);
@@ -60,8 +62,8 @@ public class PlayFragment extends HeaderPreferenceFragment {
         super.onActivityCreated(savedInstanceState);
         // set the master switch here
         // set the tag, so wo can save the preference
-        switchBar.getSwitch().setTag(PlayAction.keyShow);
-        switchBar.setChecked(PlayAction.isShow);
+        switchBar.getSwitch().setTag(AppSettingsAction.keyShow);
+        switchBar.setChecked(AppSettingsAction.isShow);
     }
 
     @Override
@@ -73,6 +75,6 @@ public class PlayFragment extends HeaderPreferenceFragment {
     @Override
     public void onSwitchChanged(Switch switchView, boolean isChecked) {
         super.onSwitchChanged(switchView, isChecked);
-        PlayAction.isShow = isChecked;
+        AppSettingsAction.isShow = isChecked;
     }
 }

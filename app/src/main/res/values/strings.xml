@@ -5,27 +5,45 @@
     <string name="package_name">Package name&#160;</string>
     <string name="copied">copied</string>
 
-    <string translatable="false" name="key_play">key_play</string>
-    <string translatable="false" name="key_clipboard">key_clipboard</string>
-    <string translatable="false" name="key_search">key_search</string>
-    <string translatable="false" name="key_appops">key_appops</string>
-    <string translatable="false" name="key_appsettings">key_appsettings</string>
+    <string name="key_play" translatable="false">key_play</string>
+    <string name="key_clipboard" translatable="false">key_clipboard</string>
+    <string name="key_search" translatable="false">key_search</string>
+    <string name="key_appops" translatable="false">key_appops</string>
+    <string name="key_appsettings" translatable="false">key_appsettings</string>
 
 
-    <string translatable="false" name="key_play_status_bar">key_play_status_bar</string>
-    <string translatable="false" name="key_play_recent_task">key_play_recent_task</string>
-    <string translatable="false" name="key_play_app_info">key_play_app_info</string>
-    <string translatable="false" name="key_clipboard_status_bar">key_clipboard_status_bar</string>
-    <string translatable="false" name="key_clipboard_recent_task">key_clipboard_recent_task</string>
-    <string translatable="false" name="key_clipboard_app_info">key_clipboard_app_info</string>
-    <string translatable="false" name="key_search_status_bar">key_search_status_bar</string>
-    <string translatable="false" name="key_search_recent_task">key_search_recent_task</string>
-    <string translatable="false" name="key_search_app_info">key_search_app_info</string>
-    <string translatable="false" name="key_appops_status_bar">key_appops_status_bar</string>
-    <string translatable="false" name="key_appops_recent_task">key_appops_recent_task</string>
-    <string translatable="false" name="key_appops_app_info">key_appops_app_info</string>
-    <string translatable="false" name="key_appsettings_status_bar">key_appsettings_status_bar</string>
-    <string translatable="false" name="key_appsettings_recent_task">key_appsettings_recent_task</string>
-    <string translatable="false" name="key_appsettings_app_info">key_appsettings_app_info</string>
+    <string name="key_play_status_bar" translatable="false">key_play_status_bar</string>
+    <string name="key_play_recent_task" translatable="false">key_play_recent_task</string>
+    <string name="key_play_app_info" translatable="false">key_play_app_info</string>
+    <string name="key_clipboard_status_bar" translatable="false">key_clipboard_status_bar</string>
+    <string name="key_clipboard_recent_task" translatable="false">key_clipboard_recent_task</string>
+    <string name="key_clipboard_app_info" translatable="false">key_clipboard_app_info</string>
+    <string name="key_search_status_bar" translatable="false">key_search_status_bar</string>
+    <string name="key_search_recent_task" translatable="false">key_search_recent_task</string>
+    <string name="key_search_app_info" translatable="false">key_search_app_info</string>
+    <string name="key_appops_status_bar" translatable="false">key_appops_status_bar</string>
+    <string name="key_appops_recent_task" translatable="false">key_appops_recent_task</string>
+    <string name="key_appops_app_info" translatable="false">key_appops_app_info</string>
+    <string name="key_appsettings_status_bar" translatable="false">key_appsettings_status_bar</string>
+    <string name="key_appsettings_recent_task" translatable="false">key_appsettings_recent_task</string>
+    <string name="key_appsettings_app_info" translatable="false">key_appsettings_app_info</string>
+
+    <string name="title_show_in_status_bar">Show in notification</string>
+    <string name="summary_show_in_status_bar">Show in notification long click view</string>
+    <string name="title_show_in_recent_task">Show in recent</string>
+    <string name="summary_show_in_recent_task">Show in recent task header long click view</string>
+    <string name="title_show_in_app_info">Show in app info</string>
+    <string name="summary_show_in_app_info">Show in the action bar of app info settings</string>
+    <string name="summary_play">add view in Play store button in the system</string>
+    <string name="title_play">View in Play store</string>
+    <string name="summary_clipboard">add copy to clipboard button in the system</string>
+    <string name="title_clipboard">Copy to clipboard</string>
+    <string name="summary_search">add search button in the system</string>
+    <string name="title_search">Search</string>
+    <string name="summary_appops">add view in AppOps button in the system</string>
+    <string name="title_appops">View in AppOps</string>
+    <string name="summary_appsettings">add view in AppSettings button in the system</string>
+    <string name="title_appsettings">View in AppSettings</string>
+    <string name="title_xda">XDA thread</string>
 
 </resources>

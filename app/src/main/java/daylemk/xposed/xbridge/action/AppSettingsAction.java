@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.Hook;
+import daylemk.xposed.xbridge.utils.Log;
 
 /**
  * @author DayLemK
@@ -67,6 +68,9 @@ public class AppSettingsAction extends Action {
                 showInAppInfoDefault);
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
+        Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
+                "isShowInRecentTask:" + isShowInRecentTask + "isShowInAppInfo:" + isShowInAppInfo
+                + "isShow:" + isShow);
     }
 
     @Override

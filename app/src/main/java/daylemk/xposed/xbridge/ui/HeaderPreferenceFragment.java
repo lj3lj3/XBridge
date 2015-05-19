@@ -4,6 +4,10 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -11,7 +15,6 @@ import com.android.settings.widget.SwitchBar;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import daylemk.xposed.xbridge.R;
@@ -27,6 +30,9 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
                 .OnSwitchChangeListener, Preference
         .OnPreferenceChangeListener {
     public static final String TAG = "HeaderPreferenceFragment";
+
+    // the inflated view
+    protected View view;
     /**
      * only can be used after onActivityCreated
      */
@@ -40,11 +46,19 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
     }
 
     @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle
+            savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        view = inflater.inflate(R.layout.header_perference, container, false);
+        return view;
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        switchBar = (SwitchBar) getView().findViewById(R.id.switch_bar);
+        switchBar = (SwitchBar) view.findViewById(R.id.switch_bar);
         switchBar.addOnSwitchChangeListener(this);
-        list = (ListView) getView().findViewById(android.R.id.list);
+        list = (ListView) view.findViewById(android.R.id.list);
     }
 
     @Override
@@ -82,7 +96,7 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
         Fragment fragment = getFragmentManager().findFragmentByTag(XBridgeFragment.TAG);
         Log.d(TAG, "xBridgeFragment on switch changed: " + fragment);
         if (fragment != null) {
-            XBridgeFragment xBridgeFragment = (XBridgeFragment)fragment;
+            XBridgeFragment xBridgeFragment = (XBridgeFragment) fragment;
             xBridgeFragment.setNeed2Load(true);
         }
     }

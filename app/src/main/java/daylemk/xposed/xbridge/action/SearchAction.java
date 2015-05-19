@@ -11,6 +11,7 @@ import android.net.Uri;
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.FrameworksHook;
 import daylemk.xposed.xbridge.hook.Hook;
+import daylemk.xposed.xbridge.utils.Log;
 
 /**
  * Created by DayLemK on 2015/5/11.
@@ -63,6 +64,9 @@ public class SearchAction extends Action{
                 showInAppInfoDefault);
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
+        Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
+                "isShowInRecentTask:" + isShowInRecentTask + "isShowInAppInfo:" + isShowInAppInfo
+                + "isShow:" + isShow);
     }
 
     @Override

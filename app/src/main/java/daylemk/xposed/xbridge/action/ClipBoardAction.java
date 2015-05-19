@@ -69,6 +69,9 @@ public class ClipBoardAction extends Action {
                 showInAppInfoDefault);
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
+        Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
+                "isShowInRecentTask:" + isShowInRecentTask + "isShowInAppInfo:" + isShowInAppInfo
+                + "isShow:" + isShow);
     }
 
     @Override
