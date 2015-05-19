@@ -5,6 +5,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 
 /**
@@ -32,7 +34,8 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference ClipBoardPreference;
     private SwitchPreference SearchPreference;
 
-    private boolean need2Load = false;
+    // the first time open, should load values
+    private boolean need2Load = true;
 
     public static XBridgeFragment getFragment(Bundle bundle) {
         XBridgeFragment fragment = new XBridgeFragment();
@@ -47,7 +50,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
         Log.d(TAG, "keys:" + PlayAction.keyShow + AppOpsAction.keyShow + AppSettingsAction
                 .keyShow + ClipBoardAction.keyShow + SearchAction.keyShow);
@@ -83,7 +86,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     }
 
     @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference preference) {
         super.onPreferenceTreeClick(preferenceScreen, preference);
         String prefKey = preference.getKey();
 

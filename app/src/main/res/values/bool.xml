@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="play_default">true</bool>
+    <bool name="play_status_bar_default">true</bool>
+    <bool name="play_app_info_default">true</bool>
+    <bool name="play_recent_task_default">true</bool>
+    <bool name="clipboard_default">true</bool>
+    <bool name="clipboard_status_bar_default">true</bool>
+    <bool name="clipboard_app_info_default">true</bool>
+    <bool name="clipboard_recent_task_default">true</bool>
+    <bool name="appops_default">true</bool>
+    <bool name="appops_status_bar_default">true</bool>
+    <!--<bool name="appops_app_info_default">true</bool>-->
+    <bool name="appops_recent_task_default">true</bool>
+    <bool name="appsettings_default">true</bool>
+    <bool name="appsettings_status_bar_default">true</bool>
+    <bool name="appsettings_app_info_default">true</bool>
+    <bool name="appsettings_recent_task_default">true</bool>
+    <bool name="search_default">true</bool>
+    <bool name="search_status_bar_default">true</bool>
+    <bool name="search_app_info_default">true</bool>
+    <bool name="search_recent_task_default">true</bool>
+</resources>

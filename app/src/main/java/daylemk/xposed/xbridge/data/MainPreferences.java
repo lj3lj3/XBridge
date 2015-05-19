@@ -42,7 +42,7 @@ public class MainPreferences {
      */
     public static XSharedPreferences getSharedPreference() {
         if (sharedPreferences == null) {
-            Log.w(TAG, "sharedPreference is null");
+            Log.w(TAG, "sharedPreference is null, init it");
             sharedPreferences = new XSharedPreferences(StaticData
                     .THIS_PACKAGE_NAME, NAME_PREFERENCE);
             // call reload when the data has changed
@@ -63,7 +63,7 @@ public class MainPreferences {
 
     public static SharedPreferences getEditablePreferences(PreferenceManager preferenceManager) {
         if (editablePreferences == null) {
-            Log.w(TAG, "editable sharedPreference is null");
+            Log.w(TAG, "editable sharedPreference is null, init it");
             editablePreferences = preferenceManager.getSharedPreferences();
         }
 
@@ -71,6 +71,7 @@ public class MainPreferences {
     }
 
     public static void loadPreferenceKeys(Resources resources) {
+        Log.d(TAG, "load preference keys");
         Action.loadPreferenceKeys(resources);
     }
 
@@ -78,6 +79,7 @@ public class MainPreferences {
      * this CAN'T be called within the activity cycle, use loadPreference(PreferenceManager) instead
      */
     public static void loadPreference() {
+        Log.d(TAG, "load preference");
         if (sharedPreferences == null) {
             getSharedPreference();
         }

@@ -25,8 +25,8 @@ public abstract class AbstractPreferenceFragment extends PreferenceFragment{
 //        MainPreferences.loadPreference();
         // first time on UI, load keys and values
         if (PlayAction.keyShow == null) {
+            Log.d(TAG, "on create: reload preference keys and values");
             MainPreferences.loadPreferenceKeys(getResources());
-            Log.d(TAG, "on create: reload preference keys");
             MainPreferences.loadPreference(getPreferenceManager());
         }
     }
