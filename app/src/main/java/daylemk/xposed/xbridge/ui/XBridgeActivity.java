@@ -1,19 +1,11 @@
 package daylemk.xposed.xbridge.ui;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import daylemk.xposed.xbridge.R;
-import daylemk.xposed.xbridge.action.Action;
-import daylemk.xposed.xbridge.action.PlayAction;
-import daylemk.xposed.xbridge.data.MainPreferences;
-import daylemk.xposed.xbridge.utils.Log;
 
 
 /**
@@ -27,6 +19,12 @@ public class XBridgeActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // use the transitions animation
+        // do no need???
+//        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+//        // start transition as soon as possible
+//        getWindow().setAllowEnterTransitionOverlap(true);
+//        getWindow().setAllowReturnTransitionOverlap(true);
         setContentView(R.layout.activity_xbridge);
         if (savedInstanceState == null) {
             // add tag, so we can get this fragment

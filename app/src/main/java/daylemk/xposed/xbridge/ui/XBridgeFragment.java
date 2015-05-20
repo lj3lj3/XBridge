@@ -1,5 +1,6 @@
 package daylemk.xposed.xbridge.ui;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -77,14 +78,16 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             AppSettingsPreference.setChecked(AppSettingsAction.isShow);
             ClipBoardPreference.setChecked(ClipBoardAction.isShow);
             SearchPreference.setChecked(SearchAction.isShow);
-            Log.d(TAG, "values:" + PlayAction.isShow + AppOpsAction.isShow + AppSettingsAction.isShow
+            Log.d(TAG, "values:" + PlayAction.isShow + AppOpsAction.isShow + AppSettingsAction
+                    .isShow
                     + ClipBoardAction.isShow + SearchAction.isShow);
             need2Load = false;
         }
     }
 
     @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference preference) {
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, @NonNull Preference
+            preference) {
         super.onPreferenceTreeClick(preferenceScreen, preference);
         String prefKey = preference.getKey();
 
@@ -111,7 +114,11 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         if (fragment != null) {
             Log.d(TAG, "fragment is ok: " + fragment);
             this.getFragmentManager().beginTransaction().replace(
-                    R.id.container, fragment, tag).addToBackStack(tag).commit();
+                    R.id.container, fragment, tag).setTransition(FragmentTransaction
+                    .TRANSIT_FRAGMENT_OPEN)
+                    .addToBackStack(tag).commit();
+            // start transactions now
+            this.getFragmentManager().executePendingTransactions();
         } else {
             Log.w(TAG, "on click fragment is null, key: " + prefKey);
         }
