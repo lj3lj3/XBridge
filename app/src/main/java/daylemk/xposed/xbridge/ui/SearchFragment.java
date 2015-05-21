@@ -1,6 +1,7 @@
 package daylemk.xposed.xbridge.ui;
 
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
@@ -22,6 +23,8 @@ public class SearchFragment extends HeaderPreferenceFragment {
     private SwitchPreference preferenceStatusBar;
     private SwitchPreference preferenceRecentTask;
     private SwitchPreference preferenceAppInfo;
+    private SwitchPreference preferenceCustomizeUrl;
+    private EditTextPreference preferenceUrl;
 
     public static SearchFragment getFragment(Bundle bundle) {
         SearchFragment fragment = new SearchFragment();
@@ -43,15 +46,22 @@ public class SearchFragment extends HeaderPreferenceFragment {
         preferenceRecentTask = (SwitchPreference) this.findPreference(SearchAction
                 .keyShowInRecentTask);
         preferenceAppInfo = (SwitchPreference) this.findPreference(SearchAction.keyShowInAppInfo);
+        preferenceCustomizeUrl = (SwitchPreference) this.findPreference(SearchAction.keyCustomize);
+        preferenceUrl = (EditTextPreference) this.findPreference(SearchAction.keyUrl);
+
         preferenceStatusBar.setOnPreferenceChangeListener(this);
         preferenceRecentTask.setOnPreferenceChangeListener(this);
         preferenceAppInfo.setOnPreferenceChangeListener(this);
+        preferenceCustomizeUrl.setOnPreferenceChangeListener(this);
+        preferenceUrl.setOnPreferenceChangeListener(this);
         // set values
 //        preferenceStatusBar.setChecked(PlayAction.isShowInStatusBar);
 //        preferenceRecentTask.setChecked(PlayAction.isShowInRecentTask);
 //        preferenceAppInfo.setChecked(PlayAction.isShowInAppInfo);
 
-        addPreferences2TheList(preferenceStatusBar, preferenceRecentTask, preferenceAppInfo);
+        // preferenceUrl is no needed
+        addPreferences2TheList(preferenceStatusBar, preferenceRecentTask, preferenceAppInfo,
+                preferenceCustomizeUrl);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }

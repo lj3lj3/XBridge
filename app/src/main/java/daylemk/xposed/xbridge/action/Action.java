@@ -344,11 +344,20 @@ public abstract class Action {
         }
         Log.d(TAG, "userHandle: " + userHandle);
 
-        // call startActivities method
-        // FIXED: should use the empty Bundle object not null
-        XposedHelpers.callMethod(taskStackBuilder, "startActivities",
-                new Bundle(), userHandle);
         Log.d(TAG, "start activities");
+        // add try catch
+        try {
+            // call startActivities method
+            // FIXED: should use the empty Bundle object not null
+            XposedHelpers.callMethod(taskStackBuilder, "startActivities",
+                    new Bundle(), userHandle);
+        } catch (Exception e) {
+            XposedBridge.log(e);
+            Log.e(TAG, "start intent as user error, intent: " + intent);
+            // show toast
+            XBridgeToast.showToastOnHandler(context, Hook.getXBridgeContext(context).getString
+                    (R.string.error) + intent.getData());
+        }
     }
 
     private int getUid(Context context, String pkgName) {

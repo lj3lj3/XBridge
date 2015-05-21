@@ -23,6 +23,10 @@
     <string name="key_search_status_bar" translatable="false">key_search_status_bar</string>
     <string name="key_search_recent_task" translatable="false">key_search_recent_task</string>
     <string name="key_search_app_info" translatable="false">key_search_app_info</string>
+    <string name="key_search_customize_url" translatable="false">key_search_cutomize_url</string>
+    <!-- default url of search action -->
+    <string name="search_url_default" translatable="false">"https://www.google.com/search?q="</string>
+    <string name="key_search_url" translatable="false">key_search_url</string>
     <string name="key_appops_status_bar" translatable="false">key_appops_status_bar</string>
     <string name="key_appops_recent_task" translatable="false">key_appops_recent_task</string>
     <string name="key_appops_app_info" translatable="false">key_appops_app_info</string>

@@ -19,5 +19,19 @@
         android:summary="@string/summary_show_in_app_info"
         android:title="@string/title_show_in_app_info">
     </SwitchPreference>
+    <PreferenceCategory android:title="Customize">
+        <SwitchPreference
+            android:defaultValue="@bool/search_customize_default"
+            android:key="@string/key_search_customize_url"
+            android:title="Customize search url">
+        </SwitchPreference>
+        <EditTextPreference
+            android:defaultValue="@string/search_url_default"
+            android:dependency="@string/key_search_customize_url"
+            android:key="@string/key_search_url"
+            android:title="search url">
+
+        </EditTextPreference>
+    </PreferenceCategory>
 
 </PreferenceScreen>
