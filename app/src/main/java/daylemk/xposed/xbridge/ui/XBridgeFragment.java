@@ -121,6 +121,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             this.getFragmentManager().executePendingTransactions();
         } else {
             Log.w(TAG, "on click fragment is null, key: " + prefKey);
+            return false;
         }
         return true;
     }

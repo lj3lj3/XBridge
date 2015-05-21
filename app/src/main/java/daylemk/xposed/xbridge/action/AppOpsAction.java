@@ -77,7 +77,7 @@ public class AppOpsAction extends Action {
     }
 
     @Override
-    protected Intent getIntent(Hook hook, String pkgName) {
+    protected Intent getIntent(Hook hook, Context context, String pkgName) {
         Intent intent = new Intent();
         intent.setClassName(PKG_NAME, ACTIVITY_CLASS_NAME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -91,7 +91,7 @@ public class AppOpsAction extends Action {
     }
 
     @Override
-    protected void handleData(Context context, String pkgName) {
+    public void handleData(Context context, String pkgName) {
     }
 
     @Override

@@ -74,7 +74,7 @@ public class AppSettingsAction extends Action {
     }
 
     @Override
-    protected Intent getIntent(Hook hook, String pkgName) {
+    protected Intent getIntent(Hook hook, Context context, String pkgName) {
         Intent intent = new Intent();
         intent.setClassName(PKG_NAME, ACTIVITY_CLASS_NAME);
         intent.putExtra(ARG_PACKAGE_NAME, pkgName);
@@ -82,7 +82,7 @@ public class AppSettingsAction extends Action {
     }
 
     @Override
-    protected void handleData(Context context, String pkgName) {
+    public void handleData(Context context, String pkgName) {
     }
 
     @Override

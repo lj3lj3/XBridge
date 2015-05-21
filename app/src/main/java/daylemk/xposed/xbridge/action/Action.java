@@ -7,11 +7,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.content.res.XModuleResources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.UserHandle;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +22,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import daylemk.xposed.xbridge.data.MainPreferences;
+import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
 import daylemk.xposed.xbridge.utils.Log;
-import de.robv.android.xposed.XSharedPreferences;
+import daylemk.xposed.xbridge.utils.XBridgeToast;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
@@ -68,14 +66,16 @@ public abstract class Action {
 
     /**
      * load the key from the string resource
+     *
      * @param sModRes the module resource of package
      */
-    public static void loadPreferenceKeys (Resources sModRes){
+    public static void loadPreferenceKeys(Resources sModRes) {
         PlayAction.loadPreferenceKeys(sModRes);
         AppOpsAction.loadPreferenceKeys(sModRes);
         AppSettingsAction.loadPreferenceKeys(sModRes);
         SearchAction.loadPreferenceKeys(sModRes);
         ClipBoardAction.loadPreferenceKeys(sModRes);
+        ForceStopAction.loadPreferenceKeys(sModRes);
         Log.d(TAG, "load preference key done");
     }
 
@@ -88,6 +88,7 @@ public abstract class Action {
         AppSettingsAction.loadPreference(preferences);
         SearchAction.loadPreference(preferences);
         ClipBoardAction.loadPreference(preferences);
+        ForceStopAction.loadPreference(preferences);
         Log.d(TAG, "load preference done");
     }
 
@@ -179,8 +180,8 @@ public abstract class Action {
         return drawable;
     }
 
-    private Intent getFinalIntent(Hook hook, String pkgName) {
-        Intent intent = getIntent(hook, pkgName);
+    private Intent getFinalIntent(Hook hook, Context context, String pkgName) {
+        Intent intent = getIntent(hook, context, pkgName);
         // this is just need for appInfo screen for now, not in status bar
         if (intent != null && hook instanceof AppInfoHook) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
@@ -193,13 +194,15 @@ public abstract class Action {
     /**
      * subclass should overwrite this method or handleData method
      * this method will be called first, if the result is null, will call handleData method
+     * EDIT: add Context parameter
      */
-    protected abstract Intent getIntent(Hook hook, String pkgName);
+    protected abstract Intent getIntent(Hook hook, Context context, String pkgName);
 
     /**
      * subclass should overwrite this method or getIntent method
+     * EDIT: this class is need to set public to call out of the action
      */
-    protected abstract void handleData(Context context, String pkgName);
+    public abstract void handleData(Context context, String pkgName);
 
     /**
      * get the icon of this action
@@ -232,7 +235,7 @@ public abstract class Action {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "on click action is + " + Action.this.getClass() + ", hook: " + hook);
-                Intent intent = getFinalIntent(hook, pkgName);
+                Intent intent = getFinalIntent(hook, context, pkgName);
                 if (intent == null) {
                     // if the intent is null, we need to call handleData method
                     handleData(context, pkgName);
@@ -264,14 +267,22 @@ public abstract class Action {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Log.d(TAG, "on click action is: " + Action.this.getClass() + ", hook: " + hook);
-                Intent intent = getFinalIntent(hook, pkgName);
+                Intent intent = getFinalIntent(hook, context, pkgName);
                 if (intent == null) {
                     // if the intent is null, we need to call handleData method
                     handleData(context, pkgName);
                 } else if (hook instanceof AppInfoHook) {
-                    // no need to start as user, 'cause when the appInfo screen is called, it
-                    // already signed to a user
-                    context.startActivity(intent);
+                    try {
+                        // no need to start as user, 'cause when the appInfo screen is called, it
+                        // already signed to a user
+                        context.startActivity(intent);
+                    } catch (Exception e) {
+                        XposedBridge.log(e);
+                        Log.e(TAG, "start intent error, intent: " + intent);
+
+                        XBridgeToast.showToast(context, Hook.getXBridgeContext(context).getString
+                                (R.string.error) + intent.getComponent().getPackageName());
+                    }
                 }
 
                 Log.d(TAG, "menu action done");
@@ -291,12 +302,29 @@ public abstract class Action {
         startIntentAsUser(context, intent, getUid(context, pkgName));
     }
 
-    public void startIntentAsUser(Context context, Intent intent, int appUid) {
+    public void startIntentAsUser(final Context context, Intent intent, int appUid) {
         Log.d(TAG, "start intent as user, appUid: " + appUid + ", " + intent);
-        // TODO: get ride of TaskStackBuilder ???
-        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create
-                (context).addNextIntentWithParentStack
-                (intent);
+//        List<ResolveInfo> infoList = context.getPackageManager().queryIntentActivities
+//                (intent, PackageManager
+//                .MATCH_DEFAULT_ONLY);
+//        if(infoList.size() == 0) {
+//            throw new Exception();
+//        }
+        TaskStackBuilder taskStackBuilder;
+        try {
+            // TODO: get ride of TaskStackBuilder ???
+            // if the target package is no available, this will throw a exception
+            taskStackBuilder = TaskStackBuilder.create
+                    (context).addNextIntentWithParentStack
+                    (intent);
+        } catch (Exception e) {
+            XposedBridge.log(e);
+            Log.e(TAG, "start intent as user error, intent: " + intent);
+            // show toast
+            XBridgeToast.showToastOnHandler(context, Hook.getXBridgeContext(context).getString
+                    (R.string.error) + intent.getComponent().getPackageName());
+            return;
+        }
         Log.d(TAG, "taskStackBuilder: " + taskStackBuilder);
 
         int userId = (int) XposedHelpers.callStaticMethod(UserHandle

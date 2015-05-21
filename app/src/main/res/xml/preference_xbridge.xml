@@ -31,6 +31,20 @@
         android:summary="@string/summary_appsettings"
         android:title="@string/title_appsettings">
     </SwitchPreference>
+    <PreferenceCategory android:title="Enhance">
+        <SwitchPreference
+            android:defaultValue="@bool/show_dismiss_default"
+            android:key="@string/key_show_dismiss"
+            android:summary="@string/summary_show_dismiss"
+            android:title="@string/title_show_dismiss">
+        </SwitchPreference>
+        <SwitchPreference
+            android:defaultValue="@bool/forcestop_default"
+            android:key="@string/key_forcestop"
+            android:summary="@string/summary_forcestop"
+            android:title="@string/title_forcestop">
+        </SwitchPreference>
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="About" >
         <Preference

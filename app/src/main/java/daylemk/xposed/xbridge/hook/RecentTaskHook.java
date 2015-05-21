@@ -2,7 +2,6 @@ package daylemk.xposed.xbridge.hook;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -18,10 +17,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -29,11 +25,11 @@ import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
+import daylemk.xposed.xbridge.action.ForceStopAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -88,7 +84,13 @@ public class RecentTaskHook extends Hook {
         XposedHelpers.findAndHookMethod(taskViewClass, "onTaskDataLoaded", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!Action.isActionsShowInRecentTask()) {
+                boolean isRecentShow = false;
+                if (Action.isActionsShowInRecentTask()) {
+                    isRecentShow = true;
+                }
+                if (!(isRecentShow || ForceStopAction.isShow || ForceStopAction
+                        .isShowDismissButton)) {
+                    // the recent and force stop action is not active
                     // call the original method
                     param.getResult();
                     return;
@@ -99,18 +101,31 @@ public class RecentTaskHook extends Hook {
                 FrameLayout taskViewObject = (FrameLayout) param.thisObject;
                 View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
                         "mHeaderView");
-                mHeaderView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
-                if (listener == null) {
-                    listener = new HeaderViewTouchListener();
+                if (isRecentShow) {
+                    mHeaderView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
+                    if (listener == null) {
+                        listener = new HeaderViewTouchListener();
+                    }
+                    // set on touch listener
+                    mHeaderView.setOnTouchListener(listener);
                 }
-                // set on touch listener
-                mHeaderView.setOnTouchListener(listener);
-
-                // TODO: this is just for test
-                // get the view ids
-                initViewIds(taskViewObject.getResources());
-                View dismissView = mHeaderView.findViewById(idDismiss);
-                dismissView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
+                View dismissView = null;
+                // check if we should use force stop action
+                if (ForceStopAction.isShow) {
+                    // get the view ids
+                    initViewIds(taskViewObject.getResources());
+                    dismissView = mHeaderView.findViewById(idDismiss);
+                    dismissView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
+                }
+                if (ForceStopAction.isShowDismissButton) {
+                    Log.d(TAG, "show dismiss button now");
+                    // get the view ids
+                    initViewIds(taskViewObject.getResources());
+                    if (dismissView == null) {
+                        dismissView = mHeaderView.findViewById(idDismiss);
+                    }
+                    dismissView.setVisibility(View.VISIBLE);
+                }
 
                 // call the original method
                 param.getResult();
@@ -123,7 +138,12 @@ public class RecentTaskHook extends Hook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws
                             Throwable {
-                        if (!Action.isActionsShowInRecentTask()) {
+                        boolean isRecentShow = false;
+                        if (Action.isActionsShowInRecentTask()) {
+                            isRecentShow = true;
+                        }
+                        if (!(isRecentShow || ForceStopAction.isShow)) {
+                            // the recent and force stop action is not active
                             // call the original method
                             param.getResult();
                             return;
@@ -134,20 +154,24 @@ public class RecentTaskHook extends Hook {
                         View mHeaderView = (View) XposedHelpers.getObjectField
                                 (taskViewObject,
                                         "mHeaderView");
-                        mHeaderView.setOnLongClickListener(null);
-                        // set the on touch listener to null
-                        mHeaderView.setOnTouchListener(null);
+                        if (isRecentShow) {
+                            mHeaderView.setOnLongClickListener(null);
+                            // set the on touch listener to null
+                            mHeaderView.setOnTouchListener(null);
 
-                        // EDIT: need to set the guts to invisible
-                        View gutsView = ((ViewGroup) mHeaderView.getParent())
-                                .findViewById(ID_GUTS);
-                        Log.d(TAG, "the guts view on unloaded is: " + gutsView);
-                        if (gutsView != null) {
-                            gutsView.setVisibility(View.INVISIBLE);
+                            // EDIT: need to set the guts to invisible
+                            View gutsView = ((ViewGroup) mHeaderView.getParent())
+                                    .findViewById(ID_GUTS);
+                            Log.d(TAG, "the guts view on unloaded is: " + gutsView);
+                            if (gutsView != null) {
+                                gutsView.setVisibility(View.INVISIBLE);
+                            }
                         }
 
-                        //TODO: this is just for testing
-                        mHeaderView.findViewById(idDismiss).setOnLongClickListener(null);
+                        // if force stop action is show, set null
+                        if (ForceStopAction.isShow) {
+                            mHeaderView.findViewById(idDismiss).setOnLongClickListener(null);
+                        }
 
                         // call the original method
                         param.getResult();
@@ -159,7 +183,8 @@ public class RecentTaskHook extends Hook {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws
                             Throwable {
-                        if (!Action.isActionsShowInRecentTask()) {
+                        if (!(Action.isActionsShowInRecentTask() || ForceStopAction.isShow)) {
+                            // the recent and force stop action is not active
                             return;
                         }
 
@@ -180,6 +205,7 @@ public class RecentTaskHook extends Hook {
                         Log.d(TAG, "hearView: " + mHeaderView);
                         initViewIds(taskViewObject.getResources());
                         final View mDissmissButton = mHeaderView.findViewById(idDismiss);
+                        // don't need to check, 'cause we do in the onLoadData
                         if (longClickedView == mHeaderView) {
                             handleHeaderLongClick(loadPackageParam, param, taskViewObject,
                                     mHeaderView);
@@ -188,7 +214,6 @@ public class RecentTaskHook extends Hook {
                             handleDismissLongClick(taskViewObject);
                             param.setResult(true);
                         } else {
-
                             // set the original result back which is false
                             param.setResult(false);
                         }
@@ -326,28 +351,8 @@ public class RecentTaskHook extends Hook {
     private void handleDismissLongClick(final FrameLayout taskViewObject) {
         final String pkgName = getTaskBaseIntent(taskViewObject).getComponent().getPackageName();
         Log.d(TAG, "long dismiss pkgName: " + pkgName);
-        final Context context = taskViewObject.getContext();
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Process p = Runtime.getRuntime().exec("su");
-                    DataOutputStream os = new DataOutputStream(p.getOutputStream());
-                    String s = "am force-stop " + pkgName + "\n";
-                    Log.d(TAG, "force stop cmd: " + s);
-                    os.writeBytes(s);
-                    os.writeBytes("exit\n");
-                    os.flush();
-                    Toast.makeText(context, "force stop: " + pkgName, Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    XposedBridge.log(e);
-                }
-            }
-        });
-        thread.start();
+        Action action = new ForceStopAction();
+        action.handleData(taskViewObject.getContext(), pkgName);
     }
 
     /**
@@ -445,10 +450,11 @@ public class RecentTaskHook extends Hook {
             pkgName) {
         Log.d(TAG, "reset action: " + action);
         // this action need to be reset
+        // EDIT: use action.getClass instead
         ImageView xBridgeView = (ImageView) headerGutsView
                 .findViewById
                         (Action
-                                .getViewId(PlayAction.class));
+                                .getViewId(action.getClass()));
         action.setAction(RecentTaskHook.this, context,
                 pkgName,
                 xBridgeView);

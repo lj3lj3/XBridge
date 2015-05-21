@@ -94,7 +94,7 @@ public class PlayAction extends Action {
     }
 
     @Override
-    protected Intent getIntent(Hook hook, String pkgName) {
+    protected Intent getIntent(Hook hook, Context context, String pkgName) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("http://play.google.com/store/apps/details?id="
                 + pkgName));
@@ -102,6 +102,6 @@ public class PlayAction extends Action {
     }
 
     @Override
-    protected void handleData(Context context, String pkgName) {
+    public void handleData(Context context, String pkgName) {
     }
 }

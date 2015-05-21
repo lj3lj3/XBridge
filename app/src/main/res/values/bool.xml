@@ -20,4 +20,9 @@
     <bool name="search_status_bar_default">true</bool>
     <bool name="search_app_info_default">true</bool>
     <bool name="search_recent_task_default">true</bool>
+    <bool name="forcestop_default">true</bool>
+    <!--<bool name="forcestop_status_bar_default">true</bool>
+    <bool name="forcestop_app_info_default">true</bool>
+    <bool name="forcestop_recent_task_default">true</bool>-->
+    <bool name="show_dismiss_default">true</bool>
 </resources>

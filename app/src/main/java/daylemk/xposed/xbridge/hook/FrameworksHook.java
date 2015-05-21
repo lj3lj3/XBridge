@@ -40,6 +40,6 @@ public class FrameworksHook extends Hook {
         iconCopy = initPackageResourcesParam.res.getDrawable(iconCopyId);
         int iconSearchId = initPackageResourcesParam.res.getIdentifier(STR_ICON_SEARCH_NAME, STR_DRAWABLE, initPackageResourcesParam.packageName);
         iconSearch = initPackageResourcesParam.res.getDrawable(iconSearchId);
-        Log.d(TAG, "iocnCopy: " + iconCopy + "iconSearch: " + iconSearch);
+        Log.d(TAG, "iocnCopy: " + iconCopy + "\niconSearch: " + iconSearch);
     }
 }

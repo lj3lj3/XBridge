@@ -75,7 +75,7 @@ public class ClipBoardAction extends Action {
     }
 
     @Override
-    protected Intent getIntent(Hook hook, String pkgName) {
+    protected Intent getIntent(Hook hook, Context context, String pkgName) {
         return null;
     }
 
@@ -98,10 +98,8 @@ public class ClipBoardAction extends Action {
         clipboardManager.setPrimaryClip(clipData);
         Context xBridgeContext = Hook.getXBridgeContext(context);
 
-        String strPkgName = xBridgeContext.getString(R.string.package_name);
-        String strCopied = xBridgeContext.getString(R.string.copied);
+        String str = xBridgeContext.getString(R.string.package_name_copied);
 
-        Toast.makeText(context, strPkgName + strCopied + "\n" + pkgName, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, str + "\n" + pkgName, Toast.LENGTH_LONG).show();
     }
-
 }

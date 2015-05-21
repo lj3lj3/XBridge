@@ -70,14 +70,14 @@ public class SearchAction extends Action{
     }
 
     @Override
-    protected Intent getIntent(Hook hook, String pkgName) {
+    protected Intent getIntent(Hook hook, Context context, String pkgName) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("https://www.google.com/search?q=" + pkgName));
         return intent;
     }
 
     @Override
-    protected void handleData(Context context, String pkgName) {
+    public void handleData(Context context, String pkgName) {
 
     }
 
