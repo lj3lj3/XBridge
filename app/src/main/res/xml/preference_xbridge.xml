@@ -46,7 +46,7 @@
         </SwitchPreference>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="About" >
+    <PreferenceCategory android:title="@string/title_about">
         <Preference
             android:selectable="false"
             android:title="@string/app_name"/>

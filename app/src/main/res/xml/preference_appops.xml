@@ -17,7 +17,8 @@
     <SwitchPreference
         android:checked="false"
         android:enabled="false"
-        android:title="Show in app info"
+        android:summary="@string/summary_appops_show_in_app_info"
+        android:title="@string/title_show_in_app_info"
         >
     </SwitchPreference>
 

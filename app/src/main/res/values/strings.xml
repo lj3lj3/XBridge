@@ -46,8 +46,8 @@
     <string name="title_clipboard">Copy to clipboard</string>
     <string name="summary_search">Add search button in the system</string>
     <string name="title_search">Search</string>
-    <string name="summary_appops">Add view in AppOps button in the system</string>
-    <string name="title_appops">View in AppOps</string>
+    <string name="summary_appops">Add view in AppOpsXposed button in the system</string>
+    <string name="title_appops">View in AppOpsXposed</string>
     <string name="summary_appsettings">Add view in AppSettings button in the system</string>
     <string name="title_appsettings">View in AppSettings</string>
     <string name="title_xda">XDA thread</string>
@@ -55,5 +55,10 @@
     <string name="summary_forcestop">In the recent task screen, long press dismiss button(x) to force stop package</string>
     <string name="summary_show_dismiss">Show dismiss button immediately when recent task screen show up</string>
     <string name="title_show_dismiss">Show dismiss button immediately</string>
+    <string name="title_search_url">Search url</string>
+    <string name="title_customize_url">Customize search url</string>
+    <string name="title_customize">Customize</string>
+    <string name="summary_appops_show_in_app_info">AppOpsXposed already do itself :)</string>
+    <string name="title_about">About</string>
 
 </resources>

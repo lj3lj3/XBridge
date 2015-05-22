@@ -1,9 +1,9 @@
 package daylemk.xposed.xbridge.ui;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +30,7 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
                 .OnSwitchChangeListener, Preference
         .OnPreferenceChangeListener {
     public static final String TAG = "HeaderPreferenceFragment";
+    public static final String ARGS_TITLE = "title";
 
     // the inflated view
     protected View view;
@@ -57,6 +58,13 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey(ARGS_TITLE)) {
+            ActionBar actionBar = this.getActivity().getActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(bundle.getInt(ARGS_TITLE));
+            }
+        }
         switchBar = (SwitchBar) view.findViewById(R.id.switch_bar);
         switchBar.addOnSwitchChangeListener(this);
         list = (ListView) view.findViewById(android.R.id.list);
@@ -112,22 +120,9 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
         Collections.addAll(preferenceList, preference);
     }
 
-    /**
-     * will store preference key and value to the disk
-     *
-     * @param preference the changed preference
-     * @param newValue   the new value
-     * @return if we handle it
-     */
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        Log.d(TAG, "preference key: " + preference.getKey() + ", " + newValue);
-        if (preference instanceof SwitchPreference) {
-            MainPreferences.getEditablePreferences(getPreferenceManager()).edit().putBoolean(
-                    preference.getKey(),
-                    (boolean) newValue)
-                    .commit();
-        }
+        Log.d(TAG, "changed preference: " + preference + ", newValue: " + newValue);
         return true;
     }
 }

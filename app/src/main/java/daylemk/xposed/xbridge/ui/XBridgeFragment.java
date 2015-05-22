@@ -1,5 +1,6 @@
 package daylemk.xposed.xbridge.ui;
 
+import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -71,6 +72,11 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     @Override
     public void onStart() {
         super.onStart();
+        // set actionbar name
+        ActionBar actionBar = this.getActivity().getActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.app_name);
+        }
         if (need2Load) {
             // here should set the preference value???
             playPreference.setChecked(PlayAction.isShow);
@@ -94,20 +100,26 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         Log.d(TAG, "clicked preference: " + prefKey);
         PreferenceFragment fragment = null;
         String tag = null;
+        Bundle bundle = new Bundle();
         if (PlayAction.keyShow.equals(prefKey)) {
-            fragment = PlayFragment.getFragment(null);
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_play);
+            fragment = PlayFragment.getFragment(bundle);
             tag = PlayFragment.TAG;
         } else if (AppOpsAction.keyShow.equals(prefKey)) {
-            fragment = AppOpsFragment.getFragment(null);
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_appops);
+            fragment = AppOpsFragment.getFragment(bundle);
             tag = AppOpsFragment.TAG;
         } else if (AppSettingsAction.keyShow.equals(prefKey)) {
-            fragment = AppSettingsFragment.getFragment(null);
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_appsettings);
+            fragment = AppSettingsFragment.getFragment(bundle);
             tag = AppSettingsFragment.TAG;
         } else if (ClipBoardAction.keyShow.equals(prefKey)) {
-            fragment = ClipBoardFragment.getFragment(null);
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_clipboard);
+            fragment = ClipBoardFragment.getFragment(bundle);
             tag = ClipBoardFragment.TAG;
         } else if (SearchAction.keyShow.equals(prefKey)) {
-            fragment = SearchFragment.getFragment(null);
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_search);
+            fragment = SearchFragment.getFragment(bundle);
             tag = SearchFragment.TAG;
         }
 

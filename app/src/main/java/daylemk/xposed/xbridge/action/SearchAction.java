@@ -92,10 +92,12 @@ public class SearchAction extends Action {
                 + "isShow:" + isShow + "isCustomize:" + isCustomize + "url:" + url);
     }
 
-    @Override
-    protected Intent getIntent(Hook hook, Context context, String pkgName) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        // check if we should use default url or default url
+    /**
+     * get final url search action will use
+     *
+     * @return url search action will use
+     */
+    public static String getUrl() {
         String str = urlDefault;
         if (isCustomize) {
             Log.d(TAG, "search url customized: " + url);
@@ -105,6 +107,14 @@ public class SearchAction extends Action {
                 Log.d(TAG, "new url didn't contain prefix, new:" + str);
             }
         }
+        return str;
+    }
+
+    @Override
+    protected Intent getIntent(Hook hook, Context context, String pkgName) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        // check if we should use default url or default url
+        String str = getUrl();
         intent.setData(Uri.parse(str + pkgName));
         return intent;
     }

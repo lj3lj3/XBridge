@@ -12,6 +12,7 @@ import android.widget.Switch;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.utils.Log;
 
 /**
  * Created by DayLemK on 2015/5/14.
@@ -54,6 +55,8 @@ public class SearchFragment extends HeaderPreferenceFragment {
         preferenceAppInfo.setOnPreferenceChangeListener(this);
         preferenceCustomizeUrl.setOnPreferenceChangeListener(this);
         preferenceUrl.setOnPreferenceChangeListener(this);
+        // set summary on preference created
+        preferenceUrl.setSummary(SearchAction.getUrl());
         // set values
 //        preferenceStatusBar.setChecked(PlayAction.isShowInStatusBar);
 //        preferenceRecentTask.setChecked(PlayAction.isShowInRecentTask);
@@ -78,6 +81,13 @@ public class SearchFragment extends HeaderPreferenceFragment {
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         super.onPreferenceChange(preference, newValue);
+        if (preference.equals(preferenceUrl)) {
+            Log.d(TAG, "url changed: " + newValue);
+            // set the new value
+            SearchAction.url = (String) newValue;
+            // set summary on preference changed
+            preferenceUrl.setSummary(SearchAction.getUrl());
+        }
         return true;
     }
 

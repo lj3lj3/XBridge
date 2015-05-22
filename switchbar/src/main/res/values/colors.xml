@@ -17,5 +17,5 @@
 <resources>
 
     <color name="switchbar_background_color">#5D4037</color>
-    <color name="switch_accent_color">#536DFE</color>
+     <color name="switch_accent_color">#009688</color>
 </resources>
