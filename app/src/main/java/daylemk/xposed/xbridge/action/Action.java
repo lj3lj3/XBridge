@@ -92,6 +92,21 @@ public abstract class Action {
         Log.d(TAG, "load preference done");
     }
 
+    public static boolean onReceiveNewValue(String key, String value) {
+        if (key != null && value != null) {
+            if (!(PlayAction.onReceiveNewValue(key, value) ||
+                    AppOpsAction.onReceiveNewValue(key, value) ||
+                    AppSettingsAction.onReceiveNewValue(key, value) ||
+                    ClipBoardAction.onReceiveNewValue(key, value) ||
+                    ForceStopAction.onReceiveNewValue(key, value) ||
+                    SearchAction.onReceiveNewValue(key, value))) {
+                Log.w(TAG, "key not found???");
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static boolean isActionsShowInAppInfo() {
         return PlayAction.isShow && PlayAction.isShowInAppInfo
                 || AppOpsAction.isShow && AppOpsAction.isShowInAppInfo

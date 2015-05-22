@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.XModuleResources;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
 import daylemk.xposed.xbridge.action.Action;
@@ -26,6 +25,7 @@ public class MainPreferences {
     // the hook pref show be PREF_SHOW_IN_STATUS_BAR + Hook.class
     private static XSharedPreferences sharedPreferences;
     private static SharedPreferences editablePreferences;
+    private static OnMainPreferenceChangedListener listener;
 
     public static void initZygote(IXposedHookZygoteInit.StartupParam startupParam) {
         sModRes = XModuleResources.createInstance(startupParam.modulePath, null);
@@ -61,6 +61,24 @@ public class MainPreferences {
         preferenceManager.setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
     }
 
+    public static void setOnPreferenceChanged(Context context, PreferenceManager
+            preferenceManager) {
+        if (listener == null) {
+            listener = new OnMainPreferenceChangedListener(context);
+        }
+        preferenceManager.getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
+        Log.d(TAG, "register on shared preference changed listener");
+    }
+
+    public static void unSetOnPreferenceChanged(PreferenceManager preferenceManager) {
+        if (listener != null) {
+            preferenceManager.getSharedPreferences().unregisterOnSharedPreferenceChangeListener
+                    (listener);
+//            listener = null;
+            Log.d(TAG, "unregister on shared preference changed listener");
+        }
+    }
+
     public static SharedPreferences getEditablePreferences(PreferenceManager preferenceManager) {
         if (editablePreferences == null) {
             Log.w(TAG, "editable sharedPreference is null, init it");
@@ -87,7 +105,9 @@ public class MainPreferences {
         Action.loadPreference(sharedPreferences);
     }
 
-    /** use this method on the activity side */
+    /**
+     * use this method on the activity side
+     */
     public static void loadPreference(PreferenceManager preferenceManager) {
         if (editablePreferences == null) {
             getEditablePreferences(preferenceManager);

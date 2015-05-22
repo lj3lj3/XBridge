@@ -26,13 +26,12 @@ public class ForceStopAction extends Action {
 
     /* the key should the sub class overwrite ------------begin */
     public static String keyShow;
-    public static boolean showDefault = true;
-    public static boolean isShow = true;
-    /* the key should the sub class overwrite ------------end */
     public static String keyShowDismissButton;
     public static boolean showDismissButtonDefault = true;
+    public static boolean showDefault = true;
+    public static boolean isShow = true;
     public static boolean isShowDismissButton = true;
-
+    /* the key should the sub class overwrite ------------end */
 
     /**
      * load the key from the string resource
@@ -54,6 +53,23 @@ public class ForceStopAction extends Action {
                 showDismissButtonDefault);
         Log.d(TAG, "load preference: " + "isShow:" + isShow + "isShowDismissButton:" +
                 isShowDismissButton);
+    }
+
+    public static boolean onReceiveNewValue(String key, String value) {
+        boolean result = true;
+        if (key.equals(keyShow)) {
+            isShow = Boolean.valueOf(value);
+        } else if (key.equals(keyShowDismissButton)) {
+            isShowDismissButton = Boolean.valueOf(value);
+        /*} else if (key.equals(keyShowInRecentTask)) {
+            isShowInRecentTask = Boolean.valueOf(value);
+        } else if (key.equals(keyShowInStatusBar)) {
+            isShowInStatusBar = Boolean.valueOf(value);*/
+        } else {
+            // if not found it, return false
+            result = false;
+        }
+        return result;
     }
 
     @Override

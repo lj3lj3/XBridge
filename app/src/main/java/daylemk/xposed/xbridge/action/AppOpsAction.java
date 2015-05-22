@@ -76,6 +76,23 @@ public class AppOpsAction extends Action {
                 + "isShow:" + isShow);
     }
 
+    public static boolean onReceiveNewValue(String key, String value) {
+        boolean result = true;
+        if (key.equals(keyShow)) {
+            isShow = Boolean.valueOf(value);
+        /*} else if (key.equals(keyShowInAppInfo)) {
+            isShowInAppInfo = Boolean.valueOf(value);*/
+        } else if (key.equals(keyShowInRecentTask)) {
+            isShowInRecentTask = Boolean.valueOf(value);
+        } else if (key.equals(keyShowInStatusBar)) {
+            isShowInStatusBar = Boolean.valueOf(value);
+        } else {
+            // if not found it, return false
+            result = false;
+        }
+        return result;
+    }
+
     @Override
     protected Intent getIntent(Hook hook, Context context, String pkgName) {
         Intent intent = new Intent();

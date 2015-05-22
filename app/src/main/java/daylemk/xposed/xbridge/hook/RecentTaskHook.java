@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
@@ -406,8 +407,9 @@ public class RecentTaskHook extends Hook {
                 (context).inflate(viewHeaderId, null);
         // set the gut id for later retrieve from layout
         headerGutsView.setId(ID_GUTS);
-        // TODO: set the color on the fly
-        headerGutsView.setBackgroundColor(Color.BLUE);
+        // use primary dark color
+        headerGutsView.setBackgroundColor(Hook.getXBridgeContext(context).getResources().getColor
+                (R.color.primary_dark));
 
         // we don't need dismiss task view, so dismiss it
         Log.d(TAG, "headerGutsView: " + headerGutsView);

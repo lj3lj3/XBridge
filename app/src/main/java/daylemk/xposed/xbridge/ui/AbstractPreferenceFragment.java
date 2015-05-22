@@ -3,7 +3,6 @@ package daylemk.xposed.xbridge.ui;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
-import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
@@ -12,7 +11,7 @@ import daylemk.xposed.xbridge.utils.Log;
  * Created by DayLemK on 2015/5/18.
  * the abstract fragment of all fragment in xbridge activity
  */
-public abstract class AbstractPreferenceFragment extends PreferenceFragment{
+public abstract class AbstractPreferenceFragment extends PreferenceFragment {
     public static final String TAG = "AbstractPreferenceFragment";
 
     @Override
@@ -29,5 +28,18 @@ public abstract class AbstractPreferenceFragment extends PreferenceFragment{
             MainPreferences.loadPreferenceKeys(getResources());
             MainPreferences.loadPreference(getPreferenceManager());
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        MainPreferences.setOnPreferenceChanged(this.getActivity().getApplicationContext(),
+                getPreferenceManager());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        MainPreferences.unSetOnPreferenceChanged(getPreferenceManager());
     }
 }

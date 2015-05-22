@@ -1,40 +1,30 @@
 package daylemk.xposed.xbridge.hook;
 
-import android.app.TaskStackBuilder;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.media.Image;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.UserHandle;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import daylemk.xposed.xbridge.R;
-import daylemk.xposed.xbridge.XposedInit;
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
-import daylemk.xposed.xbridge.data.MainPreferences;
+import daylemk.xposed.xbridge.data.OnPreferenceChangedReceiver;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -76,7 +66,24 @@ public class StatusBarHook extends Hook {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws
             Throwable {
+        super.handleLoadPackage(loadPackageParam);
         Log.v(TAG, "enter the status bar hook");
+        Class<?> systemUIAppClass = XposedHelpers.findClass("com.android.systemui" +
+                        ".SystemUIApplication",
+                loadPackageParam
+                        .classLoader);
+        XposedBridge.hookAllMethods(systemUIAppClass, "onCreate", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+                Log.d(TAG, "SystemUIApplication onCreate hook");
+                Application app = (Application) param.thisObject;
+                Log.d(TAG, "app: " + app);
+                app.registerReceiver(new OnPreferenceChangedReceiver(), new IntentFilter
+                        (StaticData.ACTION_PREFERENCE_CHANGED));
+            }
+        });
+
         final Class<?> baseStatusBarClass = XposedHelpers.findClass("com.android.systemui" +
                 ".statusbar.BaseStatusBar", loadPackageParam.classLoader);
         Log.d(TAG, "BaseStatusBar: " + baseStatusBarClass);
@@ -232,7 +239,8 @@ public class StatusBarHook extends Hook {
         ImageButton xBridgeButton = createXBridgeButton(context, inspectLayoutParams);
         action.setAction(StatusBarHook.this, context, pkgName, xBridgeButton);
         // add the view to the last-1
-        linearLayout.addView(xBridgeButton, linearLayout.getChildCount() - 1);
+        // EDIT: move to last one, 'cause some notification has more than one icon
+        linearLayout.addView(xBridgeButton, linearLayout.getChildCount());
     }
 
     private ImageButton createXBridgeButton(Context context, ViewGroup.LayoutParams layoutParams) {
