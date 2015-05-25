@@ -33,6 +33,7 @@ public class PlayFragment extends HeaderPreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_play);
+        addRebootPreference(this);
     }
 
     @Override

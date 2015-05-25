@@ -7,14 +7,10 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.Hook;
+import daylemk.xposed.xbridge.utils.BashOperation;
 import daylemk.xposed.xbridge.utils.Log;
-import daylemk.xposed.xbridge.utils.XBridgeToast;
-import de.robv.android.xposed.XposedBridge;
 
 /**
  * Created by DayLemK on 2015/5/21.
@@ -83,25 +79,7 @@ public class ForceStopAction extends Action {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // use loop to call the toast inside thread
-                try {
-                    Process p = Runtime.getRuntime().exec("su");
-                    DataOutputStream os = new DataOutputStream(p.getOutputStream());
-                    String s = "am force-stop " + pkgName + "\n";
-                    Log.d(TAG, "force stop cmd: " + s);
-                    os.writeBytes(s);
-                    os.writeBytes("exit\n");
-                    os.flush();
-
-                    // show toast
-                    Context xBridgeContext = Hook.getXBridgeContext(context);
-                    final String forceStop = xBridgeContext.getString(R.string.force_stop) +
-                            pkgName;
-                    XBridgeToast.showToastOnHandler(context, forceStop);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    XposedBridge.log(e);
-                }
+                BashOperation.forceStopPackage(context, pkgName);
             }
         }).start();
     }

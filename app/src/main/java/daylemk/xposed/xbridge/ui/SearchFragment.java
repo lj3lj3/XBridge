@@ -37,6 +37,7 @@ public class SearchFragment extends HeaderPreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_search);
+        addRebootPreference(this);
     }
 
     @Override

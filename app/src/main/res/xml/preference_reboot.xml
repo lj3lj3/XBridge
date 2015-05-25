@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Reboot">
+        <Preference
+            android:key="@string/key_reboot_systemui"
+            android:title="@string/title_reboot_system_ui">
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

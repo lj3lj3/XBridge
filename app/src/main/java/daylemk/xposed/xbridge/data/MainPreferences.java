@@ -45,9 +45,9 @@ public class MainPreferences {
             Log.w(TAG, "sharedPreference is null, init it");
             sharedPreferences = new XSharedPreferences(StaticData
                     .THIS_PACKAGE_NAME, NAME_PREFERENCE);
-            // call reload when the data has changed
-            sharedPreferences.reload();
         }
+        // call reload when the data has changed
+        sharedPreferences.reload();
         return sharedPreferences;
     }
 

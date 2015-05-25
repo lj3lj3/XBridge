@@ -33,6 +33,7 @@ public class ClipBoardFragment extends HeaderPreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_clipboard);
+        addRebootPreference(this);
     }
 
     @Override

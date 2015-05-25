@@ -1,9 +1,12 @@
 package daylemk.xposed.xbridge.ui;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import java.util.List;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.data.MainPreferences;
+import daylemk.xposed.xbridge.utils.BashOperation;
 import daylemk.xposed.xbridge.utils.Log;
 
 /**
@@ -28,7 +32,7 @@ import daylemk.xposed.xbridge.utils.Log;
 public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragment implements
         SwitchBar
                 .OnSwitchChangeListener, Preference
-        .OnPreferenceChangeListener {
+        .OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     public static final String TAG = "HeaderPreferenceFragment";
     public static final String ARGS_TITLE = "title";
 
@@ -41,9 +45,10 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
     protected ListView list;
     protected List<Preference> preferenceList = new ArrayList<>();
 
+    protected Preference preferenceRebootSysUi;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
 
@@ -51,8 +56,18 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        // get the reboot preference and set click listener
+        preferenceRebootSysUi = findPreference(getString(R.string.key_reboot_systemui));
+        if (preferenceRebootSysUi != null) {
+            preferenceRebootSysUi.setOnPreferenceClickListener(this);
+        }
+
         view = inflater.inflate(R.layout.header_perference, container, false);
         return view;
+    }
+
+    protected void addRebootPreference(PreferenceFragment preferenceFragment) {
+        preferenceFragment.addPreferencesFromResource(R.xml.preference_reboot);
     }
 
     @Override
@@ -124,5 +139,27 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Log.d(TAG, "changed preference: " + preference + ", newValue: " + newValue);
         return true;
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if (preference.equals(preferenceRebootSysUi)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog dialog = builder.setMessage(R.string.title_reboot_system_ui)
+                    .setPositiveButton
+                            (android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            BashOperation.restartSystemUI();
+                                        }
+                                    }).start();
+                                }
+                            }).setNegativeButton(android.R.string.no, null).create();
+            dialog.show();
+        }
+        return false;
     }
 }

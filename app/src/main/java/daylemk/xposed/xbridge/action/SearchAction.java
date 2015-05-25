@@ -126,6 +126,9 @@ public class SearchAction extends Action {
                 // if the scheme is null, set it to http
                 str = SearchAction.URI_HTTP_PREFIX + url;
                 Log.d(TAG, "new url didn't contain prefix, new:" + str);
+            } else {
+                // if url is ok, just set it
+                str = url;
             }
         }
         return str;

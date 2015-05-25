@@ -3,9 +3,8 @@ package daylemk.xposed.xbridge.data;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.EditTextPreference;
-import android.preference.SwitchPreference;
 
+import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.utils.Log;
 
 /**
@@ -25,11 +24,13 @@ public class OnMainPreferenceChangedListener implements SharedPreferences
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Intent intent = new Intent(StaticData.ACTION_PREFERENCE_CHANGED);
-        String value = null;
-        if (sharedPreferences instanceof SwitchPreference) {
-            value = String.valueOf(sharedPreferences.getBoolean(key, false));
-        } else if (sharedPreferences instanceof EditTextPreference) {
+        String value;
+        Log.d(TAG, "preference: " + sharedPreferences);
+        // if the value is String, let's get it.
+        if (key.equals(SearchAction.keyUrl)) {
             value = sharedPreferences.getString(key, null);
+        } else {
+            value = String.valueOf(sharedPreferences.getBoolean(key, false));
         }
         intent.putExtra(StaticData.ARG_KEY, key);
         intent.putExtra(StaticData.ARG_VALUE, value);

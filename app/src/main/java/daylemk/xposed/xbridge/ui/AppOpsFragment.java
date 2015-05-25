@@ -33,6 +33,8 @@ public class AppOpsFragment extends HeaderPreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_appops);
+        // add reboot preference at last
+        addRebootPreference(this);
     }
 
     @Override
