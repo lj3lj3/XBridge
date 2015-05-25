@@ -2,8 +2,8 @@
 <manifest
     package="daylemk.xposed.xbridge"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="13"
-    android:versionName="1.0beta">
+    android:versionCode="14"
+    android:versionName="@string/app_version_name">
     <!-- begin with 13 is after the viewinplay version -->
 
     <application

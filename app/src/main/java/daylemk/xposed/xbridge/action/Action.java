@@ -70,6 +70,8 @@ public abstract class Action {
      * @param sModRes the module resource of package
      */
     public static void loadPreferenceKeys(Resources sModRes) {
+        // load debug value
+        Log.keyDebug = sModRes.getString(R.string.key_debug);
         PlayAction.loadPreferenceKeys(sModRes);
         AppOpsAction.loadPreferenceKeys(sModRes);
         AppSettingsAction.loadPreferenceKeys(sModRes);
@@ -83,6 +85,7 @@ public abstract class Action {
      * load all action related preference
      */
     public static void loadPreference(SharedPreferences preferences) {
+        Log.debug = preferences.getBoolean(Log.keyDebug, Log.isDebugDefault);
         PlayAction.loadPreference(preferences);
         AppOpsAction.loadPreference(preferences);
         AppSettingsAction.loadPreference(preferences);
@@ -100,6 +103,11 @@ public abstract class Action {
                     ClipBoardAction.onReceiveNewValue(key, value) ||
                     ForceStopAction.onReceiveNewValue(key, value) ||
                     SearchAction.onReceiveNewValue(key, value))) {
+                // check if the debug value
+                if (key.equals(Log.keyDebug)) {
+                    Log.debug = Boolean.valueOf(value);
+                    return true;
+                }
                 Log.w(TAG, "key not found???");
                 return false;
             }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">XBridge</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_version_name">1.0beta2</string>
+    <string name="action_settings">Debug</string>
     <string name="xposed_description">XBridge</string>
     <string name="package_name_copied">Package name copied:</string>
     <string name="force_stop">Force stop&#160;</string>
@@ -15,6 +16,7 @@
     <string name="key_show_dismiss" translatable="false">key_show_dismiss</string>
     <string name="key_reboot_systemui" translatabel="false">key_reboot_systemui</string>
     <string name="key_reboot_settings" translatabel="false">key_reboot_settings</string>
+    <string name="key_debug" translatable="false">key_debug</string>
 
     <string name="key_play_status_bar" translatable="false">key_play_status_bar</string>
     <string name="key_play_recent_task" translatable="false">key_play_recent_task</string>

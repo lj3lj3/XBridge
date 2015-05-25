@@ -48,7 +48,7 @@
 
     <PreferenceCategory android:title="@string/title_about">
         <Preference
-            android:selectable="false"
+            android:summary="@string/app_version_name"
             android:title="@string/app_name"/>
         <Preference
             android:icon="@drawable/xda_icon"

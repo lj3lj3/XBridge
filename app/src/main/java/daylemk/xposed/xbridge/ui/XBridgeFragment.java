@@ -9,6 +9,9 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,6 +21,7 @@ import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 
 /**
@@ -47,7 +51,9 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_xbridge);
+        setHasOptionsMenu(true);
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle
@@ -142,6 +148,42 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Log.d(TAG, "changed preference: " + preference + ", newValue: " + newValue);
         return false;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        // does not need menu right now
+        inflater.inflate(R.menu.menu_xbridge, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem debugItem = menu.findItem(R.id.debug);
+        debugItem.setChecked(Log.debug);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.debug) {
+            boolean isChecked = !item.isChecked();
+            item.setChecked(isChecked);
+            Log.debug = isChecked;
+            Log.i(TAG, "debug is checked: " + isChecked);
+            // put the new value to preference
+            MainPreferences.getEditablePreferences(getPreferenceManager()).edit().putBoolean(Log
+                    .keyDebug, isChecked).commit();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

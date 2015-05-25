@@ -10,9 +10,6 @@ import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
-import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -33,9 +30,9 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
-        Log.d(TAG, "init zygote");
-        Log.d(TAG, "the package name: " + StaticData.THIS_PACKAGE_NAME);
-        Log.d(TAG, "module path: " + startupParam.modulePath);
+        Log.i(TAG, "init zygote");
+        Log.i(TAG, "the package name: " + StaticData.THIS_PACKAGE_NAME);
+        Log.i(TAG, "module path: " + startupParam.modulePath);
 
 //        startupParam.modulePath
         // init the hook object first
@@ -55,7 +52,7 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam
                                                    initPackageResourcesParam) throws Throwable {
-        Log.d(TAG, "handle package resource: " + initPackageResourcesParam.packageName);
+//        Log.d(TAG, "handle package resource: " + initPackageResourcesParam.packageName);
         if(initPackageResourcesParam.packageName.equals("android")){
             frameworksHook.handleInitPackageResources(initPackageResourcesParam);
         }
@@ -65,15 +62,15 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws
             Throwable {
-        Log.d(TAG, "handle load package:" + loadPackageParam.packageName);
+//        Log.i(TAG, "handle load package:" + loadPackageParam.packageName);
         if (loadPackageParam.packageName.equals("com.android.systemui")) {
-            Log.d(TAG, "found systemui");
+            Log.i(TAG, "found systemui");
             statusBarHook.handleLoadPackage(loadPackageParam);
             recentTaskHook.handleLoadPackage(loadPackageParam);
             // add this for systemui process
             MainPreferences.loadPreference();
         } else if (loadPackageParam.packageName.equals("com.android.settings")) {
-            Log.d(TAG, "found settings");
+            Log.i(TAG, "found settings");
             appInfoHook.handleLoadPackage(loadPackageParam);
             // add this for settings process
             MainPreferences.loadPreference();
