@@ -53,7 +53,7 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam
                                                    initPackageResourcesParam) throws Throwable {
 //        Log.d(TAG, "handle package resource: " + initPackageResourcesParam.packageName);
-        if(initPackageResourcesParam.packageName.equals("android")){
+        if(initPackageResourcesParam.packageName.equals(StaticData.PKG_NAME_FRAMEWORK)){
             frameworksHook.handleInitPackageResources(initPackageResourcesParam);
         }
 
@@ -63,13 +63,13 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws
             Throwable {
 //        Log.i(TAG, "handle load package:" + loadPackageParam.packageName);
-        if (loadPackageParam.packageName.equals("com.android.systemui")) {
+        if (loadPackageParam.packageName.equals(StaticData.PKG_NAME_SYSTEMUI)) {
             Log.i(TAG, "found systemui");
             statusBarHook.handleLoadPackage(loadPackageParam);
             recentTaskHook.handleLoadPackage(loadPackageParam);
             // add this for systemui process
             MainPreferences.loadPreference();
-        } else if (loadPackageParam.packageName.equals("com.android.settings")) {
+        } else if (loadPackageParam.packageName.equals(StaticData.PKG_NAME_SETTINGS)) {
             Log.i(TAG, "found settings");
             appInfoHook.handleLoadPackage(loadPackageParam);
             // add this for settings process

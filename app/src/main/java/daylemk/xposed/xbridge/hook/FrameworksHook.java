@@ -11,9 +11,6 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources;
  */
 public class FrameworksHook extends Hook {
     public static final String TAG = "FrameworksHook";
-    public static final String STR_ICON_COPY_NAME = "ic_menu_copy_material";
-    public static final String STR_ICON_SEARCH_NAME = "ic_menu_search_material";
-    public static final String STR_DRAWABLE = "drawable";
 
     private static Drawable iconCopy;
     private static Drawable iconSearch;
@@ -34,12 +31,14 @@ public class FrameworksHook extends Hook {
         super.handleInitPackageResources(initPackageResourcesParam);
         Log.d(TAG, "load framework resource");
         // get the icon copy icon
-        int iconCopyId = initPackageResourcesParam.res.getIdentifier(STR_ICON_COPY_NAME,
-                STR_DRAWABLE,
+        int iconCopyId = initPackageResourcesParam.res.getIdentifier("ic_menu_copy_material",
+                "drawable",
                 initPackageResourcesParam.packageName);
-        iconCopy = initPackageResourcesParam.res.getDrawable(iconCopyId);
-        int iconSearchId = initPackageResourcesParam.res.getIdentifier(STR_ICON_SEARCH_NAME, STR_DRAWABLE, initPackageResourcesParam.packageName);
-        iconSearch = initPackageResourcesParam.res.getDrawable(iconSearchId);
-        Log.d(TAG, "iocnCopy: " + iconCopy + "\niconSearch: " + iconSearch);
+        // use null theme
+        iconCopy = initPackageResourcesParam.res.getDrawable(iconCopyId, null);
+        int iconSearchId = initPackageResourcesParam.res.getIdentifier("ic_menu_search_material",
+                "drawable", initPackageResourcesParam.packageName);
+        iconSearch = initPackageResourcesParam.res.getDrawable(iconSearchId, null);
+        Log.d(TAG, "iocnCopy: " + iconCopy + ",iconSearch: " + iconSearch);
     }
 }

@@ -1,5 +1,6 @@
 package daylemk.xposed.xbridge.utils;
 
+import daylemk.xposed.xbridge.BuildConfig;
 import de.robv.android.xposed.XposedBridge;
 
 /**
@@ -10,7 +11,8 @@ public final class Log {
     public static final String TAG = "DayL";
     public static String keyDebug;
     public static boolean debug = false;
-    public static boolean isDebugDefault = false;
+    // if the version is debug, let enable the log by default
+    public static boolean isDebugDefault = BuildConfig.DEBUG;
 
     private Log() {
     }

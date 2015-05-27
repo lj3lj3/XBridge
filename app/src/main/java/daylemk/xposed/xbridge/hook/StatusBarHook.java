@@ -38,6 +38,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class StatusBarHook extends Hook {
     public static final String TAG = "StatusBarHook";
+    public static final String PKG_KEY_GUARD = "com.android.keyguard";
+
     // TODO: need get this value from original class
     public static final int FLAG_EXCLUDE_NONE = 0;
 
@@ -68,7 +70,7 @@ public class StatusBarHook extends Hook {
             Throwable {
         super.handleLoadPackage(loadPackageParam);
         Log.v(TAG, "enter the status bar hook");
-        Class<?> systemUIAppClass = XposedHelpers.findClass("com.android.systemui" +
+        Class<?> systemUIAppClass = XposedHelpers.findClass(StaticData.PKG_NAME_SYSTEMUI +
                         ".SystemUIApplication",
                 loadPackageParam
                         .classLoader);
@@ -84,7 +86,7 @@ public class StatusBarHook extends Hook {
             }
         });
 
-        final Class<?> baseStatusBarClass = XposedHelpers.findClass("com.android.systemui" +
+        final Class<?> baseStatusBarClass = XposedHelpers.findClass(StaticData.PKG_NAME_SYSTEMUI +
                 ".statusbar.BaseStatusBar", loadPackageParam.classLoader);
         Log.d(TAG, "BaseStatusBar: " + baseStatusBarClass);
         XposedBridge.hookAllMethods(baseStatusBarClass, "inflateGuts", new XC_MethodHook() {
@@ -208,7 +210,7 @@ public class StatusBarHook extends Hook {
             }
         });
 
-        onDismissActionInterface = XposedHelpers.findClass("com.android.keyguard" +
+        onDismissActionInterface = XposedHelpers.findClass(PKG_KEY_GUARD +
                 ".KeyguardHostView.OnDismissAction", loadPackageParam.classLoader);
         Log.d(TAG, "onDismissActionInterface: " + onDismissActionInterface);
 

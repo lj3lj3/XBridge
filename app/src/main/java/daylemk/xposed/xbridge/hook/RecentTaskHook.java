@@ -29,6 +29,7 @@ import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.ForceStopAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
@@ -76,7 +77,8 @@ public class RecentTaskHook extends Hook {
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) throws
             Throwable {
         super.handleLoadPackage(loadPackageParam);
-        Class<?> taskViewClass = XposedHelpers.findClass("com.android.systemui.recents.views" +
+        Class<?> taskViewClass = XposedHelpers.findClass(StaticData.PKG_NAME_SYSTEMUI + ".recents" +
+                        ".views" +
                         ".TaskView",
                 loadPackageParam.classLoader);
         Log.d(TAG, "task view class: " + taskViewClass);
@@ -377,26 +379,23 @@ public class RecentTaskHook extends Hook {
     private void initViewIds(Resources res) {
         if (viewHeaderId == -1) {
             // use package name on get identifier
-            viewHeaderId = res.getIdentifier
-                    ("recents_task_view_header", "layout", "com" +
-                            ".android" +
-                            ".systemui");
+            viewHeaderId = res.getIdentifier("recents_task_view_header", "layout",
+                    StaticData.PKG_NAME_SYSTEMUI);
             Log.d(TAG, "view header view: " + viewHeaderId);
         }
         if (idDismiss == -1) {
             idDismiss = res.getIdentifier("dismiss_task", "id",
-                    "com" + ".android.systemui");
+                    StaticData.PKG_NAME_SYSTEMUI);
             Log.d(TAG, "dismiss button view: " + idDismiss);
         }
         if (idDesc == -1) {
             idDesc = res.getIdentifier("activity_description", "id",
-                    "com" +
-                            ".android.systemui");
+                    StaticData.PKG_NAME_SYSTEMUI);
         }
         if (buttonBgId == -1) {
             // set the button background
             buttonBgId = res.getIdentifier("recents_button_bg", "drawable",
-                    "com.android.systemui");
+                    StaticData.PKG_NAME_SYSTEMUI);
             Log.d(TAG, "buttonBgId: " + buttonBgId);
         }
     }
@@ -471,8 +470,8 @@ public class RecentTaskHook extends Hook {
                                              actionCount) throws
             IllegalAccessException, InvocationTargetException, InstantiationException {
         if (fixedSizeImageViewConstructor == null) {
-            Class<?> fixedSizeImageViewClass = XposedHelpers.findClass("com" +
-                    ".android.systemui" +
+            Class<?> fixedSizeImageViewClass = XposedHelpers.findClass(StaticData
+                    .PKG_NAME_SYSTEMUI +
                     ".recents.views.FixedSizeImageView", classLoader);
             Log.d(TAG, "fixedSizeImageView: " + fixedSizeImageViewClass);
             fixedSizeImageViewConstructor = XposedHelpers
@@ -512,9 +511,7 @@ public class RecentTaskHook extends Hook {
             headerGutsView.setTag(compName);
             // get the views id so we can set the content
             if (idIcon == -1) {
-                idIcon = res.getIdentifier("application_icon", "id", "com" +
-                        ".android" +
-                        ".systemui");
+                idIcon = res.getIdentifier("application_icon", "id", StaticData.PKG_NAME_SYSTEMUI);
             }
 
             Log.d(TAG, "icon id: " + idIcon + ", desc id: " + idDesc);

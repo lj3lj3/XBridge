@@ -9,12 +9,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import daylemk.xposed.xbridge.action.Action;
-import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
-import daylemk.xposed.xbridge.data.MainPreferences;
+import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
@@ -31,7 +30,8 @@ public class AppInfoHook extends Hook {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws
             Throwable {
         Log.d(TAG, "enter app info hook");
-        final Class<?> installedAppDetailsClass = XposedHelpers.findClass("com.android.settings" +
+        final Class<?> installedAppDetailsClass = XposedHelpers.findClass(StaticData
+                .PKG_NAME_SETTINGS +
                 ".applications" +
                 ".InstalledAppDetails", loadPackageParam.classLoader);
         Log.d(TAG, "installedAppDetailsClass: " + installedAppDetailsClass);
@@ -41,7 +41,7 @@ public class AppInfoHook extends Hook {
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        if(!Action.isActionsShowInAppInfo()){
+                        if (!Action.isActionsShowInAppInfo()) {
                             // do nothing
                             return;
                         }
@@ -71,10 +71,10 @@ public class AppInfoHook extends Hook {
                 });
     }
 
-    private void handleAllAction (Menu menu, Context context, String pkgName){
-        if(PlayAction.isShow && PlayAction.isShowInAppInfo) {
+    private void handleAllAction(Menu menu, Context context, String pkgName) {
+        if (PlayAction.isShow && PlayAction.isShowInAppInfo) {
             final Action action = new PlayAction();
-            addMenuAndSetAction(menu,action, context, pkgName);
+            addMenuAndSetAction(menu, action, context, pkgName);
         }
         // app Ops already show in app info
                         /*if(AppOpsAction.isShowInAppInfo) {
@@ -83,21 +83,21 @@ public class AppInfoHook extends Hook {
                             action.setAction(AppInfoHook.this, context,
                                     pkgName, playMenuItem);
                         }*/
-        if(AppSettingsAction.isShow && AppSettingsAction.isShowInAppInfo){
+        if (AppSettingsAction.isShow && AppSettingsAction.isShowInAppInfo) {
             final Action action = new AppSettingsAction();
-            addMenuAndSetAction(menu,action, context, pkgName);
+            addMenuAndSetAction(menu, action, context, pkgName);
         }
-        if(ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo){
+        if (ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo) {
             final Action action = new ClipBoardAction();
-            addMenuAndSetAction(menu,action, context, pkgName);
+            addMenuAndSetAction(menu, action, context, pkgName);
         }
-        if(SearchAction.isShow && SearchAction.isShowInAppInfo) {
+        if (SearchAction.isShow && SearchAction.isShowInAppInfo) {
             final Action action = new SearchAction();
-            addMenuAndSetAction(menu,action, context, pkgName);
+            addMenuAndSetAction(menu, action, context, pkgName);
         }
     }
 
-    private void addMenuAndSetAction (Menu menu, Action action, Context context, String pkgName){
+    private void addMenuAndSetAction(Menu menu, Action action, Context context, String pkgName) {
         MenuItem xBridgeMenuItem = menu.add(action.getMenuTitle());
         action.setAction(AppInfoHook.this, context, pkgName, xBridgeMenuItem);
     }

@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import daylemk.xposed.xbridge.R;
+import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.hook.Hook;
 import de.robv.android.xposed.XposedBridge;
 
@@ -14,11 +15,15 @@ import de.robv.android.xposed.XposedBridge;
  * Base operations
  */
 public class BashOperation {
-    public static final String TAG = "SuOperation";
+    public static final String TAG = "BashOperation";
+    public static final String COM_SU = "su";
+    public static final String COM_AM_FS = "am force-stop ";
+    public static final String COM_PKILL = "pkill ";
+    public static final String COM_EXIT = "exit\n";
 
     public static void forceStopPackage(Context context, String pkgName) {
         // use loop to call the toast inside thread
-        String command = "am force-stop " + pkgName + "\n";
+        String command = COM_AM_FS + pkgName + "\n";
         runCommandAsSU(command);
 
         // show toast
@@ -29,17 +34,17 @@ public class BashOperation {
     }
 
     public static void restartSystemUI() {
-        killPackage("com.android.systemui");
+        killPackage(StaticData.PKG_NAME_SYSTEMUI);
     }
 
     public static void killPackage(String pkgName) {
-        runCommandAsSU("pkill " + pkgName);
+        runCommandAsSU(COM_PKILL + pkgName);
     }
 
     private static void runCommandAsSU(String command) {
         Log.d(TAG, "run command as su: " + command);
         try {
-            Process p = Runtime.getRuntime().exec("su");
+            Process p = Runtime.getRuntime().exec(COM_SU);
             if (p == null) {
                 Log.d(TAG, "ohh, no! not SU");
                 return;
@@ -47,7 +52,7 @@ public class BashOperation {
             DataOutputStream os = new DataOutputStream(p.getOutputStream());
             os.writeBytes(command);
             os.flush();
-            os.writeBytes("exit\n");
+            os.writeBytes(COM_EXIT);
             os.flush();
             p.waitFor();
         } catch (IOException e) {

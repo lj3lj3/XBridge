@@ -17,6 +17,13 @@ android {
         }
     }
     productFlavors {
+        xbridgeDefault {
+            applicationId "daylemk.xposed.xbridge"
+        }
+
+        xbridgeForMe {
+            applicationId "daylemk.xposed.xbridge.debug"
+        }
     }
 }
 
