@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import daylemk.xposed.xbridge.R;
+import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
@@ -39,6 +40,8 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference ClipBoardPreference;
     private SwitchPreference SearchPreference;
 
+    private String keyXda;
+
     private boolean need2Load = false;
 
     public static XBridgeFragment getFragment(Bundle bundle) {
@@ -52,6 +55,8 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_xbridge);
         setHasOptionsMenu(true);
+        // get xda key
+        keyXda = getString(R.string.key_xda);
     }
 
 
@@ -127,6 +132,9 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_search);
             fragment = SearchFragment.getFragment(bundle);
             tag = SearchFragment.TAG;
+        } else if (keyXda.equals(prefKey)) {
+            Action.viewInXda(this.getActivity().getApplicationContext());
+            return true;
         }
 
         if (fragment != null) {

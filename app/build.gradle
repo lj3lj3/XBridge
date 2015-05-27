@@ -7,7 +7,7 @@ android {
         applicationId "daylemk.xposed.xbridge"
         minSdkVersion 21
         targetSdkVersion 21
-        versionCode 1
+        versionCode 14
         versionName "1.0"
     }
     buildTypes {
@@ -20,7 +20,6 @@ android {
         xbridgeDefault {
             applicationId "daylemk.xposed.xbridge"
         }
-
         xbridgeForMe {
             applicationId "daylemk.xposed.xbridge.debug"
         }

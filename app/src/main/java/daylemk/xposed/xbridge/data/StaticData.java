@@ -30,7 +30,8 @@ public final class StaticData {
     public static final boolean DEFAULT_USE_BROWSER = false;
     public static final boolean DEFAULT_DEBUG_LOGS = false;
     */
-    public static final String XDA_THREAD = "http://forum.xda-developers.com/showthread.php?t=2419287";
+    public static final String XDA_THREAD = "http://forum.xda-developers" +
+            ".com/xposed/modules/xposed-xbridge-bridge-task-app-t3119373";
 
     // can't construct this class
     private StaticData() {

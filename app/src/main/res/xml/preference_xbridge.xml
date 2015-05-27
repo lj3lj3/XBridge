@@ -52,6 +52,7 @@
             android:title="@string/app_name"/>
         <Preference
             android:icon="@drawable/xda_icon"
+            android:key="@string/key_xda"
             android:title="@string/title_xda"/>
     </PreferenceCategory>
 </PreferenceScreen>

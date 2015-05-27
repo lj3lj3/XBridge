@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">XBridge Debug</string>
-    <string name="app_version_name" translatable="false">1.0beta2</string>
+    <string name="app_version_name" translatable="false">1.0</string>
     <string name="action_settings">Debug</string>
-    <string name="xposed_description">XBridge</string>
+    <string name="xposed_description">A bridge between task and app</string>
     <string name="package_name_copied">Package name copied:</string>
     <string name="force_stop">Force stop&#160;</string>
     <string name="error">Error:&#160;</string>
@@ -16,6 +16,7 @@
     <string name="key_show_dismiss" translatable="false">key_show_dismiss</string>
     <string name="key_reboot_systemui" translatabel="false">key_reboot_systemui</string>
     <string name="key_reboot_settings" translatabel="false">key_reboot_settings</string>
+    <string name="key_xda" translatable="false">key_xda</string>
     <string name="key_debug" translatable="false">key_debug</string>
 
     <string name="key_play_status_bar" translatable="false">key_play_status_bar</string>
@@ -62,7 +63,7 @@
     <string name="title_search_url">Search url</string>
     <string name="title_customize_url">Customize search url</string>
     <string name="title_customize">Customize</string>
-    <string name="summary_appops_show_in_app_info">AppOpsXposed already do itself :)</string>
+    <string name="summary_appops_show_in_app_info">AppOpsXposed already done itself :)</string>
     <string name="title_about">About</string>
     <string name="title_reboot_system_ui">Reboot system UI</string>
 

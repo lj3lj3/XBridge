@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import daylemk.xposed.xbridge.R;
+import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
@@ -189,6 +191,16 @@ public abstract class Action {
         return viewIdMap.get(actionClass);
     }
 
+    /**
+     * View in xda thread
+     */
+    public static void viewInXda(Context context) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setData(Uri.parse(StaticData.XDA_THREAD));
+        context.startActivity(intent);
+    }
+
     protected Drawable getPackageIcon(PackageManager packageManager, String pkgName) {
         Drawable drawable;
         try {
@@ -212,7 +224,6 @@ public abstract class Action {
         Log.d(TAG, "final intent: " + intent);
         return intent;
     }
-
 
     /**
      * subclass should overwrite this method or handleData method
