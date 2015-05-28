@@ -3,7 +3,6 @@ package daylemk.xposed.xbridge.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.content.res.XModuleResources;
 import android.preference.PreferenceManager;
 
 import daylemk.xposed.xbridge.action.Action;
@@ -21,17 +20,17 @@ public class MainPreferences {
 
     public static String NAME_PREFERENCE = "xbridge_preference";
 
-    private static XModuleResources sModRes;
+    //    private static XModuleResources sModRes;
     // the hook pref show be PREF_SHOW_IN_STATUS_BAR + Hook.class
     private static XSharedPreferences sharedPreferences;
     private static SharedPreferences editablePreferences;
     private static OnMainPreferenceChangedListener listener;
 
     public static void initZygote(IXposedHookZygoteInit.StartupParam startupParam) {
-        sModRes = XModuleResources.createInstance(startupParam.modulePath, null);
-        loadPreferenceKeys(sModRes);
+//        sModRes = XModuleResources.createInstance(startupParam.modulePath, null);
+//        loadPreferenceKeys(sModRes);
         // call this method to init shared preference
-        getSharedPreference();
+//        getSharedPreference();
         // call this to load hub switch
 //        loadPreference();
     }
