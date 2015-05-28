@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -82,6 +83,34 @@ public class RecentTaskHook extends Hook {
                         ".TaskView",
                 loadPackageParam.classLoader);
         Log.d(TAG, "task view class: " + taskViewClass);
+        // hook the reset method, set the dismiss button to visible if ForceStopAction
+        // .isShowDismissButton is true on lollipop mr1
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            XposedHelpers.findAndHookMethod(taskViewClass, "reset", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+                    Log.d(TAG, "reset method hook");
+                    if (ForceStopAction.isShowDismissButton) {
+                        FrameLayout taskViewObject = (FrameLayout) param.thisObject;
+                        View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
+                                "mHeaderView");
+                        if (mHeaderView != null) {
+                            View dismissView = mHeaderView.findViewById(idDismiss);
+                            if (dismissView != null) {
+                                Log.d(TAG, "after reset visible:" + dismissView.getVisibility());
+                                dismissView.setVisibility(View.VISIBLE);
+                            } else {
+                                Log.d(TAG, "dismiss view is null at reset");
+                            }
+                        } else {
+                            Log.d(TAG, "mHeaderView is null at reset");
+                        }
+                    }
+                }
+            });
+        }
+
         // set the long press listener
         // BUT we can't set the view back, 'cause the data maybe different due to data recycle
         XposedHelpers.findAndHookMethod(taskViewClass, "onTaskDataLoaded", new XC_MethodHook() {
@@ -104,7 +133,7 @@ public class RecentTaskHook extends Hook {
                 FrameLayout taskViewObject = (FrameLayout) param.thisObject;
                 View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
                         "mHeaderView");
-                if (isRecentShow) {
+                if (isRecentShow && mHeaderView != null) {
                     mHeaderView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
                     if (listener == null) {
                         listener = new HeaderViewTouchListener();
@@ -114,20 +143,22 @@ public class RecentTaskHook extends Hook {
                 }
                 View dismissView = null;
                 // check if we should use force stop action
-                if (ForceStopAction.isShow) {
+                if (ForceStopAction.isShow && mHeaderView != null) {
                     // get the view ids
                     initViewIds(taskViewObject.getResources());
                     dismissView = mHeaderView.findViewById(idDismiss);
                     dismissView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
                 }
-                if (ForceStopAction.isShowDismissButton) {
+                if (ForceStopAction.isShowDismissButton && mHeaderView != null) {
                     Log.d(TAG, "show dismiss button now");
                     // get the view ids
                     initViewIds(taskViewObject.getResources());
                     if (dismissView == null) {
                         dismissView = mHeaderView.findViewById(idDismiss);
                     }
-                    dismissView.setVisibility(View.VISIBLE);
+                    if (dismissView != null) {
+                        dismissView.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 // call the original method
@@ -157,7 +188,7 @@ public class RecentTaskHook extends Hook {
                         View mHeaderView = (View) XposedHelpers.getObjectField
                                 (taskViewObject,
                                         "mHeaderView");
-                        if (isRecentShow) {
+                        if (isRecentShow && mHeaderView != null) {
                             mHeaderView.setOnLongClickListener(null);
                             // set the on touch listener to null
                             mHeaderView.setOnTouchListener(null);
@@ -172,7 +203,7 @@ public class RecentTaskHook extends Hook {
                         }
 
                         // if force stop action is show, set null
-                        if (ForceStopAction.isShow) {
+                        if (ForceStopAction.isShow && mHeaderView != null) {
                             mHeaderView.findViewById(idDismiss).setOnLongClickListener(null);
                         }
 
@@ -247,7 +278,7 @@ public class RecentTaskHook extends Hook {
                 headerParent.getChildCount());
         // the header guts is null, we need create it
         if (headerGutsView == null) {
-            headerGutsView = createHeaderGutsView(context, res, mHeaderView);
+            headerGutsView = createHeaderGutsView(context, mHeaderView);
             // add view to the last position, and with layoutParams
             headerParent.addView(headerGutsView,
                     headerParent.getChildCount(), headerViewLayoutParams);
@@ -400,7 +431,7 @@ public class RecentTaskHook extends Hook {
         }
     }
 
-    private FrameLayout createHeaderGutsView(Context context, Resources res, View mHeaderView) {
+    private FrameLayout createHeaderGutsView(Context context, View mHeaderView) {
         // inflate the guts view
         FrameLayout headerGutsView = (FrameLayout) LayoutInflater.from
                 (context).inflate(viewHeaderId, null);

@@ -16,14 +16,10 @@ import de.robv.android.xposed.XposedBridge;
  */
 public class BashOperation {
     public static final String TAG = "BashOperation";
-    public static final String COM_SU = "su";
-    public static final String COM_AM_FS = "am force-stop ";
-    public static final String COM_PKILL = "pkill ";
-    public static final String COM_EXIT = "exit\n";
 
     public static void forceStopPackage(Context context, String pkgName) {
         // use loop to call the toast inside thread
-        String command = COM_AM_FS + pkgName + "\n";
+        String command = "am force-stop " + pkgName + "\n";
         runCommandAsSU(command);
 
         // show toast
@@ -33,18 +29,21 @@ public class BashOperation {
         XBridgeToast.showToastOnHandler(context, forceStop);
     }
 
+    // use -c flag to terminate system ui process
     public static void restartSystemUI() {
-        killPackage(StaticData.PKG_NAME_SYSTEMUI);
-    }
-
-    public static void killPackage(String pkgName) {
-        runCommandAsSU(COM_PKILL + pkgName);
+        Log.d(TAG, "new restart system ui method");
+        try {
+            Runtime.getRuntime().exec("su -c pkill " + StaticData.PKG_NAME_SYSTEMUI).waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+            XposedBridge.log(e);
+        }
     }
 
     private static void runCommandAsSU(String command) {
         Log.d(TAG, "run command as su: " + command);
         try {
-            Process p = Runtime.getRuntime().exec(COM_SU);
+            Process p = Runtime.getRuntime().exec("su");
             if (p == null) {
                 Log.d(TAG, "ohh, no! not SU");
                 return;
@@ -52,7 +51,7 @@ public class BashOperation {
             DataOutputStream os = new DataOutputStream(p.getOutputStream());
             os.writeBytes(command);
             os.flush();
-            os.writeBytes(COM_EXIT);
+            os.writeBytes("exit\n");
             os.flush();
             p.waitFor();
         } catch (IOException e) {

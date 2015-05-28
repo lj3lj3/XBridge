@@ -47,10 +47,10 @@ public abstract class Action {
     public static String keyShowInAppInfo;
     public static String keyShow;
 
-    public static boolean showInStatusBarDefault = true;
-    public static boolean showInRecentTaskDefault = true;
-    public static boolean showInAppInfoDefault = true;
-    public static boolean showDefault = true;
+//    public static boolean showInStatusBarDefault = true;
+//    public static boolean showInRecentTaskDefault = true;
+//    public static boolean showInAppInfoDefault = true;
+//    public static boolean showDefault = true;
 
     public static boolean isShowInRecentTask = true;
     public static boolean isShowInStatusBar = true;
