@@ -12,6 +12,7 @@
     <string name="key_search" translatable="false">key_search</string>
     <string name="key_appops" translatable="false">key_appops</string>
     <string name="key_appsettings" translatable="false">key_appsettings</string>
+    <string name="key_xprivacy" translatable="false">key_xprivacy</string>
     <string name="key_forcestop" translatable="false">key_forcestop</string>
     <string name="key_show_dismiss" translatable="false">key_show_dismiss</string>
     <string name="key_reboot_systemui" translatabel="false">key_reboot_systemui</string>
@@ -38,6 +39,9 @@
     <string name="key_appsettings_status_bar" translatable="false">key_appsettings_status_bar</string>
     <string name="key_appsettings_recent_task" translatable="false">key_appsettings_recent_task</string>
     <string name="key_appsettings_app_info" translatable="false">key_appsettings_app_info</string>
+    <string name="key_xprivacy_status_bar" translatable="false">key_xprivacy_status_bar</string>
+    <string name="key_xprivacy_recent_task" translatable="false">key_xprivacy_recent_task</string>
+    <string name="key_xprivacy_app_info" translatable="false">key_xprivacy_app_info</string>
 
     <string name="title_show_in_status_bar">Show in notification</string>
     <string name="summary_show_in_status_bar">Show in notification long click view\n(Need reboot system UI)</string>
@@ -66,5 +70,7 @@
     <string name="summary_appops_show_in_app_info">AppOpsXposed already done itself :)</string>
     <string name="title_about">About</string>
     <string name="title_reboot_system_ui">Reboot system UI</string>
+    <string name="summary_xprivacy">Add view in XPrivacy button in the system</string>
+    <string name="title_xprivacy">View in XPrivacy</string>
 
 </resources>

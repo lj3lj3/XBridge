@@ -31,6 +31,12 @@
         android:summary="@string/summary_appsettings"
         android:title="@string/title_appsettings">
     </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/xprivacy_default"
+        android:key="@string/key_xprivacy"
+        android:summary="@string/summary_xprivacy"
+        android:title="@string/title_xprivacy">
+    </SwitchPreference>
     <PreferenceCategory android:title="Enhance">
         <SwitchPreference
             android:defaultValue="@bool/show_dismiss_default"

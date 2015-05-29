@@ -80,6 +80,7 @@ public abstract class Action {
         SearchAction.loadPreferenceKeys(sModRes);
         ClipBoardAction.loadPreferenceKeys(sModRes);
         ForceStopAction.loadPreferenceKeys(sModRes);
+        XPrivacyAction.loadPreferenceKeys(sModRes);
         Log.d(TAG, "load preference key done");
     }
 
@@ -94,6 +95,7 @@ public abstract class Action {
         SearchAction.loadPreference(preferences);
         ClipBoardAction.loadPreference(preferences);
         ForceStopAction.loadPreference(preferences);
+        XPrivacyAction.loadPreference(preferences);
         Log.d(TAG, "load preference done");
     }
 
@@ -104,6 +106,7 @@ public abstract class Action {
                     AppSettingsAction.onReceiveNewValue(key, value) ||
                     ClipBoardAction.onReceiveNewValue(key, value) ||
                     ForceStopAction.onReceiveNewValue(key, value) ||
+                    XPrivacyAction.onReceiveNewValue(key, value) ||
                     SearchAction.onReceiveNewValue(key, value))) {
                 // check if the debug value
                 if (key.equals(Log.keyDebug)) {
@@ -122,6 +125,7 @@ public abstract class Action {
                 || AppOpsAction.isShow && AppOpsAction.isShowInAppInfo
                 || AppSettingsAction.isShow && AppSettingsAction.isShowInAppInfo
                 || SearchAction.isShow && SearchAction.isShowInAppInfo
+                || XPrivacyAction.isShow && XPrivacyAction.isShowInAppInfo
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo;
 
     }
@@ -131,6 +135,7 @@ public abstract class Action {
                 || AppOpsAction.isShow && AppOpsAction.isShowInRecentTask
                 || AppSettingsAction.isShow && AppSettingsAction.isShowInRecentTask
                 || SearchAction.isShow && SearchAction.isShowInRecentTask
+                || XPrivacyAction.isShow && XPrivacyAction.isShowInRecentTask
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask;
 
     }
@@ -140,6 +145,7 @@ public abstract class Action {
                 || AppOpsAction.isShow && AppOpsAction.isShowInStatusBar
                 || AppSettingsAction.isShow && AppSettingsAction.isShowInStatusBar
                 || SearchAction.isShow && SearchAction.isShowInStatusBar
+                || XPrivacyAction.isShow && XPrivacyAction.isShowInStatusBar
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInStatusBar;
 
     }
@@ -268,7 +274,7 @@ public abstract class Action {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "on click action is + " + Action.this.getClass() + ", hook: " + hook);
+                Log.d(TAG, "on click action is: " + Action.this.toString() + ", hook: " + hook);
                 Intent intent = getFinalIntent(hook, context, pkgName);
                 if (intent == null) {
                     // if the intent is null, we need to call handleData method
@@ -283,7 +289,7 @@ public abstract class Action {
 //                    context.startActivity(intent);
                 }
 
-                Log.d(TAG, "play action done");
+                Log.d(TAG, Action.this.toString() + " action done");
             }
         });
     }
@@ -319,7 +325,7 @@ public abstract class Action {
                     }
                 }
 
-                Log.d(TAG, "menu action done");
+                Log.d(TAG, Action.this.toString() + " menu action done");
                 return true;
             }
         });
@@ -394,7 +400,7 @@ public abstract class Action {
         }
     }
 
-    private int getUid(Context context, String pkgName) {
+    protected int getUid(Context context, String pkgName) {
         // get the appUid
         int appUid = -1;
         try {

@@ -22,6 +22,7 @@ import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.utils.Log;
 
@@ -35,10 +36,11 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     public static final String TAG = "XBridgeFragment";
 
     private SwitchPreference playPreference;
-    private SwitchPreference AppOpsPreference;
-    private SwitchPreference AppSettingsPreference;
-    private SwitchPreference ClipBoardPreference;
-    private SwitchPreference SearchPreference;
+    private SwitchPreference appOpsPreference;
+    private SwitchPreference appSettingsPreference;
+    private SwitchPreference clipBoardPreference;
+    private SwitchPreference searchPreference;
+    private SwitchPreference xPrivacyPreference;
 
     private String keyXda;
 
@@ -66,16 +68,18 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         Log.d(TAG, "keys:" + PlayAction.keyShow + AppOpsAction.keyShow + AppSettingsAction
                 .keyShow + ClipBoardAction.keyShow + SearchAction.keyShow);
         playPreference = (SwitchPreference) this.findPreference(PlayAction.keyShow);
-        AppOpsPreference = (SwitchPreference) this.findPreference(AppOpsAction.keyShow);
-        AppSettingsPreference = (SwitchPreference) this.findPreference(AppSettingsAction.keyShow);
-        ClipBoardPreference = (SwitchPreference) this.findPreference(ClipBoardAction.keyShow);
-        SearchPreference = (SwitchPreference) this.findPreference(SearchAction.keyShow);
+        appOpsPreference = (SwitchPreference) this.findPreference(AppOpsAction.keyShow);
+        appSettingsPreference = (SwitchPreference) this.findPreference(AppSettingsAction.keyShow);
+        clipBoardPreference = (SwitchPreference) this.findPreference(ClipBoardAction.keyShow);
+        searchPreference = (SwitchPreference) this.findPreference(SearchAction.keyShow);
+        xPrivacyPreference = (SwitchPreference) this.findPreference(XPrivacyAction.keyShow);
 
         playPreference.setOnPreferenceChangeListener(this);
-        AppOpsPreference.setOnPreferenceChangeListener(this);
-        AppSettingsPreference.setOnPreferenceChangeListener(this);
-        ClipBoardPreference.setOnPreferenceChangeListener(this);
-        SearchPreference.setOnPreferenceChangeListener(this);
+        appOpsPreference.setOnPreferenceChangeListener(this);
+        appSettingsPreference.setOnPreferenceChangeListener(this);
+        clipBoardPreference.setOnPreferenceChangeListener(this);
+        searchPreference.setOnPreferenceChangeListener(this);
+        xPrivacyPreference.setOnPreferenceChangeListener(this);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -91,10 +95,11 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         if (need2Load) {
             // here should set the preference value???
             playPreference.setChecked(PlayAction.isShow);
-            AppOpsPreference.setChecked(AppOpsAction.isShow);
-            AppSettingsPreference.setChecked(AppSettingsAction.isShow);
-            ClipBoardPreference.setChecked(ClipBoardAction.isShow);
-            SearchPreference.setChecked(SearchAction.isShow);
+            appOpsPreference.setChecked(AppOpsAction.isShow);
+            appSettingsPreference.setChecked(AppSettingsAction.isShow);
+            clipBoardPreference.setChecked(ClipBoardAction.isShow);
+            searchPreference.setChecked(SearchAction.isShow);
+            xPrivacyPreference.setChecked(XPrivacyAction.isShow);
             Log.d(TAG, "values:" + PlayAction.isShow + AppOpsAction.isShow + AppSettingsAction
                     .isShow
                     + ClipBoardAction.isShow + SearchAction.isShow);
@@ -132,6 +137,10 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_search);
             fragment = SearchFragment.getFragment(bundle);
             tag = SearchFragment.TAG;
+        } else if (XPrivacyAction.keyShow.equals(prefKey)) {
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_xprivacy);
+            fragment = XPrivacyFragment.getFragment(bundle);
+            tag = XPrivacyFragment.TAG;
         } else if (keyXda.equals(prefKey)) {
             Action.viewInXda(this.getActivity().getApplicationContext());
             return true;
@@ -155,6 +164,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Log.d(TAG, "changed preference: " + preference + ", newValue: " + newValue);
+        // return false to on touch the switch result
         return false;
     }
 

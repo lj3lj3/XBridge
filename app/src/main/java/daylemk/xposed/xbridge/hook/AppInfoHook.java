@@ -13,6 +13,7 @@ import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -93,6 +94,10 @@ public class AppInfoHook extends Hook {
         }
         if (SearchAction.isShow && SearchAction.isShowInAppInfo) {
             final Action action = new SearchAction();
+            addMenuAndSetAction(menu, action, context, pkgName);
+        }
+        if (XPrivacyAction.isShow && XPrivacyAction.isShowInAppInfo) {
+            final Action action = new XPrivacyAction();
             addMenuAndSetAction(menu, action, context, pkgName);
         }
     }

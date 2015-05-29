@@ -30,6 +30,7 @@ import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.ForceStopAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -367,6 +368,18 @@ public class RecentTaskHook extends Hook {
                         pkgName, loadPackageParam.classLoader, actionCount);
             } else if (checkIfNeed2Change(headerGutsView, compName)) {
                 Action xBridgeAction = new SearchAction();
+                resetAction(context, xBridgeAction, headerGutsView, pkgName);
+            }
+            actionCount++;
+        }
+        if (XPrivacyAction.isShow && XPrivacyAction.isShowInRecentTask) {
+            if (XPrivacyAction.isNeed2Add(headerParent, XPrivacyAction.class)) {
+                // set the action up
+                Action xBridgeAction = new XPrivacyAction();
+                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                        pkgName, loadPackageParam.classLoader, actionCount);
+            } else if (checkIfNeed2Change(headerGutsView, compName)) {
+                Action xBridgeAction = new XPrivacyAction();
                 resetAction(context, xBridgeAction, headerGutsView, pkgName);
             }
             actionCount++;

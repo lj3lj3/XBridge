@@ -24,6 +24,7 @@ import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.OnPreferenceChangedReceiver;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
@@ -134,6 +135,7 @@ public class StatusBarHook extends Hook {
                 boolean isAppSetNeed2Add = false;
                 boolean isClipBoardNeed2Add = false;
                 boolean isSearchNeed2Add = false;
+                boolean isXprivacyNeed2Add = false;
                 // check if need to add action
                 if (PlayAction.isShow && PlayAction.isShowInStatusBar) {
                     isPlayNeed2Add = Action.isNeed2Add(layoutGuts, PlayAction.class);
@@ -150,9 +152,12 @@ public class StatusBarHook extends Hook {
                 if (SearchAction.isShow && SearchAction.isShowInStatusBar) {
                     isSearchNeed2Add = Action.isNeed2Add(layoutGuts, SearchAction.class);
                 }
+                if (XPrivacyAction.isShow && XPrivacyAction.isShowInStatusBar) {
+                    isXprivacyNeed2Add = Action.isNeed2Add(layoutGuts, XPrivacyAction.class);
+                }
 
                 if (!(isPlayNeed2Add || isOpsNeed2Add || isAppSetNeed2Add || isClipBoardNeed2Add
-                        || isSearchNeed2Add)) {
+                        || isSearchNeed2Add || isXprivacyNeed2Add)) {
                     Log.d(TAG, "need add nothing");
                     return;
                 }
@@ -205,6 +210,10 @@ public class StatusBarHook extends Hook {
                 }
                 if (isSearchNeed2Add) {
                     Action action = new SearchAction();
+                    addViewAndSetAction(action, linearLayout, pkgName);
+                }
+                if (isXprivacyNeed2Add) {
+                    Action action = new XPrivacyAction();
                     addViewAndSetAction(action, linearLayout, pkgName);
                 }
             }
