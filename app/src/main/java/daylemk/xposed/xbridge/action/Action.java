@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,6 +83,7 @@ public abstract class Action {
         ClipBoardAction.loadPreferenceKeys(sModRes);
         ForceStopAction.loadPreferenceKeys(sModRes);
         XPrivacyAction.loadPreferenceKeys(sModRes);
+        AppInfoAction.loadPreferenceKeys(sModRes);
         Log.d(TAG, "load preference key done");
     }
 
@@ -96,6 +99,7 @@ public abstract class Action {
         ClipBoardAction.loadPreference(preferences);
         ForceStopAction.loadPreference(preferences);
         XPrivacyAction.loadPreference(preferences);
+        AppInfoAction.loadPreference(preferences);
         Log.d(TAG, "load preference done");
     }
 
@@ -107,6 +111,7 @@ public abstract class Action {
                     ClipBoardAction.onReceiveNewValue(key, value) ||
                     ForceStopAction.onReceiveNewValue(key, value) ||
                     XPrivacyAction.onReceiveNewValue(key, value) ||
+                    AppInfoAction.onReceiveNewValue(key, value) ||
                     SearchAction.onReceiveNewValue(key, value))) {
                 // check if the debug value
                 if (key.equals(Log.keyDebug)) {
@@ -122,10 +127,11 @@ public abstract class Action {
 
     public static boolean isActionsShowInAppInfo() {
         return PlayAction.isShow && PlayAction.isShowInAppInfo
-                || AppOpsAction.isShow && AppOpsAction.isShowInAppInfo
+//                || AppOpsAction.isShow && AppOpsAction.isShowInAppInfo
                 || AppSettingsAction.isShow && AppSettingsAction.isShowInAppInfo
                 || SearchAction.isShow && SearchAction.isShowInAppInfo
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInAppInfo
+//                || AppInfoAction.isShow && AppInfoAction.isShowInAppInfo
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo;
 
     }
@@ -136,6 +142,7 @@ public abstract class Action {
                 || AppSettingsAction.isShow && AppSettingsAction.isShowInRecentTask
                 || SearchAction.isShow && SearchAction.isShowInRecentTask
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInRecentTask
+                || AppInfoAction.isShow && AppInfoAction.isShowInRecentTask
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask;
 
     }
@@ -146,6 +153,7 @@ public abstract class Action {
                 || AppSettingsAction.isShow && AppSettingsAction.isShowInStatusBar
                 || SearchAction.isShow && SearchAction.isShowInStatusBar
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInStatusBar
+                || AppInfoAction.isShow && AppInfoAction.isShowInStatusBar
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInStatusBar;
 
     }
@@ -247,7 +255,7 @@ public abstract class Action {
     /**
      * get the icon of this action
      */
-    protected abstract Drawable getIcon(PackageManager packageManager);
+    public abstract Drawable getIcon(PackageManager packageManager);
 
     /**
      * get the String that represent this action, overwrite this in the subclass
@@ -342,7 +350,7 @@ public abstract class Action {
         startIntentAsUser(context, intent, getUid(context, pkgName));
     }
 
-    public void startIntentAsUser(final Context context, Intent intent, int appUid) {
+    public void startIntentAsUser(final Context context, final Intent intent, int appUid) {
         Log.d(TAG, "start intent as user, appUid: " + appUid + ", " + intent);
 //        List<ResolveInfo> infoList = context.getPackageManager().queryIntentActivities
 //                (intent, PackageManager
@@ -357,12 +365,45 @@ public abstract class Action {
             taskStackBuilder = TaskStackBuilder.create
                     (context).addNextIntentWithParentStack
                     (intent);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             XposedBridge.log(e);
             Log.e(TAG, "start intent as user error, intent: " + intent);
             // show toast
             XBridgeToast.showToastOnHandler(context, Hook.getXBridgeContext(context).getString
                     (R.string.error) + intent.getComponent().getPackageName());
+
+            // if debug is on, let's get more information
+            // this may contain some privacy information, need to notify users
+            if (Log.debug) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "handle error, begin load more information");
+                        // load package
+                        try {
+                            ApplicationInfo info = context.getPackageManager().getApplicationInfo
+                                    (intent.getComponent().getPackageName(), PackageManager
+                                            .GET_UNINSTALLED_PACKAGES
+                                            | PackageManager.GET_DISABLED_COMPONENTS);
+                            if (info != null) {
+                                Log.d(TAG, "package is found: " + info.className + ",info: " +
+                                        info);
+                            }
+                        } catch (PackageManager.NameNotFoundException e1) {
+                            e1.printStackTrace();
+                            XposedBridge.log(e);
+                            List<PackageInfo> infoList = context.getPackageManager()
+                                    .getInstalledPackages(PackageManager
+                                            .GET_UNINSTALLED_PACKAGES);
+                            for (PackageInfo anInfoList : infoList) {
+                                Log.d(TAG, anInfoList.packageName);
+                            }
+                        }
+                        Log.d(TAG, "handle error, load more information done");
+                    }
+                }).start();
+            }
+
             return;
         }
         Log.d(TAG, "taskStackBuilder: " + taskStackBuilder);

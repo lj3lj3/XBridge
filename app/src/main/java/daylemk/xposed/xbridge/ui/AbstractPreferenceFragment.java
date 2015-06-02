@@ -17,6 +17,7 @@ public abstract class AbstractPreferenceFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         // set the preference of the fragment on create
         MainPreferences.setSharedPreferences(getPreferenceManager());
         // load the preference every time

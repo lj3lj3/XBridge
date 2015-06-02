@@ -1,5 +1,8 @@
 package daylemk.xposed.xbridge.ui;
 
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -26,6 +29,11 @@ public class SearchFragment extends HeaderPreferenceFragment {
     private SwitchPreference preferenceAppInfo;
     private SwitchPreference preferenceCustomizeUrl;
     private EditTextPreference preferenceUrl;
+
+    // every sub class should has this method
+    public static Drawable getPkgIcon(Resources res, PackageManager pm) {
+        return new SearchAction().initIcon(res).getIcon(pm);
+    }
 
     public static SearchFragment getFragment(Bundle bundle) {
         SearchFragment fragment = new SearchFragment();

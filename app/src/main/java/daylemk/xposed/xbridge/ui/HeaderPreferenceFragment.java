@@ -9,6 +9,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -47,6 +48,11 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
 
     protected Preference preferenceRebootSysUi;
 
+    // every sub class should has this method
+//    public static Drawable getPkgIcon(PackageManager pm) {
+//        return pm.getDefaultActivityIcon();
+//    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +84,8 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
             ActionBar actionBar = this.getActivity().getActionBar();
             if (actionBar != null) {
                 actionBar.setTitle(bundle.getInt(ARGS_TITLE));
+                // set icon of action bar
+                actionBar.setDisplayHomeAsUpEnabled(true);
             }
         }
         switchBar = (SwitchBar) view.findViewById(R.id.switch_bar);
@@ -161,5 +169,15 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
             dialog.show();
         }
         return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "pressed:" + item.getItemId());
+        if (item.getItemId() == android.R.id.home) {
+            Log.d(TAG, "home pressed");
+            this.getFragmentManager().popBackStack();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

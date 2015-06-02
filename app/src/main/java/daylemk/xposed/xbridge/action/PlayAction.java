@@ -93,7 +93,7 @@ public class PlayAction extends Action {
     }
 
     @Override
-    protected Drawable getIcon(PackageManager packageManager) {
+    public Drawable getIcon(PackageManager packageManager) {
         // check the icon. if good, just return.
         // TODO: check if the app is just install or upgrade and the icon should be changed
         if (sIcon == null) {

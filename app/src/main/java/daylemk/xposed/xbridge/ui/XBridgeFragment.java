@@ -2,6 +2,9 @@ package daylemk.xposed.xbridge.ui;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -17,6 +20,7 @@ import android.view.ViewGroup;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.action.Action;
+import daylemk.xposed.xbridge.action.AppInfoAction;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
@@ -41,6 +45,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference clipBoardPreference;
     private SwitchPreference searchPreference;
     private SwitchPreference xPrivacyPreference;
+    private SwitchPreference appInfoPreference;
 
     private String keyXda;
 
@@ -56,7 +61,6 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_xbridge);
-        setHasOptionsMenu(true);
         // get xda key
         keyXda = getString(R.string.key_xda);
     }
@@ -73,6 +77,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         clipBoardPreference = (SwitchPreference) this.findPreference(ClipBoardAction.keyShow);
         searchPreference = (SwitchPreference) this.findPreference(SearchAction.keyShow);
         xPrivacyPreference = (SwitchPreference) this.findPreference(XPrivacyAction.keyShow);
+        appInfoPreference = (SwitchPreference) this.findPreference(AppInfoAction.keyShow);
 
         playPreference.setOnPreferenceChangeListener(this);
         appOpsPreference.setOnPreferenceChangeListener(this);
@@ -80,6 +85,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         clipBoardPreference.setOnPreferenceChangeListener(this);
         searchPreference.setOnPreferenceChangeListener(this);
         xPrivacyPreference.setOnPreferenceChangeListener(this);
+        appInfoPreference.setOnPreferenceChangeListener(this);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -100,11 +106,14 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             clipBoardPreference.setChecked(ClipBoardAction.isShow);
             searchPreference.setChecked(SearchAction.isShow);
             xPrivacyPreference.setChecked(XPrivacyAction.isShow);
+            appInfoPreference.setChecked(AppInfoAction.isShow);
             Log.d(TAG, "values:" + PlayAction.isShow + AppOpsAction.isShow + AppSettingsAction
                     .isShow
-                    + ClipBoardAction.isShow + SearchAction.isShow);
+                    + ClipBoardAction.isShow + SearchAction.isShow + XPrivacyAction.isShow +
+                    AppInfoAction.isShow);
             need2Load = false;
         }
+        new IconLoader().execute();
     }
 
     @Override
@@ -141,6 +150,10 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_xprivacy);
             fragment = XPrivacyFragment.getFragment(bundle);
             tag = XPrivacyFragment.TAG;
+        } else if (AppInfoAction.keyShow.equals(prefKey)) {
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_appinfo);
+            fragment = AppInfoFragment.getFragment(bundle);
+            tag = AppInfoFragment.TAG;
         } else if (keyXda.equals(prefKey)) {
             Action.viewInXda(this.getActivity().getApplicationContext());
             return true;
@@ -204,11 +217,61 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ActionBar actionBar = this.getActivity().getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        }
+    }
+
     /**
      * need2Load is false on default, but if we changed the value from the another fragment, we
      * need to load the status from the parameters.
      */
     public void setNeed2Load(boolean need2Load) {
         this.need2Load = need2Load;
+    }
+
+    class IconLoader extends AsyncTask<Object, Object, Object> {
+        Drawable iconInfo;
+        Drawable iconAppOps;
+        Drawable iconAppSettings;
+        //        Drawable iconClipBoard;
+        Drawable iconPlay;
+        //        Drawable iconSearch;
+        Drawable iconXPrivacy;
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            PackageManager packageManager = getActivity().getPackageManager();
+            iconInfo = AppInfoFragment.getPkgIcon(packageManager);
+            iconAppOps = AppOpsFragment.getPkgIcon(packageManager);
+            iconAppSettings = AppSettingsFragment.getPkgIcon(packageManager);
+//            iconClipBoard = ClipBoardFragment.getPkgIcon(getResources(),packageManager);
+            iconPlay = PlayFragment.getPkgIcon(packageManager);
+//            iconSearch = SearchFragment.getPkgIcon(getResources(),packageManager);
+            iconXPrivacy = XPrivacyFragment.getPkgIcon(packageManager);
+            Log.d(TAG, "load icons done:" + "iconInfo:" + iconInfo + ",iconAppOps:" + iconAppOps
+                    + ",iconAppSettings:" + iconAppSettings +
+//                    ",iconClipBoard:" + iconClipBoard +
+                    ",iconPlay:" + iconPlay +
+//                    ",iconSearch:" + iconSearch +
+                    ",iconXPrivacy:" + iconXPrivacy);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            playPreference.setIcon(iconPlay);
+            appOpsPreference.setIcon(iconAppOps);
+            appSettingsPreference.setIcon(iconAppSettings);
+//            clipBoardPreference.setIcon(iconClipBoard);
+//            searchPreference.setIcon(iconSearch);
+            xPrivacyPreference.setIcon(iconXPrivacy);
+            appInfoPreference.setIcon(iconInfo);
+            super.onPostExecute(o);
+        }
     }
 }

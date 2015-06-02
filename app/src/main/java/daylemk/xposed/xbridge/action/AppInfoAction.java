@@ -6,25 +6,23 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.net.Uri;
+import android.provider.Settings;
 
 import daylemk.xposed.xbridge.R;
+import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.utils.Log;
 
 /**
- * App Ops xposed Action
- * Created by DayLemK on 2015/5/8.
+ * Created by DayLemK on 2015/6/2.
+ * The app info screen of app action
  */
-public class AppOpsAction extends Action {
-    public static final String TAG = "AppOpsAction";
-    public static final String STR_DESC = "View in App Ops";
-    public static final String PKG_NAME = "at.jclehner.appopsxposed";
-    public static final String ACTIVITY_CLASS_NAME = PKG_NAME + ".AppOpsActivity";
-    public static final String DETAILS_CLASS_NAME = "com.android.settings.applications" +
-            ".AppOpsDetails";
-    public static final String ARG_PACKAGE_NAME = "package";
+public class AppInfoAction extends Action {
+    public static final String TAG = "AppInfoAction";
+    //TODO: get menu description from xml
+    public static final String STR_DESC = "Show info screen of this app";
+    public static final String PKG_NAME = StaticData.PKG_NAME_SETTINGS;
 
     /* the key should the sub class overwrite ------------begin */
     public static String keyShowInStatusBar;
@@ -51,24 +49,24 @@ public class AppOpsAction extends Action {
      * @param sModRes the module resource of package
      */
     public static void loadPreferenceKeys(Resources sModRes) {
-        keyShow = sModRes.getString(R.string.key_appops);
-//        keyShowInAppInfo = sModRes.getString(R.string.key_appops_app_info);
-        keyShowInRecentTask = sModRes.getString(R.string.key_appops_recent_task);
-        keyShowInStatusBar = sModRes.getString(R.string.key_appops_status_bar);
+        keyShow = sModRes.getString(R.string.key_appinfo);
+//        keyShowInAppInfo = sModRes.getString(R.string.key_appinfo_app_info);
+        keyShowInRecentTask = sModRes.getString(R.string.key_appinfo_recent_task);
+        keyShowInStatusBar = sModRes.getString(R.string.key_appinfo_status_bar);
         // get the default value of this action
-        showInStatusBarDefault = sModRes.getBoolean(R.bool.appops_status_bar_default);
-        showInRecentTaskDefault = sModRes.getBoolean(R.bool.appops_recent_task_default);
-//        showInAppInfoDefault = sModRes.getBoolean(R.bool.appops_app_info_default);
-        showDefault = sModRes.getBoolean(R.bool.appops_default);
+        showInStatusBarDefault = sModRes.getBoolean(R.bool.appinfo_status_bar_default);
+        showInRecentTaskDefault = sModRes.getBoolean(R.bool.appinfo_recent_task_default);
+//        showInAppInfoDefault = sModRes.getBoolean(R.bool.appinfo_app_info_default);
+        showDefault = sModRes.getBoolean(R.bool.appinfo_default);
     }
 
     public static void loadPreference(SharedPreferences preferences) {
-        isShowInRecentTask = preferences.getBoolean(keyShowInRecentTask,
-                showInStatusBarDefault);
         isShowInStatusBar = preferences.getBoolean(keyShowInStatusBar,
+                showInStatusBarDefault);
+        isShowInRecentTask = preferences.getBoolean(keyShowInRecentTask,
                 showInRecentTaskDefault);
 //        isShowInAppInfo = preferences.getBoolean(keyShowInAppInfo,
-//                PREF_SHOW_IN_APP_INFO_DEFAULT);
+//                showInAppInfoDefault);
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
         Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
@@ -80,8 +78,8 @@ public class AppOpsAction extends Action {
         boolean result = true;
         if (key.equals(keyShow)) {
             isShow = Boolean.valueOf(value);
-        /*} else if (key.equals(keyShowInAppInfo)) {
-            isShowInAppInfo = Boolean.valueOf(value);*/
+//        } else if (key.equals(keyShowInAppInfo)) {
+//            isShowInAppInfo = Boolean.valueOf(value);
         } else if (key.equals(keyShowInRecentTask)) {
             isShowInRecentTask = Boolean.valueOf(value);
         } else if (key.equals(keyShowInStatusBar)) {
@@ -95,20 +93,15 @@ public class AppOpsAction extends Action {
 
     @Override
     protected Intent getIntent(Hook hook, Context context, String pkgName) {
-        Intent intent = new Intent();
-        intent.setClassName(PKG_NAME, ACTIVITY_CLASS_NAME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_PACKAGE_NAME, pkgName);
-
-        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, bundle);
-        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, DETAILS_CLASS_NAME);
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", pkgName, null));
+        intent.setComponent(intent.resolveActivity(context.getPackageManager()));
         return intent;
     }
 
     @Override
     public void handleData(Context context, String pkgName) {
+
     }
 
     @Override

@@ -96,6 +96,22 @@ public class ClipBoardAction extends Action {
         return null;
     }
 
+    /**
+     * init the icon from UI
+     *
+     * @param res resource
+     */
+    public Action initIcon(Resources res) {
+        FrameworksHook.getDefaultIcons(res);
+        return this;
+    }
+
+    /**
+     * need to call initIcon before this method.
+     *
+     * @param packageManager package manager
+     * @return the icon
+     */
     @Override
     public Drawable getIcon(PackageManager packageManager) {
         return FrameworksHook.getIconCopy();

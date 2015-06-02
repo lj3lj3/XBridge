@@ -41,6 +41,8 @@ public class XPrivacyAction extends Action {
     public static boolean isShow = true;
     /* the key should the sub class overwrite ------------end */
 
+    public static Drawable sIcon = null;
+
     /**
      * load the key from the string resource
      *
@@ -107,8 +109,11 @@ public class XPrivacyAction extends Action {
     }
 
     @Override
-    protected Drawable getIcon(PackageManager packageManager) {
-        return getPackageIcon(packageManager, PKG_NAME);
+    public Drawable getIcon(PackageManager packageManager) {
+        if (sIcon == null) {
+            sIcon = getPackageIcon(packageManager, PKG_NAME);
+        }
+        return sIcon;
     }
 
     @Override

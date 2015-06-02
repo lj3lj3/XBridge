@@ -19,6 +19,7 @@ import java.lang.reflect.Proxy;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.action.Action;
+import daylemk.xposed.xbridge.action.AppInfoAction;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
@@ -135,7 +136,8 @@ public class StatusBarHook extends Hook {
                 boolean isAppSetNeed2Add = false;
                 boolean isClipBoardNeed2Add = false;
                 boolean isSearchNeed2Add = false;
-                boolean isXprivacyNeed2Add = false;
+                boolean isXPrivacyNeed2Add = false;
+                boolean isAppInfoNeed2Add = false;
                 // check if need to add action
                 if (PlayAction.isShow && PlayAction.isShowInStatusBar) {
                     isPlayNeed2Add = Action.isNeed2Add(layoutGuts, PlayAction.class);
@@ -153,11 +155,14 @@ public class StatusBarHook extends Hook {
                     isSearchNeed2Add = Action.isNeed2Add(layoutGuts, SearchAction.class);
                 }
                 if (XPrivacyAction.isShow && XPrivacyAction.isShowInStatusBar) {
-                    isXprivacyNeed2Add = Action.isNeed2Add(layoutGuts, XPrivacyAction.class);
+                    isXPrivacyNeed2Add = Action.isNeed2Add(layoutGuts, XPrivacyAction.class);
+                }
+                if (AppInfoAction.isShow && AppInfoAction.isShowInStatusBar) {
+                    isAppInfoNeed2Add = Action.isNeed2Add(layoutGuts, AppInfoAction.class);
                 }
 
                 if (!(isPlayNeed2Add || isOpsNeed2Add || isAppSetNeed2Add || isClipBoardNeed2Add
-                        || isSearchNeed2Add || isXprivacyNeed2Add)) {
+                        || isSearchNeed2Add || isXPrivacyNeed2Add || isAppInfoNeed2Add)) {
                     Log.d(TAG, "need add nothing");
                     return;
                 }
@@ -212,8 +217,12 @@ public class StatusBarHook extends Hook {
                     Action action = new SearchAction();
                     addViewAndSetAction(action, linearLayout, pkgName);
                 }
-                if (isXprivacyNeed2Add) {
+                if (isXPrivacyNeed2Add) {
                     Action action = new XPrivacyAction();
+                    addViewAndSetAction(action, linearLayout, pkgName);
+                }
+                if (isAppInfoNeed2Add) {
+                    Action action = new AppInfoAction();
                     addViewAndSetAction(action, linearLayout, pkgName);
                 }
             }

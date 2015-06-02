@@ -2,10 +2,39 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
         android:defaultValue="@bool/play_default"
+        android:icon="@mipmap/ic_launcher"
         android:key="@string/key_play"
         android:summary="@string/summary_play"
         android:title="@string/title_play"
         >
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/appops_default"
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/key_appops"
+        android:summary="@string/summary_appops"
+        android:title="@string/title_appops">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/appsettings_default"
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/key_appsettings"
+        android:summary="@string/summary_appsettings"
+        android:title="@string/title_appsettings">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/xprivacy_default"
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/key_xprivacy"
+        android:summary="@string/summary_xprivacy"
+        android:title="@string/title_xprivacy">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/appinfo_default"
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/key_appinfo"
+        android:summary="@string/summary_appinfo"
+        android:title="@string/title_appinfo">
     </SwitchPreference>
     <SwitchPreference
         android:defaultValue="@bool/clipboard_default"
@@ -18,24 +47,6 @@
         android:key="@string/key_search"
         android:summary="@string/summary_search"
         android:title="@string/title_search">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="@bool/appops_default"
-        android:key="@string/key_appops"
-        android:summary="@string/summary_appops"
-        android:title="@string/title_appops">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="@bool/appsettings_default"
-        android:key="@string/key_appsettings"
-        android:summary="@string/summary_appsettings"
-        android:title="@string/title_appsettings">
-    </SwitchPreference>
-    <SwitchPreference
-        android:defaultValue="@bool/xprivacy_default"
-        android:key="@string/key_xprivacy"
-        android:summary="@string/summary_xprivacy"
-        android:title="@string/title_xprivacy">
     </SwitchPreference>
     <PreferenceCategory android:title="Enhance">
         <SwitchPreference

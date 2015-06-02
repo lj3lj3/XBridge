@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.action.Action;
+import daylemk.xposed.xbridge.action.AppInfoAction;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
@@ -306,7 +307,7 @@ public class RecentTaskHook extends Hook {
 
         int actionCount = 0;
         if (PlayAction.isShow && PlayAction.isShowInRecentTask) {
-            if (PlayAction.isNeed2Add(headerParent,
+            if (Action.isNeed2Add(headerParent,
                     PlayAction.class)) {
                 // set the action up
                 Action xBridgeAction = new PlayAction();
@@ -320,7 +321,7 @@ public class RecentTaskHook extends Hook {
             actionCount++;
         }
         if (AppOpsAction.isShow && AppOpsAction.isShowInRecentTask) {
-            if (AppOpsAction.isNeed2Add(headerParent, AppOpsAction.class)) {
+            if (Action.isNeed2Add(headerParent, AppOpsAction.class)) {
                 Log.d(TAG, "add new AppOpsAction");
                 // set the action up
                 Action xBridgeAction = new AppOpsAction();
@@ -334,7 +335,7 @@ public class RecentTaskHook extends Hook {
             actionCount++;
         }
         if (AppSettingsAction.isShow && AppSettingsAction.isShowInRecentTask) {
-            if (AppSettingsAction.isNeed2Add(headerParent, AppSettingsAction
+            if (Action.isNeed2Add(headerParent, AppSettingsAction
                     .class)) {
                 // set the action up
                 Action xBridgeAction = new AppSettingsAction();
@@ -348,7 +349,7 @@ public class RecentTaskHook extends Hook {
             actionCount++;
         }
         if (ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask) {
-            if (ClipBoardAction.isNeed2Add(headerParent, ClipBoardAction
+            if (Action.isNeed2Add(headerParent, ClipBoardAction
                     .class)) {
                 // set the action up
                 Action xBridgeAction = new ClipBoardAction();
@@ -361,7 +362,7 @@ public class RecentTaskHook extends Hook {
             actionCount++;
         }
         if (SearchAction.isShow && SearchAction.isShowInRecentTask) {
-            if (SearchAction.isNeed2Add(headerParent, SearchAction.class)) {
+            if (Action.isNeed2Add(headerParent, SearchAction.class)) {
                 // set the action up
                 Action xBridgeAction = new SearchAction();
                 addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
@@ -373,13 +374,25 @@ public class RecentTaskHook extends Hook {
             actionCount++;
         }
         if (XPrivacyAction.isShow && XPrivacyAction.isShowInRecentTask) {
-            if (XPrivacyAction.isNeed2Add(headerParent, XPrivacyAction.class)) {
+            if (Action.isNeed2Add(headerParent, XPrivacyAction.class)) {
                 // set the action up
                 Action xBridgeAction = new XPrivacyAction();
                 addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
                         pkgName, loadPackageParam.classLoader, actionCount);
             } else if (checkIfNeed2Change(headerGutsView, compName)) {
                 Action xBridgeAction = new XPrivacyAction();
+                resetAction(context, xBridgeAction, headerGutsView, pkgName);
+            }
+            actionCount++;
+        }
+        if (AppInfoAction.isShow && AppInfoAction.isShowInRecentTask) {
+            if (Action.isNeed2Add(headerParent, AppInfoAction.class)) {
+                // set the action up
+                Action xBridgeAction = new AppInfoAction();
+                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                        pkgName, loadPackageParam.classLoader, actionCount);
+            } else if (checkIfNeed2Change(headerGutsView, compName)) {
+                Action xBridgeAction = new AppInfoAction();
                 resetAction(context, xBridgeAction, headerGutsView, pkgName);
             }
             actionCount++;

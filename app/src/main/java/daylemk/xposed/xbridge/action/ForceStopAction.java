@@ -85,7 +85,7 @@ public class ForceStopAction extends Action {
     }
 
     @Override
-    protected Drawable getIcon(PackageManager packageManager) {
+    public Drawable getIcon(PackageManager packageManager) {
         return null;
     }
 

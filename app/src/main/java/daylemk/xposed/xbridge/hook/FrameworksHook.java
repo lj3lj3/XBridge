@@ -1,7 +1,6 @@
 package daylemk.xposed.xbridge.hook;
 
 import android.content.res.Resources;
-import android.content.res.XModuleResources;
 import android.graphics.drawable.Drawable;
 
 import daylemk.xposed.xbridge.R;
@@ -22,7 +21,7 @@ public class FrameworksHook extends Hook {
     private static Drawable iconCopyDefault;
     private static Drawable iconSearchDefault;
 
-    public static void getDefaultIcons(XModuleResources sModRes) {
+    public static void getDefaultIcons(Resources sModRes) {
         if (iconCopy == null) {
             iconCopy = sModRes.getDrawable(getCopyId(sModRes), null);
             Log.d(TAG, "get the icon copy: " + iconCopy);
@@ -31,8 +30,12 @@ public class FrameworksHook extends Hook {
             iconSearch = sModRes.getDrawable(getSearchId(sModRes), null);
             Log.d(TAG, "get the icon search: " + iconSearch);
         }
-        iconCopyDefault = sModRes.getDrawable(R.drawable.ic_menu_copy_material);
-        iconSearchDefault = sModRes.getDrawable(R.drawable.ic_menu_search_material);
+        if (iconCopyDefault == null) {
+            iconCopyDefault = sModRes.getDrawable(R.drawable.ic_menu_copy_material);
+        }
+        if (iconSearchDefault == null) {
+            iconSearchDefault = sModRes.getDrawable(R.drawable.ic_menu_search_material);
+        }
         Log.d(TAG, "default icons: " + iconCopyDefault + ", " + iconSearchDefault);
     }
 

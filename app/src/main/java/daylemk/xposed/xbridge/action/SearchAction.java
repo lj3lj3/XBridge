@@ -148,8 +148,24 @@ public class SearchAction extends Action {
 
     }
 
+    /**
+     * init the icon from UI
+     *
+     * @param res resource
+     */
+    public Action initIcon(Resources res) {
+        FrameworksHook.getDefaultIcons(res);
+        return this;
+    }
+
+    /**
+     * need to call initIcon before this method.
+     *
+     * @param packageManager package manager
+     * @return the icon
+     */
     @Override
-    protected Drawable getIcon(PackageManager packageManager) {
+    public Drawable getIcon(PackageManager packageManager) {
         return FrameworksHook.getIconSearch();
     }
 

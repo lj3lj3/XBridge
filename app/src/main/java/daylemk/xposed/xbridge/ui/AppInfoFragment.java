@@ -1,7 +1,6 @@
 package daylemk.xposed.xbridge.ui;
 
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -13,26 +12,26 @@ import android.view.ViewGroup;
 import android.widget.Switch;
 
 import daylemk.xposed.xbridge.R;
-import daylemk.xposed.xbridge.action.ClipBoardAction;
+import daylemk.xposed.xbridge.action.AppInfoAction;
 
 /**
  * Created by DayLemK on 2015/5/14.
- * Play Action settings fragment
+ * AppInfo Action settings fragment
  */
-public class ClipBoardFragment extends HeaderPreferenceFragment {
-    public static final String TAG = "ClipBoardFragment";
+public class AppInfoFragment extends HeaderPreferenceFragment {
+    public static final String TAG = "AppInfoFragment";
 
     private SwitchPreference preferenceStatusBar;
     private SwitchPreference preferenceRecentTask;
-    private SwitchPreference preferenceAppInfo;
+//    private SwitchPreference preferenceAppInfo;
 
     // every sub class should has this method
-    public static Drawable getPkgIcon(Resources res, PackageManager pm) {
-        return new ClipBoardAction().initIcon(res).getIcon(pm);
+    public static Drawable getPkgIcon(PackageManager pm) {
+        return new AppInfoAction().getIcon(pm);
     }
 
-    public static ClipBoardFragment getFragment(Bundle bundle) {
-        ClipBoardFragment fragment = new ClipBoardFragment();
+    public static AppInfoFragment getFragment(Bundle bundle) {
+        AppInfoFragment fragment = new AppInfoFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -40,28 +39,28 @@ public class ClipBoardFragment extends HeaderPreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.addPreferencesFromResource(R.xml.preference_clipboard);
+        this.addPreferencesFromResource(R.xml.preference_appinfo);
         addRebootPreference(this);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        preferenceStatusBar = (SwitchPreference) this.findPreference(ClipBoardAction
+        preferenceStatusBar = (SwitchPreference) this.findPreference(AppInfoAction
                 .keyShowInStatusBar);
-        preferenceRecentTask = (SwitchPreference) this.findPreference(ClipBoardAction
+        preferenceRecentTask = (SwitchPreference) this.findPreference(AppInfoAction
                 .keyShowInRecentTask);
-        preferenceAppInfo = (SwitchPreference) this.findPreference(ClipBoardAction
-                .keyShowInAppInfo);
+//        preferenceAppInfo = (SwitchPreference) this.findPreference(AppInfoAction
+//                .keyShowInAppInfo);
         preferenceStatusBar.setOnPreferenceChangeListener(this);
         preferenceRecentTask.setOnPreferenceChangeListener(this);
-        preferenceAppInfo.setOnPreferenceChangeListener(this);
+//        preferenceAppInfo.setOnPreferenceChangeListener(this);
         // set values
 //        preferenceStatusBar.setChecked(PlayAction.isShowInStatusBar);
 //        preferenceRecentTask.setChecked(PlayAction.isShowInRecentTask);
 //        preferenceAppInfo.setChecked(PlayAction.isShowInAppInfo);
 
-        addPreferences2TheList(preferenceStatusBar, preferenceRecentTask, preferenceAppInfo);
+        addPreferences2TheList(preferenceStatusBar, preferenceRecentTask/*, preferenceAppInfo*/);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -71,8 +70,8 @@ public class ClipBoardFragment extends HeaderPreferenceFragment {
         super.onActivityCreated(savedInstanceState);
         // set the master switch here
         // set the tag, so wo can save the preference
-        switchBar.getSwitch().setTag(ClipBoardAction.keyShow);
-        switchBar.setChecked(ClipBoardAction.isShow);
+        switchBar.getSwitch().setTag(AppInfoAction.keyShow);
+        switchBar.setChecked(AppInfoAction.isShow);
     }
 
     @Override
@@ -84,6 +83,6 @@ public class ClipBoardFragment extends HeaderPreferenceFragment {
     @Override
     public void onSwitchChanged(Switch switchView, boolean isChecked) {
         super.onSwitchChanged(switchView, isChecked);
-        ClipBoardAction.isShow = isChecked;
+        AppInfoAction.isShow = isChecked;
     }
 }

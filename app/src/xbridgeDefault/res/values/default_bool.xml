@@ -30,4 +30,8 @@
     <bool name="xprivacy_status_bar_default">false</bool>
     <bool name="xprivacy_app_info_default">false</bool>
     <bool name="xprivacy_recent_task_default">false</bool>
+    <bool name="appinfo_default">false</bool>
+    <bool name="appinfo_status_bar_default">false</bool>
+    <!--<bool name="appinfo_app_info_default">false</bool>-->
+    <bool name="appinfo_recent_task_default">false</bool>
 </resources>

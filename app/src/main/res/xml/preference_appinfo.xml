@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="@bool/appinfo_status_bar_default"
+        android:key="@string/key_appinfo_status_bar"
+        android:summary="@string/summary_show_in_status_bar"
+        android:title="@string/title_show_in_status_bar"
+        >
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/appinfo_recent_task_default"
+        android:key="@string/key_appinfo_recent_task"
+        android:summary="@string/summary_show_in_recent_task"
+        android:title="@string/title_show_in_recent_task">
+    </SwitchPreference>
+    <!-- this just a place holder -->
+    <!--<SwitchPreference
+        android:checked="false"
+        android:enabled="false"
+        android:summary="@string/summary_appops_show_in_app_info"
+        android:title="@string/title_show_in_app_info"
+        >
+    </SwitchPreference>-->
+
+</PreferenceScreen>

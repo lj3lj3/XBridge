@@ -1,5 +1,7 @@
 package daylemk.xposed.xbridge.ui;
 
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
@@ -20,8 +22,13 @@ public class AppOpsFragment extends HeaderPreferenceFragment {
     public static final String TAG = "AppOpsFragment";
 
     private SwitchPreference preferenceStatusBar;
-    private SwitchPreference preferenceRecentTask;
 //    private SwitchPreference preferenceAppInfo;
+private SwitchPreference preferenceRecentTask;
+
+    // every sub class should has this method
+    public static Drawable getPkgIcon(PackageManager pm) {
+        return new AppOpsAction().getIcon(pm);
+    }
 
     public static AppOpsFragment getFragment(Bundle bundle) {
         AppOpsFragment fragment = new AppOpsFragment();
