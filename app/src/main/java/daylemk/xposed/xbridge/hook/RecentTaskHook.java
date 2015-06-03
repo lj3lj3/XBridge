@@ -136,6 +136,9 @@ public class RecentTaskHook extends Hook {
                 View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
                         "mHeaderView");
                 if (isRecentShow && mHeaderView != null) {
+                    // set on click listener, 'cause we use long click listener, so the touch
+                    // event will pass to this view and not pass through it
+                    mHeaderView.setOnClickListener((View.OnClickListener) taskViewObject);
                     mHeaderView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
                     if (listener == null) {
                         listener = new HeaderViewTouchListener();
@@ -191,6 +194,7 @@ public class RecentTaskHook extends Hook {
                                 (taskViewObject,
                                         "mHeaderView");
                         if (isRecentShow && mHeaderView != null) {
+                            mHeaderView.setOnClickListener(null);
                             mHeaderView.setOnLongClickListener(null);
                             // set the on touch listener to null
                             mHeaderView.setOnTouchListener(null);
@@ -211,6 +215,35 @@ public class RecentTaskHook extends Hook {
 
                         // call the original method
                         param.getResult();
+                    }
+                });
+
+        // hook onClick to handle the header view click event
+        XposedHelpers.findAndHookMethod(taskViewClass, "onClick", View.class, new
+                XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws
+                            Throwable {
+                        if (!Action.isActionsShowInRecentTask()) {
+                            return;
+                        }
+                        View clickedView = (View) param.args[0];
+                        Log.d(TAG, "onClick:" + clickedView);
+                        final FrameLayout taskViewObject = (FrameLayout) param.thisObject;
+                        final View mHeaderView = (View) XposedHelpers.getObjectField
+                                (taskViewObject,
+                                        "mHeaderView");
+                        if (clickedView == mHeaderView) {
+                            Log.d(TAG, "clicked header view, start task now");
+                            Object cb = XposedHelpers.getObjectField(taskViewObject, "mCb");
+                            if (cb == null) {
+                                Log.e(TAG, "the mCb is null???");
+                                return;
+                            }
+                            Object task = XposedHelpers.callMethod(taskViewObject, "getTask");
+                            XposedHelpers.callMethod(cb, "onTaskViewClicked", taskViewObject,
+                                    task, false);
+                        }
                     }
                 });
 
@@ -492,7 +525,7 @@ public class RecentTaskHook extends Hook {
 
     private void addViewAndSetAction(Context context, Resources res, Action action, ViewGroup
             headerGutsView, String pkgName, ClassLoader classLoader, int actionCount) throws
-            IllegalAccessException, InstantiationException, InvocationTargetException {
+            Exception {
         Log.d(TAG, "add new Action: " + action);
         ImageView xBridgeView = getXBridgeView(context, res,
                 classLoader, actionCount);
