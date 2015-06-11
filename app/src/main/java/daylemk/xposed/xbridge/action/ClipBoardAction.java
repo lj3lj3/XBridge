@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.widget.Toast;
 
 import daylemk.xposed.xbridge.R;
@@ -123,16 +124,22 @@ public class ClipBoardAction extends Action {
     }
 
     @Override
-    public void handleData(Context context, String pkgName) {
+    public void handleData(final Context context, final String pkgName) {
         Log.d(TAG, "handle in the ClipBoard");
-        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context
-                .CLIPBOARD_SERVICE);
-        ClipData clipData = ClipData.newPlainText(ARG_PACKAGE_NAME, pkgName);
-        clipboardManager.setPrimaryClip(clipData);
-        Context xBridgeContext = Hook.getXBridgeContext(context);
+        // need run in the main thread
+        new Handler(context.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService
+                        (Context
+                                .CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText(ARG_PACKAGE_NAME, pkgName);
+                clipboardManager.setPrimaryClip(clipData);
+                Context xBridgeContext = Hook.getXBridgeContext(context);
 
-        String str = xBridgeContext.getString(R.string.package_name_copied);
-
-        Toast.makeText(context, str + "\n" + pkgName, Toast.LENGTH_LONG).show();
+                String str = xBridgeContext.getString(R.string.package_name_copied);
+                Toast.makeText(context, str + "\n" + pkgName, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

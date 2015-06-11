@@ -2,7 +2,6 @@ package daylemk.xposed.xbridge.hook;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -294,8 +293,8 @@ public class StatusBarHook extends Hook {
         return xBridgeButton;
     }
 
-    public void dismissKeyguardAndStartIntent(final Action action, final Intent intent, final
-    String pkgName) {
+    public void dismissKeyguardAndStartAction(final OnDismissKeyguardAction
+                                                      onDismissKeyguardAction) {
         if (statusBarObject == null) {
             Log.e(TAG, "baseStatusBar is null, give up");
             return;
@@ -350,7 +349,8 @@ public class StatusBarHook extends Hook {
                             }
                             // end of keyguard showing
 
-                            action.startIntentAsUser(context, intent, pkgName);
+                            // call the interface back
+                            onDismissKeyguardAction.onDismissKeyguard();
 
                         }
                     });
@@ -373,4 +373,7 @@ public class StatusBarHook extends Hook {
                 false/* afterKeyguardGone */);
     }
 
+    public interface OnDismissKeyguardAction {
+        void onDismissKeyguard();
+    }
 }

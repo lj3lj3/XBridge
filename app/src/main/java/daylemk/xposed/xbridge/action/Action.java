@@ -40,7 +40,7 @@ import de.robv.android.xposed.XposedHelpers;
  * @version 1.0
  *          28-四月-2015 9:16:48
  */
-public abstract class Action {
+public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
     public static final String TAG = "Action";
 
     /* the key should the sub class overwrite ------------begin */
@@ -67,6 +67,9 @@ public abstract class Action {
     // value is faster.
 //    private static Map<String, Boolean> prefItem;
 //    private static Map<String, Map<String, Object>> prefMap = new HashMap();
+    protected Context mContext;
+    protected String mPkgName;
+    protected Intent mIntent;
 
     /**
      * load the key from the string resource
@@ -274,6 +277,8 @@ public abstract class Action {
     public void setAction(final Hook hook, final Context context,
                           final String pkgName,
                           View view) {
+        mContext = context;
+        mPkgName = pkgName;
 //        super.setAction(hook, context, pkgName, imageButton);
         PackageManager packageManager = context.getPackageManager();
         if (view instanceof ImageButton) {
@@ -292,18 +297,13 @@ public abstract class Action {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "on click action is: " + Action.this.toString() + ", hook: " + hook);
-                Intent intent = getFinalIntent(hook, context, pkgName);
-                if (intent == null) {
-                    // if the intent is null, we need to call handleData method
-                    handleData(context, pkgName);
-                } else if (hook instanceof StatusBarHook) {
+                mIntent = getFinalIntent(hook, context, pkgName);
+
+                if (hook instanceof StatusBarHook) {
                     // dismiss the keyguard adn collapse panels
-                    ((StatusBarHook) hook).dismissKeyguardAndStartIntent(Action.this, intent,
-                            pkgName);
+                    ((StatusBarHook) hook).dismissKeyguardAndStartAction(Action.this);
                 } else {
-                    // just start activity as user
-                    startIntentAsUser(context, intent, pkgName);
-//                    context.startActivity(intent);
+                    startIntentOrHandleData();
                 }
 
                 Log.d(TAG, Action.this.toString() + " action done");
@@ -311,9 +311,28 @@ public abstract class Action {
         });
     }
 
+    /**
+     * the default action is start intent or handle data
+     */
+    @Override
+    public void onDismissKeyguard() {
+        startIntentOrHandleData();
+    }
+
+    protected void startIntentOrHandleData() {
+        if (mIntent == null) {
+            // if the intent is null, we need to call handleData method
+            handleData(mContext, mPkgName);
+        } else {
+            startIntentAsUser(mContext, mIntent, mPkgName);
+        }
+    }
+
     public void setAction(final Hook hook, final Context context,
                           final String pkgName,
                           MenuItem menuItem) {
+        mContext = context;
+        mPkgName = pkgName;
         // set the show flag
         // EDIT: set to always show
         menuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -324,22 +343,21 @@ public abstract class Action {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Log.d(TAG, "on click action is: " + Action.this.getClass() + ", hook: " + hook);
-                Intent intent = getFinalIntent(hook, context, pkgName);
-                if (intent == null) {
-                    // if the intent is null, we need to call handleData method
-                    handleData(context, pkgName);
-                } else if (hook instanceof AppInfoHook) {
+                mIntent = getFinalIntent(hook, context, pkgName);
+                if (hook instanceof AppInfoHook && mIntent != null) {
                     try {
                         // no need to start as user, 'cause when the appInfo screen is called, it
                         // already signed to a user
-                        context.startActivity(intent);
+                        context.startActivity(mIntent);
                     } catch (Exception e) {
                         XposedBridge.log(e);
-                        Log.e(TAG, "start intent error, intent: " + intent);
+                        Log.e(TAG, "start intent error, intent: " + mIntent);
 
                         XBridgeToast.showToast(context, Hook.getXBridgeContext(context).getString
-                                (R.string.error) + intent.getComponent().getPackageName());
+                                (R.string.error) + mIntent.getComponent().getPackageName());
                     }
+                } else {
+                    startIntentOrHandleData();
                 }
 
                 Log.d(TAG, Action.this.toString() + " menu action done");
