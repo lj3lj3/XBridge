@@ -4,6 +4,7 @@
     <bool name="play_status_bar_default">true</bool>
     <bool name="play_app_info_default">true</bool>
     <bool name="play_recent_task_default">true</bool>
+    <bool name="play_is_market_default">false</bool>
     <bool name="clipboard_default">false</bool>
     <bool name="clipboard_status_bar_default">false</bool>
     <bool name="clipboard_app_info_default">false</bool>

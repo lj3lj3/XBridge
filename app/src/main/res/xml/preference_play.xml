@@ -19,5 +19,13 @@
         android:summary="@string/summary_show_in_app_info"
         android:title="@string/title_show_in_app_info">
     </SwitchPreference>
+    <PreferenceCategory android:title="@string/title_customize">
+        <SwitchPreference
+            android:defaultValue="@bool/play_is_market_default"
+            android:key="@string/key_play_is_market"
+            android:summary="@string/summary_is_market"
+            android:title="@string/title_is_market">
+        </SwitchPreference>
+    </PreferenceCategory>
 
 </PreferenceScreen>
