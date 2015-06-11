@@ -16,6 +16,10 @@
     <bool name="appsettings_status_bar_default">false</bool>
     <bool name="appsettings_app_info_default">false</bool>
     <bool name="appsettings_recent_task_default">false</bool>
+    <bool name="notifyclean_default">false</bool>
+    <bool name="notifyclean_status_bar_default">false</bool>
+    <bool name="notifyclean_app_info_default">false</bool>
+    <bool name="notifyclean_recent_task_default">false</bool>
     <bool name="search_default">false</bool>
     <bool name="search_status_bar_default">false</bool>
     <bool name="search_app_info_default">false</bool>

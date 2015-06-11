@@ -24,6 +24,7 @@ import daylemk.xposed.xbridge.action.AppInfoAction;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
+import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
@@ -46,6 +47,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference searchPreference;
     private SwitchPreference xPrivacyPreference;
     private SwitchPreference appInfoPreference;
+    private SwitchPreference notifyCleanPreference;
 
     private String keyXda;
 
@@ -78,6 +80,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         searchPreference = (SwitchPreference) this.findPreference(SearchAction.keyShow);
         xPrivacyPreference = (SwitchPreference) this.findPreference(XPrivacyAction.keyShow);
         appInfoPreference = (SwitchPreference) this.findPreference(AppInfoAction.keyShow);
+        notifyCleanPreference = (SwitchPreference) this.findPreference(NotifyCleanAction.keyShow);
 
         playPreference.setOnPreferenceChangeListener(this);
         appOpsPreference.setOnPreferenceChangeListener(this);
@@ -86,6 +89,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         searchPreference.setOnPreferenceChangeListener(this);
         xPrivacyPreference.setOnPreferenceChangeListener(this);
         appInfoPreference.setOnPreferenceChangeListener(this);
+        notifyCleanPreference.setOnPreferenceChangeListener(this);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -107,10 +111,16 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             searchPreference.setChecked(SearchAction.isShow);
             xPrivacyPreference.setChecked(XPrivacyAction.isShow);
             appInfoPreference.setChecked(AppInfoAction.isShow);
-            Log.d(TAG, "values:" + PlayAction.isShow + AppOpsAction.isShow + AppSettingsAction
-                    .isShow
-                    + ClipBoardAction.isShow + SearchAction.isShow + XPrivacyAction.isShow +
-                    AppInfoAction.isShow);
+            notifyCleanPreference.setChecked(NotifyCleanAction.isShow);
+            Log.d(TAG, "values:" +
+                    "PlayAction:" + PlayAction.isShow +
+                    ",AppOpsAction:" + AppOpsAction.isShow +
+                    ",AppSettingsAction:" + AppSettingsAction.isShow +
+                    ",ClipBoardAction:" + ClipBoardAction.isShow +
+                    ",SearchAction:" + SearchAction.isShow +
+                    ",XPrivacyAction:" + XPrivacyAction.isShow +
+                    ",AppInfoAction:" + AppInfoAction.isShow +
+                    ",NotifyCleanAction:" + NotifyCleanAction.isShow);
             need2Load = false;
         }
         new IconLoader().execute();
@@ -154,6 +164,10 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_appinfo);
             fragment = AppInfoFragment.getFragment(bundle);
             tag = AppInfoFragment.TAG;
+        } else if (NotifyCleanAction.keyShow.equals(prefKey)) {
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_notifyclean);
+            fragment = NotifyCleanFragment.getFragment(bundle);
+            tag = NotifyCleanFragment.TAG;
         } else if (keyXda.equals(prefKey)) {
             Action.viewInXda(this.getActivity().getApplicationContext());
             return true;
@@ -242,6 +256,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         Drawable iconPlay;
         //        Drawable iconSearch;
         Drawable iconXPrivacy;
+        Drawable iconNotifyClean;
 
         @Override
         protected Object doInBackground(Object[] params) {
@@ -253,10 +268,12 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             iconPlay = PlayFragment.getPkgIcon(packageManager);
 //            iconSearch = SearchFragment.getPkgIcon(getResources(),packageManager);
             iconXPrivacy = XPrivacyFragment.getPkgIcon(packageManager);
+            iconNotifyClean = NotifyCleanFragment.getPkgIcon(packageManager);
             Log.d(TAG, "load icons done:" + "iconInfo:" + iconInfo + ",iconAppOps:" + iconAppOps
                     + ",iconAppSettings:" + iconAppSettings +
 //                    ",iconClipBoard:" + iconClipBoard +
                     ",iconPlay:" + iconPlay +
+                    ",iconNotifyClean:" + iconNotifyClean +
 //                    ",iconSearch:" + iconSearch +
                     ",iconXPrivacy:" + iconXPrivacy);
             return null;
@@ -271,6 +288,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
 //            searchPreference.setIcon(iconSearch);
             xPrivacyPreference.setIcon(iconXPrivacy);
             appInfoPreference.setIcon(iconInfo);
+            notifyCleanPreference.setIcon(iconNotifyClean);
             super.onPostExecute(o);
         }
     }

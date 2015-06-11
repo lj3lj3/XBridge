@@ -23,6 +23,7 @@ import daylemk.xposed.xbridge.action.AppInfoAction;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
+import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
@@ -138,6 +139,7 @@ public class StatusBarHook extends Hook {
                 boolean isSearchNeed2Add = false;
                 boolean isXPrivacyNeed2Add = false;
                 boolean isAppInfoNeed2Add = false;
+                boolean isNotifyCleanNeed2Add = false;
                 // check if need to add action
                 if (PlayAction.isShow && PlayAction.isShowInStatusBar) {
                     isPlayNeed2Add = Action.isNeed2Add(layoutGuts, PlayAction.class);
@@ -160,9 +162,13 @@ public class StatusBarHook extends Hook {
                 if (AppInfoAction.isShow && AppInfoAction.isShowInStatusBar) {
                     isAppInfoNeed2Add = Action.isNeed2Add(layoutGuts, AppInfoAction.class);
                 }
+                if (NotifyCleanAction.isShow && NotifyCleanAction.isShowInStatusBar) {
+                    isNotifyCleanNeed2Add = Action.isNeed2Add(layoutGuts, NotifyCleanAction.class);
+                }
 
                 if (!(isPlayNeed2Add || isOpsNeed2Add || isAppSetNeed2Add || isClipBoardNeed2Add
-                        || isSearchNeed2Add || isXPrivacyNeed2Add || isAppInfoNeed2Add)) {
+                        || isSearchNeed2Add || isXPrivacyNeed2Add || isAppInfoNeed2Add ||
+                        isNotifyCleanNeed2Add)) {
                     Log.d(TAG, "need add nothing");
                     return;
                 }
@@ -223,6 +229,10 @@ public class StatusBarHook extends Hook {
                 }
                 if (isAppInfoNeed2Add) {
                     Action action = new AppInfoAction();
+                    addViewAndSetAction(action, linearLayout, pkgName);
+                }
+                if (isNotifyCleanNeed2Add) {
+                    Action action = new NotifyCleanAction();
                     addViewAndSetAction(action, linearLayout, pkgName);
                 }
             }

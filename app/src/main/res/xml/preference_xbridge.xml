@@ -30,6 +30,13 @@
         android:title="@string/title_xprivacy">
     </SwitchPreference>
     <SwitchPreference
+        android:defaultValue="@bool/notifyclean_default"
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/key_notifyclean"
+        android:summary="@string/summary_notifyclean"
+        android:title="@string/title_notifyclean">
+    </SwitchPreference>
+    <SwitchPreference
         android:defaultValue="@bool/appinfo_default"
         android:icon="@mipmap/ic_launcher"
         android:key="@string/key_appinfo"

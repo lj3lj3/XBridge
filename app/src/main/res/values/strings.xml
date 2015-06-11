@@ -14,6 +14,7 @@
     <string name="key_appsettings" translatable="false">key_appsettings</string>
     <string name="key_xprivacy" translatable="false">key_xprivacy</string>
     <string name="key_appinfo" translatable="false">key_appinfo</string>
+    <string name="key_notifyclean" translatable="false">key_notifyclean</string>
     <string name="key_forcestop" translatable="false">key_forcestop</string>
     <string name="key_show_dismiss" translatable="false">key_show_dismiss</string>
     <string name="key_reboot_systemui" translatabel="false">key_reboot_systemui</string>
@@ -46,6 +47,9 @@
     <string name="key_appinfo_status_bar" translatable="false">key_appinfo_status_bar</string>
     <string name="key_appinfo_recent_task" translatable="false">key_appinfo_recent_task</string>
     <string name="key_appinfo_app_info" translatable="false">key_appinfo_app_info</string>
+    <string name="key_notifyclean_status_bar" translatable="false">key_notifyclean_status_bar</string>
+    <string name="key_notifyclean_recent_task" translatable="false">key_notifyclean_recent_task</string>
+    <string name="key_notifyclean_app_info" translatable="false">key_notifyclean_app_info</string>
 
     <string name="title_show_in_status_bar">Show in notification</string>
     <string name="summary_show_in_status_bar">Show in notification long click view\n(Need reboot system UI)</string>
@@ -67,6 +71,8 @@
     <string name="title_xprivacy">View in XPrivacy</string>
     <string name="summary_appinfo">Add view in default app info screen button in the system</string>
     <string name="title_appinfo">View in default app info screen</string>
+    <string name="summary_notifyclean">Add view in NotifyClean button in the system</string>
+    <string name="title_notifyclean">View in NotifyClean</string>
     <string name="title_xda">XDA thread</string>
     <string name="title_forcestop">Force stop package</string>
     <string name="summary_forcestop">In the recent task screen, long press dismiss button(x) to force stop package</string>

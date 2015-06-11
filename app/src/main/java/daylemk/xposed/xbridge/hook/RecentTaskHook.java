@@ -29,6 +29,7 @@ import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.ForceStopAction;
+import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
@@ -426,6 +427,18 @@ public class RecentTaskHook extends Hook {
                         pkgName, loadPackageParam.classLoader, actionCount);
             } else if (checkIfNeed2Change(headerGutsView, compName)) {
                 Action xBridgeAction = new AppInfoAction();
+                resetAction(context, xBridgeAction, headerGutsView, pkgName);
+            }
+            actionCount++;
+        }
+        if (NotifyCleanAction.isShow && NotifyCleanAction.isShowInRecentTask) {
+            if (Action.isNeed2Add(headerParent, NotifyCleanAction.class)) {
+                // set the action up
+                Action xBridgeAction = new NotifyCleanAction();
+                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                        pkgName, loadPackageParam.classLoader, actionCount);
+            } else if (checkIfNeed2Change(headerGutsView, compName)) {
+                Action xBridgeAction = new NotifyCleanAction();
                 resetAction(context, xBridgeAction, headerGutsView, pkgName);
             }
             actionCount++;

@@ -84,6 +84,7 @@ public abstract class Action {
         ForceStopAction.loadPreferenceKeys(sModRes);
         XPrivacyAction.loadPreferenceKeys(sModRes);
         AppInfoAction.loadPreferenceKeys(sModRes);
+        NotifyCleanAction.loadPreferenceKeys(sModRes);
         Log.d(TAG, "load preference key done");
     }
 
@@ -100,6 +101,7 @@ public abstract class Action {
         ForceStopAction.loadPreference(preferences);
         XPrivacyAction.loadPreference(preferences);
         AppInfoAction.loadPreference(preferences);
+        NotifyCleanAction.loadPreference(preferences);
         Log.d(TAG, "load preference done");
     }
 
@@ -112,6 +114,7 @@ public abstract class Action {
                     ForceStopAction.onReceiveNewValue(key, value) ||
                     XPrivacyAction.onReceiveNewValue(key, value) ||
                     AppInfoAction.onReceiveNewValue(key, value) ||
+                    NotifyCleanAction.onReceiveNewValue(key, value) ||
                     SearchAction.onReceiveNewValue(key, value))) {
                 // check if the debug value
                 if (key.equals(Log.keyDebug)) {
@@ -131,6 +134,7 @@ public abstract class Action {
                 || AppSettingsAction.isShow && AppSettingsAction.isShowInAppInfo
                 || SearchAction.isShow && SearchAction.isShowInAppInfo
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInAppInfo
+                || NotifyCleanAction.isShow && NotifyCleanAction.isShowInAppInfo
 //                || AppInfoAction.isShow && AppInfoAction.isShowInAppInfo
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo;
 
@@ -143,6 +147,7 @@ public abstract class Action {
                 || SearchAction.isShow && SearchAction.isShowInRecentTask
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInRecentTask
                 || AppInfoAction.isShow && AppInfoAction.isShowInRecentTask
+                || NotifyCleanAction.isShow && NotifyCleanAction.isShowInRecentTask
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask;
 
     }
@@ -154,6 +159,7 @@ public abstract class Action {
                 || SearchAction.isShow && SearchAction.isShowInStatusBar
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInStatusBar
                 || AppInfoAction.isShow && AppInfoAction.isShowInStatusBar
+                || NotifyCleanAction.isShow && NotifyCleanAction.isShowInStatusBar
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInStatusBar;
 
     }
@@ -219,9 +225,9 @@ public abstract class Action {
         Drawable drawable;
         try {
             drawable = packageManager.getApplicationIcon(pkgName);
-            Log.d(TAG, "play store icon is found: " + drawable);
+            Log.d(TAG, "package: " + pkgName + ", icon is found: " + drawable);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.w(TAG, "play store icon can't be found, use generic icon");
+            Log.w(TAG, "package: " + pkgName + ", icon can't be found, use generic icon");
             // app is gone, just show package name and generic icon
             drawable = packageManager.getDefaultActivityIcon();
         }
@@ -242,13 +248,16 @@ public abstract class Action {
     /**
      * subclass should overwrite this method or handleData method
      * this method will be called first, if the result is null, will call handleData method
-     * EDIT: add Context parameter
+     * <br>EDIT: add Context parameter
+     * <br>EDIT: this method ONLY is used for start activity, not for broadcast. For broadcast,
+     * handle in the handleData method
      */
     protected abstract Intent getIntent(Hook hook, Context context, String pkgName);
 
     /**
      * subclass should overwrite this method or getIntent method
-     * EDIT: this class is need to set public to call out of the action
+     * <br>EDIT: this class is need to set public to call out of the action
+     * <br>EDIT: If you like to send a boardcast, do in the this method, not getIntent.
      */
     public abstract void handleData(Context context, String pkgName);
 

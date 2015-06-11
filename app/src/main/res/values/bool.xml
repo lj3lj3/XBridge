@@ -20,6 +20,10 @@
     <bool name="xprivacy_status_bar_default">true</bool>
     <bool name="xprivacy_app_info_default">true</bool>
     <bool name="xprivacy_recent_task_default">true</bool>
+    <bool name="notifyclean_default">true</bool>
+    <bool name="notifyclean_status_bar_default">true</bool>
+    <bool name="notifyclean_app_info_default">true</bool>
+    <bool name="notifyclean_recent_task_default">true</bool>
     <bool name="search_default">true</bool>
     <bool name="search_status_bar_default">true</bool>
     <bool name="search_app_info_default">true</bool>
