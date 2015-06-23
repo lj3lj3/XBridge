@@ -25,6 +25,7 @@ import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.action.XHaloFloatingWindowAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.OnPreferenceChangedReceiver;
 import daylemk.xposed.xbridge.data.StaticData;
@@ -139,6 +140,7 @@ public class StatusBarHook extends Hook {
                 boolean isXPrivacyNeed2Add = false;
                 boolean isAppInfoNeed2Add = false;
                 boolean isNotifyCleanNeed2Add = false;
+                boolean isXHaloFloatingWinNeed2Add = false;
                 // check if need to add action
                 if (PlayAction.isShow && PlayAction.isShowInStatusBar) {
                     isPlayNeed2Add = Action.isNeed2Add(layoutGuts, PlayAction.class);
@@ -164,10 +166,15 @@ public class StatusBarHook extends Hook {
                 if (NotifyCleanAction.isShow && NotifyCleanAction.isShowInStatusBar) {
                     isNotifyCleanNeed2Add = Action.isNeed2Add(layoutGuts, NotifyCleanAction.class);
                 }
+                if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                        .isShowInStatusBar) {
+                    isXHaloFloatingWinNeed2Add = Action.isNeed2Add(layoutGuts,
+                            XHaloFloatingWindowAction.class);
+                }
 
                 if (!(isPlayNeed2Add || isOpsNeed2Add || isAppSetNeed2Add || isClipBoardNeed2Add
                         || isSearchNeed2Add || isXPrivacyNeed2Add || isAppInfoNeed2Add ||
-                        isNotifyCleanNeed2Add)) {
+                        isNotifyCleanNeed2Add || isXHaloFloatingWinNeed2Add)) {
                     Log.d(TAG, "need add nothing");
                     return;
                 }
@@ -232,6 +239,10 @@ public class StatusBarHook extends Hook {
                 }
                 if (isNotifyCleanNeed2Add) {
                     Action action = new NotifyCleanAction();
+                    addViewAndSetAction(action, linearLayout, pkgName);
+                }
+                if (isXHaloFloatingWinNeed2Add) {
+                    Action action = new XHaloFloatingWindowAction();
                     addViewAndSetAction(action, linearLayout, pkgName);
                 }
             }

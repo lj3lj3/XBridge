@@ -6,49 +6,46 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.Hook;
+import daylemk.xposed.xbridge.hook.RecentTaskHook;
 import daylemk.xposed.xbridge.utils.Log;
+import daylemk.xposed.xbridge.utils.XBridgeToast;
 
 /**
  * @author DayLemK
  * @version 1.0
- *          28-四月-2015 9:16:48
+ *          23-06-2015
  */
-public class PlayAction extends Action {
-    public static final String TAG = "PlayAction";
-    public static final String STR_DESC = "View in Play Store";
-    public static final String PKG_NAME = "com.android.vending";
-    public static final String URI_BROWSER = "http://play.google.com/store/apps/details?id=";
-    public static final String URI_MARKET = "market://details?id=";
+public class XHaloFloatingWindowAction extends Action {
+    public static final String TAG = "XHaloFloatingWindowAction";
+    public static final String STR_DESC = "View in XHalo floating window";
+    public static final String PKG_NAME = "com.zst.xposed.halo.floatingwindow";
+    public static final int FLAG_FLOATING_WINDOW = 0x00002000;
 
     /* the key should the sub class overwrite ------------begin */
     public static String keyShowInStatusBar;
     public static String keyShowInRecentTask;
     public static String keyShowInAppInfo;
     public static String keyShow;
-    // add for market - browser switch
-    public static String keyIsMarket;
 
     public static boolean showInStatusBarDefault = true;
     public static boolean showInRecentTaskDefault = true;
     public static boolean showInAppInfoDefault = true;
     public static boolean showDefault = true;
-    public static boolean isMarketDefault = false;
 
     public static boolean isShowInRecentTask = true;
     public static boolean isShowInStatusBar = true;
     public static boolean isShowInAppInfo = true;
     public static boolean isShow = true;
-    public static boolean isMarket = false;
     /* the key should the sub class overwrite ------------end */
     // just need to init the icon and listener once
     // EDIT: maybe the icon is already one instance in the system
     public static Drawable sIcon = null;
     //public static View.OnClickListener sOnClickListener = null;
     // EDIT: the on click listener should be different
+    private String cantLaunchInXhalo;
 
     /**
      * load the key from the string resource
@@ -56,17 +53,16 @@ public class PlayAction extends Action {
      * @param sModRes the module resource of package
      */
     public static void loadPreferenceKeys(Resources sModRes) {
-        keyShow = sModRes.getString(R.string.key_play);
-        keyShowInAppInfo = sModRes.getString(R.string.key_play_app_info);
-        keyShowInRecentTask = sModRes.getString(R.string.key_play_recent_task);
-        keyShowInStatusBar = sModRes.getString(R.string.key_play_status_bar);
-        keyIsMarket = sModRes.getString(R.string.key_play_is_market);
+        keyShow = sModRes.getString(R.string.key_xhalofloatingwindow);
+        keyShowInAppInfo = sModRes.getString(R.string.key_xhalofloatingwindow_app_info);
+        keyShowInRecentTask = sModRes.getString(R.string.key_xhalofloatingwindow_recent_task);
+        keyShowInStatusBar = sModRes.getString(R.string.key_xhalofloatingwindow_status_bar);
         // get the default value of this action
-        showInStatusBarDefault = sModRes.getBoolean(R.bool.play_status_bar_default);
-        showInRecentTaskDefault = sModRes.getBoolean(R.bool.play_recent_task_default);
-        showInAppInfoDefault = sModRes.getBoolean(R.bool.play_app_info_default);
-        showDefault = sModRes.getBoolean(R.bool.play_default);
-        isMarketDefault = sModRes.getBoolean(R.bool.play_is_market_default);
+        showInStatusBarDefault = sModRes.getBoolean(R.bool.xhalofloatingwindow_status_bar_default);
+        showInRecentTaskDefault = sModRes.getBoolean(R.bool
+                .xhalofloatingwindow_recent_task_default);
+        showInAppInfoDefault = sModRes.getBoolean(R.bool.xhalofloatingwindow_app_info_default);
+        showDefault = sModRes.getBoolean(R.bool.xhalofloatingwindow_default);
     }
 
     public static void loadPreference(SharedPreferences preferences) {
@@ -78,10 +74,9 @@ public class PlayAction extends Action {
                 showInAppInfoDefault);
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
-        isMarket = preferences.getBoolean(keyIsMarket, isMarketDefault);
         Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
                 "isShowInRecentTask:" + isShowInRecentTask + "isShowInAppInfo:" + isShowInAppInfo
-                + "isShow:" + isShow + "isMarket:" + isMarket);
+                + "isShow:" + isShow);
     }
 
     public static boolean onReceiveNewValue(String key, String value) {
@@ -94,8 +89,6 @@ public class PlayAction extends Action {
             isShowInRecentTask = Boolean.valueOf(value);
         } else if (key.equals(keyShowInStatusBar)) {
             isShowInStatusBar = Boolean.valueOf(value);
-        } else if (key.equals(keyIsMarket)) {
-            isMarket = Boolean.valueOf(value);
         } else {
             // if not found it, return false
             result = false;
@@ -123,17 +116,41 @@ public class PlayAction extends Action {
 
     @Override
     protected Intent getIntent(Hook hook, Context context, String pkgName) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse((isMarket ? URI_MARKET : URI_BROWSER) + pkgName));
-        return intent;
-    }
-
-    @Override
-    protected Intent getIntent(Hook hook, Context context, String pkgName, Intent originalIntent) {
         return null;
     }
 
     @Override
+    protected Intent getIntent(Hook hook, Context context, String pkgName, Intent originalIntent) {
+        Intent intent;
+        // if the hook is recent task hook, handle it with method which with a intent parameter
+        if (hook instanceof RecentTaskHook) {
+            intent = new Intent(originalIntent);
+        } else {
+            // we don't know that launch intent, so use package manager to get it for us
+            intent = context.getPackageManager().getLaunchIntentForPackage
+                    (pkgName);
+        }
+        if (intent != null) {
+            // the floating window flag
+            intent.addFlags(FLAG_FLOATING_WINDOW | Intent.FLAG_ACTIVITY_MULTIPLE_TASK |
+                    Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_NEW_TASK);
+        } else {
+            Log.w(TAG, "the launcher for: " + pkgName + " is not available");
+        }
+
+        return intent;
+    }
+
+    /**
+     * when the launch intent for this package can't be found, then this method will be called,
+     * so we just show a toast to notify user
+     *
+     * @param context Context
+     * @param pkgName The package name
+     */
+    @Override
     public void handleData(Context context, String pkgName) {
+        XBridgeToast.showToastOnHandler(context, Hook.getXBridgeContext(context).getString(R.string
+                .cant_launch_in_xhalo) + pkgName);
     }
 }

@@ -6,6 +6,8 @@
     <string name="package_name_copied">Package name copied:</string>
     <string name="force_stop">Force stop&#160;</string>
     <string name="error">Error:&#160;</string>
+    <string name="experimental">experimental</string>
+    <string name="cant_launch_in_xhalo">"Can't launch in the XHaloFloatingWindow, package:&#160;"</string>
 
     <string name="key_play" translatable="false">key_play</string>
     <string name="key_clipboard" translatable="false">key_clipboard</string>
@@ -15,6 +17,7 @@
     <string name="key_xprivacy" translatable="false">key_xprivacy</string>
     <string name="key_appinfo" translatable="false">key_appinfo</string>
     <string name="key_notifyclean" translatable="false">key_notifyclean</string>
+    <string name="key_xhalofloatingwindow" translatable="false">key_xhalofloatingwindow</string>
     <string name="key_forcestop" translatable="false">key_forcestop</string>
     <string name="key_show_dismiss" translatable="false">key_show_dismiss</string>
     <string name="key_reboot_systemui" translatabel="false">key_reboot_systemui</string>
@@ -51,6 +54,9 @@
     <string name="key_notifyclean_status_bar" translatable="false">key_notifyclean_status_bar</string>
     <string name="key_notifyclean_recent_task" translatable="false">key_notifyclean_recent_task</string>
     <string name="key_notifyclean_app_info" translatable="false">key_notifyclean_app_info</string>
+    <string name="key_xhalofloatingwindow_status_bar" translatable="false">key_xhalofloatingwindow_status_bar</string>
+    <string name="key_xhalofloatingwindow_recent_task" translatable="false">key_xhalofloatingwindow_recent_task</string>
+    <string name="key_xhalofloatingwindow_app_info" translatable="false">key_xhalofloatingwindow_app_info</string>
 
     <string name="title_show_in_status_bar">Show in notification</string>
     <string name="summary_show_in_status_bar">Show in notification long click view\n(Need reboot system UI)</string>
@@ -74,6 +80,8 @@
     <string name="title_appinfo">View in default app info screen</string>
     <string name="summary_notifyclean">Add view in NotifyClean button in the system</string>
     <string name="title_notifyclean">View in NotifyClean</string>
+    <string name="summary_xhalofloatingwindow">Add view in XHaloFloatingWindow button in the system</string>
+    <string name="title_xhalofloatingwindow">View in XHaloFloatingWindow</string>
     <string name="title_xda">XDA thread</string>
     <string name="title_forcestop">Force stop package</string>
     <string name="summary_forcestop">In the recent task screen, long press dismiss button(x) to force stop package</string>

@@ -74,6 +74,11 @@ public class ForceStopAction extends Action {
     }
 
     @Override
+    protected Intent getIntent(Hook hook, Context context, String pkgName, Intent originalIntent) {
+        return null;
+    }
+
+    @Override
     public void handleData(final Context context, final String pkgName) {
 //        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         new Thread(new Runnable() {

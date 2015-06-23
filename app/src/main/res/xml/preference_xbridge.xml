@@ -37,6 +37,13 @@
         android:title="@string/title_notifyclean">
     </SwitchPreference>
     <SwitchPreference
+        android:defaultValue="@bool/xhalofloatingwindow_default"
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/key_xhalofloatingwindow"
+        android:summary="@string/summary_xhalofloatingwindow"
+        android:title="@string/title_xhalofloatingwindow">
+    </SwitchPreference>
+    <SwitchPreference
         android:defaultValue="@bool/appinfo_default"
         android:icon="@mipmap/ic_launcher"
         android:key="@string/key_appinfo"

@@ -31,10 +31,10 @@ public class FrameworksHook extends Hook {
             Log.d(TAG, "get the icon search: " + iconSearch);
         }
         if (iconCopyDefault == null) {
-            iconCopyDefault = sModRes.getDrawable(R.drawable.ic_menu_copy_material);
+            iconCopyDefault = sModRes.getDrawable(R.drawable.ic_menu_copy_material, null);
         }
         if (iconSearchDefault == null) {
-            iconSearchDefault = sModRes.getDrawable(R.drawable.ic_menu_search_material);
+            iconSearchDefault = sModRes.getDrawable(R.drawable.ic_menu_search_material, null);
         }
         Log.d(TAG, "default icons: " + iconCopyDefault + ", " + iconSearchDefault);
     }

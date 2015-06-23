@@ -25,6 +25,10 @@
     <bool name="notifyclean_status_bar_default">true</bool>
     <bool name="notifyclean_app_info_default">true</bool>
     <bool name="notifyclean_recent_task_default">true</bool>
+    <bool name="xhalofloatingwindow_default">true</bool>
+    <bool name="xhalofloatingwindow_status_bar_default">true</bool>
+    <bool name="xhalofloatingwindow_app_info_default">true</bool>
+    <bool name="xhalofloatingwindow_recent_task_default">true</bool>
     <bool name="search_default">true</bool>
     <bool name="search_status_bar_default">true</bool>
     <bool name="search_app_info_default">true</bool>

@@ -93,6 +93,11 @@ public class NotifyCleanAction extends Action {
     }
 
     @Override
+    protected Intent getIntent(Hook hook, Context context, String pkgName, Intent originalIntent) {
+        return null;
+    }
+
+    @Override
     public void handleData(Context context, String pkgName) {
         Intent intent = new Intent(ACTION_NAME);
         intent.setPackage(PKG_NAME);

@@ -97,6 +97,11 @@ public class ClipBoardAction extends Action {
         return null;
     }
 
+    @Override
+    protected Intent getIntent(Hook hook, Context context, String pkgName, Intent originalIntent) {
+        return null;
+    }
+
     /**
      * init the icon from UI
      *

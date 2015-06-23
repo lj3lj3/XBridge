@@ -104,6 +104,11 @@ public class XPrivacyAction extends Action {
     }
 
     @Override
+    protected Intent getIntent(Hook hook, Context context, String pkgName, Intent originalIntent) {
+        return null;
+    }
+
+    @Override
     public void handleData(Context context, String pkgName) {
 
     }

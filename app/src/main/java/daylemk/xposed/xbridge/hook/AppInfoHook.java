@@ -14,6 +14,7 @@ import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.action.XHaloFloatingWindowAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
@@ -103,6 +104,10 @@ public class AppInfoHook extends Hook {
         }
         if (NotifyCleanAction.isShow && NotifyCleanAction.isShowInAppInfo) {
             final Action action = new NotifyCleanAction();
+            addMenuAndSetAction(menu, action, context, pkgName);
+        }
+        if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInAppInfo) {
+            final Action action = new XHaloFloatingWindowAction();
             addMenuAndSetAction(menu, action, context, pkgName);
         }
     }

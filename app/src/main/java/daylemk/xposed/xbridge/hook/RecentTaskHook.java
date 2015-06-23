@@ -32,6 +32,7 @@ import daylemk.xposed.xbridge.action.ForceStopAction;
 import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
+import daylemk.xposed.xbridge.action.XHaloFloatingWindowAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
@@ -443,6 +444,19 @@ public class RecentTaskHook extends Hook {
             }
             actionCount++;
         }
+        // XHalo use methods with intent parameter
+        if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInRecentTask) {
+            if (Action.isNeed2Add(headerParent, XHaloFloatingWindowAction.class)) {
+                // set the action up
+                Action xBridgeAction = new XHaloFloatingWindowAction();
+                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
+                        pkgName, loadPackageParam.classLoader, actionCount, intent);
+            } else if (checkIfNeed2Change(headerGutsView, compName)) {
+                Action xBridgeAction = new XHaloFloatingWindowAction();
+                resetAction(context, xBridgeAction, headerGutsView, pkgName, intent);
+            }
+            actionCount++;
+        }
         Log.d(TAG, "count:" + actionCount);
 
         // check if the guts view is NOT the right one, some cycle stuff
@@ -537,21 +551,29 @@ public class RecentTaskHook extends Hook {
     }
 
     private void addViewAndSetAction(Context context, Resources res, Action action, ViewGroup
-            headerGutsView, String pkgName, ClassLoader classLoader, int actionCount) throws
+            headerGutsView, String pkgName, ClassLoader classLoader, int actionCount, Intent
+                                             originalIntent) throws
             Exception {
         Log.d(TAG, "add new Action: " + action);
         ImageView xBridgeView = getXBridgeView(context, res,
                 classLoader, actionCount);
         action.setAction(RecentTaskHook.this, context,
                 pkgName,
-                xBridgeView);
+                xBridgeView, originalIntent);
         // add layoutParams
         headerGutsView.addView(xBridgeView/*,
                                         dismissViewLayoutParams*/);
     }
 
+    private void addViewAndSetAction(Context context, Resources res, Action action, ViewGroup
+            headerGutsView, String pkgName, ClassLoader classLoader, int actionCount) throws
+            Exception {
+        addViewAndSetAction(context, res, action, headerGutsView, pkgName, classLoader,
+                actionCount, null);
+    }
+
     private void resetAction(Context context, Action action, ViewGroup headerGutsView, String
-            pkgName) {
+            pkgName, Intent intent) {
         Log.d(TAG, "reset action: " + action);
         // this action need to be reset
         // EDIT: use action.getClass instead
@@ -561,7 +583,12 @@ public class RecentTaskHook extends Hook {
                                 .getViewId(action.getClass()));
         action.setAction(RecentTaskHook.this, context,
                 pkgName,
-                xBridgeView);
+                xBridgeView, intent);
+    }
+
+    private void resetAction(Context context, Action action, ViewGroup headerGutsView, String
+            pkgName) {
+        resetAction(context, action, headerGutsView, pkgName, null);
     }
 
     private boolean checkIfNeed2Change(View headerGutsView, String compName) {
@@ -602,7 +629,7 @@ public class RecentTaskHook extends Hook {
                     .getMarginEnd());
         }
         // the background drawable should used one time
-        xBridgeView.setBackground(res.getDrawable(buttonBgId));
+        xBridgeView.setBackground(res.getDrawable(buttonBgId, null));
         return xBridgeView;
     }
 

@@ -88,6 +88,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
         XPrivacyAction.loadPreferenceKeys(sModRes);
         AppInfoAction.loadPreferenceKeys(sModRes);
         NotifyCleanAction.loadPreferenceKeys(sModRes);
+        XHaloFloatingWindowAction.loadPreferenceKeys(sModRes);
         Log.d(TAG, "load preference key done");
     }
 
@@ -105,6 +106,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
         XPrivacyAction.loadPreference(preferences);
         AppInfoAction.loadPreference(preferences);
         NotifyCleanAction.loadPreference(preferences);
+        XHaloFloatingWindowAction.loadPreference(preferences);
         Log.d(TAG, "load preference done");
     }
 
@@ -118,6 +120,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                     XPrivacyAction.onReceiveNewValue(key, value) ||
                     AppInfoAction.onReceiveNewValue(key, value) ||
                     NotifyCleanAction.onReceiveNewValue(key, value) ||
+                    XHaloFloatingWindowAction.onReceiveNewValue(key, value) ||
                     SearchAction.onReceiveNewValue(key, value))) {
                 // check if the debug value
                 if (key.equals(Log.keyDebug)) {
@@ -138,6 +141,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 || SearchAction.isShow && SearchAction.isShowInAppInfo
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInAppInfo
                 || NotifyCleanAction.isShow && NotifyCleanAction.isShowInAppInfo
+                || XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInAppInfo
 //                || AppInfoAction.isShow && AppInfoAction.isShowInAppInfo
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo;
 
@@ -151,6 +155,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInRecentTask
                 || AppInfoAction.isShow && AppInfoAction.isShowInRecentTask
                 || NotifyCleanAction.isShow && NotifyCleanAction.isShowInRecentTask
+                || XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInRecentTask
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask;
 
     }
@@ -163,6 +168,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInStatusBar
                 || AppInfoAction.isShow && AppInfoAction.isShowInStatusBar
                 || NotifyCleanAction.isShow && NotifyCleanAction.isShowInStatusBar
+                || XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInStatusBar
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInStatusBar;
 
     }
@@ -238,14 +244,23 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
         return drawable;
     }
 
-    private Intent getFinalIntent(Hook hook, Context context, String pkgName) {
+    private Intent getFinalIntent(Hook hook, Context context, String pkgName, Intent
+            originalIntent) {
         Intent intent = getIntent(hook, context, pkgName);
+        // if null call with intent
+        if (intent == null) {
+            intent = getIntent(hook, context, pkgName, originalIntent);
+        }
         // this is just need for appInfo screen for now, not in status bar
         if (intent != null && hook instanceof AppInfoHook) {
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
         }
         Log.d(TAG, "final intent: " + intent);
         return intent;
+    }
+
+    private Intent getFinalIntent(Hook hook, Context context, String pkgName) {
+        return getFinalIntent(hook, context, pkgName, null);
     }
 
     /**
@@ -256,6 +271,10 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
      * handle in the handleData method
      */
     protected abstract Intent getIntent(Hook hook, Context context, String pkgName);
+
+    // add orignal intent
+    protected abstract Intent getIntent(Hook hook, Context context, String pkgName, Intent
+            originalIntent);
 
     /**
      * subclass should overwrite this method or getIntent method
@@ -276,7 +295,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
 
     public void setAction(final Hook hook, final Context context,
                           final String pkgName,
-                          View view) {
+                          View view, final Intent originalIntent) {
         mContext = context;
         mPkgName = pkgName;
 //        super.setAction(hook, context, pkgName, imageButton);
@@ -297,7 +316,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "on click action is: " + Action.this.toString() + ", hook: " + hook);
-                mIntent = getFinalIntent(hook, context, pkgName);
+                mIntent = getFinalIntent(hook, context, pkgName, originalIntent);
 
                 if (hook instanceof StatusBarHook) {
                     // dismiss the keyguard adn collapse panels
@@ -309,6 +328,12 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 Log.d(TAG, Action.this.toString() + " action done");
             }
         });
+    }
+
+    public void setAction(final Hook hook, final Context context,
+                          final String pkgName,
+                          View view) {
+        setAction(hook, context, pkgName, view, null);
     }
 
     /**
