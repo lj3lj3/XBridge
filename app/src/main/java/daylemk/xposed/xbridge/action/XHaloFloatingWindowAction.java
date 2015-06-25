@@ -29,23 +29,25 @@ public class XHaloFloatingWindowAction extends Action {
     public static String keyShowInRecentTask;
     public static String keyShowInAppInfo;
     public static String keyShow;
+    public static String keyShowButtonNow;
 
     public static boolean showInStatusBarDefault = true;
     public static boolean showInRecentTaskDefault = true;
     public static boolean showInAppInfoDefault = true;
     public static boolean showDefault = true;
+    public static boolean showButtonNowDefault;
 
     public static boolean isShowInRecentTask = true;
     public static boolean isShowInStatusBar = true;
     public static boolean isShowInAppInfo = true;
     public static boolean isShow = true;
+    public static boolean isShowButtonNow = true;
     /* the key should the sub class overwrite ------------end */
     // just need to init the icon and listener once
     // EDIT: maybe the icon is already one instance in the system
     public static Drawable sIcon = null;
     //public static View.OnClickListener sOnClickListener = null;
     // EDIT: the on click listener should be different
-    private String cantLaunchInXhalo;
 
     /**
      * load the key from the string resource
@@ -57,12 +59,15 @@ public class XHaloFloatingWindowAction extends Action {
         keyShowInAppInfo = sModRes.getString(R.string.key_xhalofloatingwindow_app_info);
         keyShowInRecentTask = sModRes.getString(R.string.key_xhalofloatingwindow_recent_task);
         keyShowInStatusBar = sModRes.getString(R.string.key_xhalofloatingwindow_status_bar);
+        keyShowButtonNow = sModRes.getString(R.string.key_xhalofloatingwindow_show_button_now);
         // get the default value of this action
         showInStatusBarDefault = sModRes.getBoolean(R.bool.xhalofloatingwindow_status_bar_default);
         showInRecentTaskDefault = sModRes.getBoolean(R.bool
                 .xhalofloatingwindow_recent_task_default);
         showInAppInfoDefault = sModRes.getBoolean(R.bool.xhalofloatingwindow_app_info_default);
         showDefault = sModRes.getBoolean(R.bool.xhalofloatingwindow_default);
+        showButtonNowDefault = sModRes.getBoolean(R.bool
+                .xhalofloatingwindow_show_button_now_default);
     }
 
     public static void loadPreference(SharedPreferences preferences) {
@@ -74,9 +79,11 @@ public class XHaloFloatingWindowAction extends Action {
                 showInAppInfoDefault);
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
+        isShowButtonNow = preferences.getBoolean(keyShowButtonNow,
+                showButtonNowDefault);
         Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
                 "isShowInRecentTask:" + isShowInRecentTask + "isShowInAppInfo:" + isShowInAppInfo
-                + "isShow:" + isShow);
+                + "isShow:" + isShow + "isShowButtonNow:" + isShowButtonNow);
     }
 
     public static boolean onReceiveNewValue(String key, String value) {
@@ -89,6 +96,8 @@ public class XHaloFloatingWindowAction extends Action {
             isShowInRecentTask = Boolean.valueOf(value);
         } else if (key.equals(keyShowInStatusBar)) {
             isShowInStatusBar = Boolean.valueOf(value);
+        } else if (key.equals(keyShowButtonNow)) {
+            isShowButtonNow = Boolean.valueOf(value);
         } else {
             // if not found it, return false
             result = false;

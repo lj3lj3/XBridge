@@ -10,7 +10,7 @@
     <SwitchPreference
         android:defaultValue="@bool/xhalofloatingwindow_recent_task_default"
         android:key="@string/key_xhalofloatingwindow_recent_task"
-        android:summary="@string/summary_show_in_recent_task"
+        android:summary="@string/summary_xhalofloatingwindow_show_in_recent_task"
         android:title="@string/title_show_in_recent_task">
     </SwitchPreference>
     <SwitchPreference
@@ -19,5 +19,13 @@
         android:summary="@string/summary_show_in_app_info"
         android:title="@string/title_show_in_app_info">
     </SwitchPreference>
+    <PreferenceCategory android:title="@string/title_enhance">
+        <SwitchPreference
+            android:defaultValue="@bool/xhalofloatingwindow_show_button_now_default"
+            android:key="@string/key_xhalofloatingwindow_show_button_now"
+            android:summary="@string/summary_xhalofloatingwindow_show_button_now"
+            android:title="@string/title_xhalofloatingwindow_show_button_now">
+        </SwitchPreference>
+    </PreferenceCategory>
 
 </PreferenceScreen>

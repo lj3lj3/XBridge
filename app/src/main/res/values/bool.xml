@@ -29,6 +29,7 @@
     <bool name="xhalofloatingwindow_status_bar_default">true</bool>
     <bool name="xhalofloatingwindow_app_info_default">true</bool>
     <bool name="xhalofloatingwindow_recent_task_default">true</bool>
+    <bool name="xhalofloatingwindow_show_button_now_default">true</bool>
     <bool name="search_default">true</bool>
     <bool name="search_status_bar_default">true</bool>
     <bool name="search_app_info_default">true</bool>
@@ -38,7 +39,7 @@
     <!--<bool name="forcestop_status_bar_default">true</bool>
     <bool name="forcestop_app_info_default">true</bool>
     <bool name="forcestop_recent_task_default">true</bool>-->
-    <bool name="show_dismiss_default">true</bool>
+    <bool name="show_dismiss_now_default">true</bool>
     <bool name="appinfo_default">true</bool>
     <bool name="appinfo_status_bar_default">true</bool>
     <!--<bool name="appinfo_app_info_default">true</bool>-->

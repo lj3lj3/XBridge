@@ -155,7 +155,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 || XPrivacyAction.isShow && XPrivacyAction.isShowInRecentTask
                 || AppInfoAction.isShow && AppInfoAction.isShowInRecentTask
                 || NotifyCleanAction.isShow && NotifyCleanAction.isShowInRecentTask
-                || XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInRecentTask
+                // remove XHalo recent task, 'cause it's different
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask;
 
     }
@@ -189,7 +189,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
             }
         } else {
             // the id is not here, so we generate it and put it in the map
-            viewIdMap.put(actionClass, View.generateViewId());
+            generateViewId(actionClass);
             // --------- debug map content begin ---------
             Log.d(TAG, "map,keys: " + viewIdMap.keySet());
             Set<Class<? extends Action>> keySet = viewIdMap.keySet();
@@ -215,9 +215,18 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
     public static int getViewId(Class<? extends Action> actionClass) {
         if (!viewIdMap.containsKey(actionClass)) {
             Log.w(TAG, "the map doesn't contain: " + actionClass);
+            return generateViewId(actionClass);
         }
 
         return viewIdMap.get(actionClass);
+    }
+
+    private static int generateViewId(Class<? extends Action> actionClass) {
+        int id = View.generateViewId();
+        Log.d(TAG, "view id generated: " + id);
+        // the id is not here, so we generate it and put it in the map
+        viewIdMap.put(actionClass, id);
+        return id;
     }
 
     /**

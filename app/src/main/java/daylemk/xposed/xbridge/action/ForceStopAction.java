@@ -22,11 +22,11 @@ public class ForceStopAction extends Action {
 
     /* the key should the sub class overwrite ------------begin */
     public static String keyShow;
-    public static String keyShowDismissButton;
-    public static boolean showDismissButtonDefault = true;
+    public static String keyShowDismissButtonNow;
+    public static boolean showDismissButtonNowDefault = true;
     public static boolean showDefault = true;
     public static boolean isShow = true;
-    public static boolean isShowDismissButton = true;
+    public static boolean isShowDismissButtonNow = true;
     /* the key should the sub class overwrite ------------end */
 
     /**
@@ -36,27 +36,27 @@ public class ForceStopAction extends Action {
      */
     public static void loadPreferenceKeys(Resources sModRes) {
         keyShow = sModRes.getString(R.string.key_forcestop);
-        keyShowDismissButton = sModRes.getString(R.string.key_show_dismiss);
+        keyShowDismissButtonNow = sModRes.getString(R.string.key_show_dismiss_now);
         // get the default value of this action
         showDefault = sModRes.getBoolean(R.bool.forcestop_default);
-        showDismissButtonDefault = sModRes.getBoolean(R.bool.show_dismiss_default);
+        showDismissButtonNowDefault = sModRes.getBoolean(R.bool.show_dismiss_now_default);
     }
 
     public static void loadPreference(SharedPreferences preferences) {
         isShow = preferences.getBoolean(keyShow,
                 showDefault);
-        isShowDismissButton = preferences.getBoolean(keyShowDismissButton,
-                showDismissButtonDefault);
-        Log.d(TAG, "load preference: " + "isShow:" + isShow + "isShowDismissButton:" +
-                isShowDismissButton);
+        isShowDismissButtonNow = preferences.getBoolean(keyShowDismissButtonNow,
+                showDismissButtonNowDefault);
+        Log.d(TAG, "load preference: " + "isShow:" + isShow + "isShowDismissButtonNow:" +
+                isShowDismissButtonNow);
     }
 
     public static boolean onReceiveNewValue(String key, String value) {
         boolean result = true;
         if (key.equals(keyShow)) {
             isShow = Boolean.valueOf(value);
-        } else if (key.equals(keyShowDismissButton)) {
-            isShowDismissButton = Boolean.valueOf(value);
+        } else if (key.equals(keyShowDismissButtonNow)) {
+            isShowDismissButtonNow = Boolean.valueOf(value);
         /*} else if (key.equals(keyShowInRecentTask)) {
             isShowInRecentTask = Boolean.valueOf(value);
         } else if (key.equals(keyShowInStatusBar)) {

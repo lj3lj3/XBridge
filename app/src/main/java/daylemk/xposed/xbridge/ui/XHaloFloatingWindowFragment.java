@@ -24,6 +24,7 @@ public class XHaloFloatingWindowFragment extends HeaderPreferenceFragment {
     private SwitchPreference preferenceStatusBar;
     private SwitchPreference preferenceRecentTask;
     private SwitchPreference preferenceAppInfo;
+    private SwitchPreference preferenceShowButtonNow;
 
     // every sub class should has this method
     public static Drawable getPkgIcon(PackageManager pm) {
@@ -52,15 +53,19 @@ public class XHaloFloatingWindowFragment extends HeaderPreferenceFragment {
                 .keyShowInRecentTask);
         preferenceAppInfo = (SwitchPreference) this.findPreference(XHaloFloatingWindowAction
                 .keyShowInAppInfo);
+        preferenceShowButtonNow = (SwitchPreference) this.findPreference(XHaloFloatingWindowAction
+                .keyShowButtonNow);
         preferenceStatusBar.setOnPreferenceChangeListener(this);
         preferenceRecentTask.setOnPreferenceChangeListener(this);
         preferenceAppInfo.setOnPreferenceChangeListener(this);
+        preferenceShowButtonNow.setOnPreferenceClickListener(this);
         // set values
 //        preferenceStatusBar.setChecked(PlayAction.isShowInStatusBar);
 //        preferenceRecentTask.setChecked(PlayAction.isShowInRecentTask);
 //        preferenceAppInfo.setChecked(PlayAction.isShowInAppInfo);
 
-        addPreferences2TheList(preferenceStatusBar, preferenceRecentTask, preferenceAppInfo);
+        addPreferences2TheList(preferenceStatusBar, preferenceRecentTask, preferenceAppInfo,
+                preferenceShowButtonNow);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }

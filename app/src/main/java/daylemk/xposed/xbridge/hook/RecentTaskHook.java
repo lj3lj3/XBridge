@@ -2,6 +2,7 @@ package daylemk.xposed.xbridge.hook;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -73,6 +74,11 @@ public class RecentTaskHook extends Hook {
     // animation interpolator
     private Interpolator interpolator = new AccelerateDecelerateInterpolator();
 
+    private Interpolator fastOutSlowInInterpolator;
+    private Interpolator fastOutLinearInInterpolator;
+    private int taskBarExitAnimDuration = 0;
+    private int taskBarEnterAnimDuration = 0;
+
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         super.initZygote(startupParam);
@@ -82,30 +88,187 @@ public class RecentTaskHook extends Hook {
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) throws
             Throwable {
         super.handleLoadPackage(loadPackageParam);
+        Class<?> taskViewHeaderClass = XposedHelpers.findClass(StaticData.PKG_NAME_SYSTEMUI + "" +
+                        ".recents" +
+                        ".views" +
+                        ".TaskViewHeader",
+                loadPackageParam.classLoader);
+        Log.d(TAG, "task view header class: " + taskViewHeaderClass);
+        XposedHelpers.findAndHookMethod(taskViewHeaderClass, "onFinishInflate", new XC_MethodHook
+                () {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                Log.d(TAG, "onFinishInflate hook");
+                if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                    FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
+                    Context context = taskViewHeader.getContext();
+                    Resources res = context.getResources();
+                    // call this two
+                    initViewIds(res);
+                    getLayoutParams(taskViewHeader);
+                    // the xbridge view position is 1, right to the dismiss button
+                    View xBridgeView = getXBridgeView(context, res, loadPackageParam.classLoader,
+                            1);
+                    xBridgeView.setId(Action.getViewId(XHaloFloatingWindowAction.class));
+                    // set the button to invisible
+                    xBridgeView.setVisibility(View.INVISIBLE);
+                    taskViewHeader.addView(xBridgeView);
+                }
+            }
+        });
+
+        XposedHelpers.findAndHookMethod(taskViewHeaderClass, "startLaunchTaskDismissAnimation",
+                new XC_MethodHook
+                        () {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        Log.d(TAG, "startLaunchTaskDismissAnimation hook");
+                        if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                            FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
+                            View xHalo = taskViewHeader.findViewById(Action.getViewId
+                                    (XHaloFloatingWindowAction.class));
+                            if (xHalo != null) {
+                                if (xHalo.getVisibility() == View.VISIBLE) {
+                                    Object mConfig = XposedHelpers.getObjectField(taskViewHeader,
+                                            "mConfig");
+                                    if (mConfig != null) {
+                                        if (fastOutSlowInInterpolator == null) {
+                                            fastOutSlowInInterpolator = (Interpolator)
+                                                    XposedHelpers.getObjectField(mConfig,
+                                                            "fastOutSlowInInterpolator");
+                                        }
+                                        if (taskBarExitAnimDuration == 0) {
+                                            taskBarExitAnimDuration = XposedHelpers.getIntField
+                                                    (mConfig, "taskBarExitAnimDuration");
+                                        }
+                                    } else {
+                                        Log.w(TAG, "the mConfig is null???");
+                                    }
+                                    xHalo.animate().cancel();
+                                    xHalo.animate()
+                                            .alpha(0f)
+                                            .setStartDelay(0)
+                                            .setInterpolator(fastOutSlowInInterpolator)
+                                            .setDuration(taskBarExitAnimDuration)
+                                            .withLayer()
+                                            .start();
+                                }
+                            } else {
+                                Log.w(TAG, "the xhalo button is null??? at " +
+                                        "startLaunchTaskDismissAnimation");
+                            }
+                        }
+                    }
+                });
+
+        XposedHelpers.findAndHookMethod(taskViewHeaderClass, "startNoUserInteractionAnimation",
+                new XC_MethodHook
+                        () {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        Log.d(TAG, "startNoUserInteractionAnimation hook");
+                        if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                            FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
+                            View xHalo = taskViewHeader.findViewById(Action.getViewId
+                                    (XHaloFloatingWindowAction.class));
+                            if (xHalo != null) {
+                                Object mConfig = XposedHelpers.getObjectField(taskViewHeader,
+                                        "mConfig");
+                                if (mConfig != null) {
+                                    if (fastOutLinearInInterpolator == null) {
+                                        fastOutLinearInInterpolator = (Interpolator)
+                                                XposedHelpers.getObjectField(mConfig,
+                                                        "fastOutLinearInInterpolator");
+                                    }
+                                    if (taskBarEnterAnimDuration == 0) {
+                                        taskBarEnterAnimDuration = XposedHelpers.getIntField
+                                                (mConfig, "taskBarEnterAnimDuration");
+                                    }
+                                } else {
+                                    Log.w(TAG, "the mConfig is null???");
+                                }
+                                xHalo.setVisibility(View.VISIBLE);
+                                xHalo.setAlpha(0f);
+                                xHalo.animate()
+                                        .alpha(1f)
+                                        .setStartDelay(0)
+                                        .setInterpolator(fastOutLinearInInterpolator)
+                                        .setDuration(taskBarEnterAnimDuration)
+                                        .withLayer()
+                                        .start();
+                            } else {
+                                Log.w(TAG, "the xhalo button is null??? at " +
+                                        "startNoUserInteractionAnimation");
+                            }
+                        }
+                    }
+                });
+
+        XposedHelpers.findAndHookMethod(taskViewHeaderClass, "setNoUserInteractionState",
+                new XC_MethodHook
+                        () {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        Log.d(TAG, "startNoUserInteractionAnimation hook");
+                        if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                            FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
+                            View xHalo = taskViewHeader.findViewById(Action.getViewId
+                                    (XHaloFloatingWindowAction.class));
+                            if (xHalo != null) {
+                                if (xHalo.getVisibility() != View.VISIBLE) {
+                                    xHalo.animate().cancel();
+                                    xHalo.setVisibility(View.VISIBLE);
+                                    xHalo.setAlpha(1f);
+                                }
+                            } else {
+                                Log.w(TAG, "the xhalo button is null??? at " +
+                                        "setNoUserInteractionState");
+                            }
+                        }
+                    }
+                });
+
         Class<?> taskViewClass = XposedHelpers.findClass(StaticData.PKG_NAME_SYSTEMUI + ".recents" +
                         ".views" +
                         ".TaskView",
                 loadPackageParam.classLoader);
         Log.d(TAG, "task view class: " + taskViewClass);
         // hook the reset method, set the dismiss button to visible if ForceStopAction
-        // .isShowDismissButton is true on lollipop mr1
+        // .isShowDismissButtonNow is true on lollipop mr1
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             XposedHelpers.findAndHookMethod(taskViewClass, "reset", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
                     Log.d(TAG, "reset method hook");
-                    if (ForceStopAction.isShowDismissButton) {
+                    if (ForceStopAction.isShowDismissButtonNow || XHaloFloatingWindowAction
+                            .isShowButtonNow) {
                         FrameLayout taskViewObject = (FrameLayout) param.thisObject;
                         View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
                                 "mHeaderView");
                         if (mHeaderView != null) {
-                            View dismissView = mHeaderView.findViewById(idDismiss);
-                            if (dismissView != null) {
-                                Log.d(TAG, "after reset visible:" + dismissView.getVisibility());
-                                dismissView.setVisibility(View.VISIBLE);
-                            } else {
-                                Log.d(TAG, "dismiss view is null at reset");
+                            if (ForceStopAction.isShowDismissButtonNow) {
+                                View dismissView = mHeaderView.findViewById(idDismiss);
+                                if (dismissView != null) {
+                                    Log.d(TAG, "dismiss view after reset visible:" + dismissView
+                                            .getVisibility());
+
+                                    dismissView.setVisibility(View.VISIBLE);
+                                } else {
+                                    Log.d(TAG, "dismiss view is null at reset");
+                                }
+                            }
+                            if (XHaloFloatingWindowAction.isShowButtonNow) {
+                                View xhalo = mHeaderView.findViewById(Action.getViewId
+                                        (XHaloFloatingWindowAction.class));
+                                if (xhalo != null) {
+                                    Log.d(TAG, "xhalo after reset visible:" + xhalo.getVisibility
+                                            ());
+
+                                    xhalo.setVisibility(View.VISIBLE);
+                                } else {
+                                    Log.d(TAG, "dismiss view is null at reset");
+                                }
                             }
                         } else {
                             Log.d(TAG, "mHeaderView is null at reset");
@@ -125,7 +288,7 @@ public class RecentTaskHook extends Hook {
                     isRecentShow = true;
                 }
                 if (!(isRecentShow || ForceStopAction.isShow || ForceStopAction
-                        .isShowDismissButton)) {
+                        .isShowDismissButtonNow || XHaloFloatingWindowAction.isShowButtonNow)) {
                     // the recent and force stop action is not active
                     // call the original method
                     param.getResult();
@@ -135,7 +298,7 @@ public class RecentTaskHook extends Hook {
                 super.beforeHookedMethod(param);
                 // get this every time???
                 FrameLayout taskViewObject = (FrameLayout) param.thisObject;
-                View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
+                ViewGroup mHeaderView = (ViewGroup) XposedHelpers.getObjectField(taskViewObject,
                         "mHeaderView");
                 if (isRecentShow && mHeaderView != null) {
                     // set on click listener, 'cause we use long click listener, so the touch
@@ -156,7 +319,7 @@ public class RecentTaskHook extends Hook {
                     dismissView = mHeaderView.findViewById(idDismiss);
                     dismissView.setOnLongClickListener((View.OnLongClickListener) taskViewObject);
                 }
-                if (ForceStopAction.isShowDismissButton && mHeaderView != null) {
+                if (ForceStopAction.isShowDismissButtonNow && mHeaderView != null) {
                     Log.d(TAG, "show dismiss button now");
                     // get the view ids
                     initViewIds(taskViewObject.getResources());
@@ -165,6 +328,20 @@ public class RecentTaskHook extends Hook {
                     }
                     if (dismissView != null) {
                         dismissView.setVisibility(View.VISIBLE);
+                    }
+                }
+                if (XHaloFloatingWindowAction.isShowInRecentTask && mHeaderView != null) {
+                    Action action = new XHaloFloatingWindowAction();
+                    Intent baseIntent = getTaskBaseIntent(taskViewObject);
+                    resetAction(taskViewObject.getContext(), action, mHeaderView, getPackageName
+                            (baseIntent), baseIntent);
+                }
+                if (XHaloFloatingWindowAction.isShowButtonNow && mHeaderView != null) {
+                    Log.d(TAG, "show xhalo button now");
+                    View xHaloView = mHeaderView.findViewById(Action.getViewId
+                            (XHaloFloatingWindowAction.class));
+                    if (xHaloView != null) {
+                        xHaloView.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -213,6 +390,17 @@ public class RecentTaskHook extends Hook {
                         // if force stop action is show, set null
                         if (ForceStopAction.isShow && mHeaderView != null) {
                             mHeaderView.findViewById(idDismiss).setOnLongClickListener(null);
+                        }
+
+                        if (XHaloFloatingWindowAction.isShowInRecentTask && mHeaderView != null) {
+                            ImageView xHaloView = (ImageView) mHeaderView.findViewById(Action
+                                    .getViewId
+                                            (XHaloFloatingWindowAction
+                                                    .class));
+                            // reset parameters
+                            xHaloView.setImageDrawable(null);
+                            xHaloView.setOnClickListener(null);
+                            xHaloView.setContentDescription(null);
                         }
 
                         // call the original method
@@ -337,8 +525,8 @@ public class RecentTaskHook extends Hook {
         // get the package name
         Intent intent = getTaskBaseIntent(taskViewObject);
         // this should be the tag !!!
-        final String compName = intent.getComponent().toString();
-        final String pkgName = intent.getComponent().getPackageName();
+        final String compName = getComponentName(intent).toString();
+        final String pkgName = getPackageName(intent);
 
         int actionCount = 0;
         if (PlayAction.isShow && PlayAction.isShowInRecentTask) {
@@ -444,19 +632,7 @@ public class RecentTaskHook extends Hook {
             }
             actionCount++;
         }
-        // XHalo use methods with intent parameter
-        if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInRecentTask) {
-            if (Action.isNeed2Add(headerParent, XHaloFloatingWindowAction.class)) {
-                // set the action up
-                Action xBridgeAction = new XHaloFloatingWindowAction();
-                addViewAndSetAction(context, res, xBridgeAction, headerGutsView,
-                        pkgName, loadPackageParam.classLoader, actionCount, intent);
-            } else if (checkIfNeed2Change(headerGutsView, compName)) {
-                Action xBridgeAction = new XHaloFloatingWindowAction();
-                resetAction(context, xBridgeAction, headerGutsView, pkgName, intent);
-            }
-            actionCount++;
-        }
+        // moved XHalo to task view header
         Log.d(TAG, "count:" + actionCount);
 
         // check if the guts view is NOT the right one, some cycle stuff
@@ -493,6 +669,15 @@ public class RecentTaskHook extends Hook {
         return intent;
     }
 
+    private String getPackageName(Intent baseIntent) {
+        return getComponentName(baseIntent).getPackageName();
+    }
+
+    private ComponentName getComponentName(Intent baseIntent) {
+        // this should be the tag !!!
+        return baseIntent.getComponent();
+    }
+
     private void initViewIds(Resources res) {
         if (viewHeaderId == -1) {
             // use package name on get identifier
@@ -517,6 +702,23 @@ public class RecentTaskHook extends Hook {
         }
     }
 
+    private void getLayoutParams(View mHeaderView) {
+        if (headerViewLayoutParams == null) {
+            // add the guts to the headerParent
+            headerViewLayoutParams = (FrameLayout.LayoutParams)
+                    mHeaderView
+                            .getLayoutParams();
+        }
+        View dismissTaskView = mHeaderView.findViewById(idDismiss);
+        Log.d(TAG, "dismiss guts view: " + dismissTaskView);
+        // set the layout params
+        if (dismissViewLayoutParams == null) {
+            dismissViewLayoutParams = (FrameLayout.LayoutParams)
+                    dismissTaskView
+                            .getLayoutParams();
+        }
+    }
+
     private FrameLayout createHeaderGutsView(Context context, View mHeaderView) {
         // inflate the guts view
         FrameLayout headerGutsView = (FrameLayout) LayoutInflater.from
@@ -531,22 +733,11 @@ public class RecentTaskHook extends Hook {
         Log.d(TAG, "headerGutsView: " + headerGutsView);
         View dismissTaskView = headerGutsView.findViewById(idDismiss);
         Log.d(TAG, "dismiss guts view: " + dismissTaskView);
-        // set the layout params
-        if (dismissViewLayoutParams == null) {
-            dismissViewLayoutParams = (FrameLayout.LayoutParams)
-                    dismissTaskView
-                            .getLayoutParams();
-        }
         dismissTaskView.setVisibility(View.GONE);
         // we don't need this text views
         headerGutsView.findViewById(idDesc).setVisibility(View.GONE);
 
-        if (headerViewLayoutParams == null) {
-            // add the guts to the headerParent
-            headerViewLayoutParams = (FrameLayout.LayoutParams)
-                    mHeaderView
-                            .getLayoutParams();
-        }
+        getLayoutParams(mHeaderView);
         return headerGutsView;
     }
 
@@ -572,15 +763,13 @@ public class RecentTaskHook extends Hook {
                 actionCount, null);
     }
 
-    private void resetAction(Context context, Action action, ViewGroup headerGutsView, String
+    private void resetAction(Context context, Action action, ViewGroup viewGroup, String
             pkgName, Intent intent) {
         Log.d(TAG, "reset action: " + action);
         // this action need to be reset
         // EDIT: use action.getClass instead
-        ImageView xBridgeView = (ImageView) headerGutsView
-                .findViewById
-                        (Action
-                                .getViewId(action.getClass()));
+        ImageView xBridgeView = (ImageView) viewGroup.findViewById(Action.getViewId(action
+                .getClass()));
         action.setAction(RecentTaskHook.this, context,
                 pkgName,
                 xBridgeView, intent);
@@ -595,6 +784,19 @@ public class RecentTaskHook extends Hook {
         return !compName.equals(headerGutsView.getTag());
     }
 
+    /**
+     * create a new xbridge view based on FixedSizeImageView
+     * <br>NOTE: before call this method, call initViewId and getLayoutParams
+     *
+     * @param context     Context
+     * @param res         Resource
+     * @param classLoader the class loader for the system ui
+     * @param actionCount the position of the this view in the layout from right to left
+     * @return the created xbridge view
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     */
     private ImageView getXBridgeView(Context context, Resources res, ClassLoader
             classLoader, int
                                              actionCount) throws

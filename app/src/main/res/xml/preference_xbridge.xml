@@ -62,12 +62,12 @@
         android:summary="@string/summary_search"
         android:title="@string/title_search">
     </SwitchPreference>
-    <PreferenceCategory android:title="Enhance">
+    <PreferenceCategory android:title="@string/title_enhance">
         <SwitchPreference
-            android:defaultValue="@bool/show_dismiss_default"
-            android:key="@string/key_show_dismiss"
-            android:summary="@string/summary_show_dismiss"
-            android:title="@string/title_show_dismiss">
+            android:defaultValue="@bool/show_dismiss_now_default"
+            android:key="@string/key_show_dismiss_now"
+            android:summary="@string/summary_show_dismiss_now"
+            android:title="@string/title_show_dismiss_now">
         </SwitchPreference>
         <SwitchPreference
             android:defaultValue="@bool/forcestop_default"

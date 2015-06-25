@@ -97,8 +97,11 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         appInfoPreference.setOnPreferenceChangeListener(this);
         notifyCleanPreference.setOnPreferenceChangeListener(this);
         xhaloFloatingWindowPreference.setOnPreferenceChangeListener(this);
-        xhaloFloatingWindowPreference.setSummary(xhaloFloatingWindowPreference.getSummary() +
-                "(" + sExperimental + ")");
+        CharSequence summary = xhaloFloatingWindowPreference.getSummary();
+        // if the summary does not contain the experimental string, then add it
+        if (!summary.toString().contains(sExperimental)) {
+            xhaloFloatingWindowPreference.setSummary(summary + "(" + sExperimental + ")");
+        }
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
