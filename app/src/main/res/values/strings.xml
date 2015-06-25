@@ -17,6 +17,7 @@
     <string name="key_xprivacy" translatable="false">key_xprivacy</string>
     <string name="key_appinfo" translatable="false">key_appinfo</string>
     <string name="key_notifyclean" translatable="false">key_notifyclean</string>
+    <string name="key_lightningwall" translatable="false">key_lightningwall</string>
     <string name="key_xhalofloatingwindow" translatable="false">key_xhalofloatingwindow</string>
     <string name="key_forcestop" translatable="false">key_forcestop</string>
     <string name="key_show_dismiss_now" translatable="false">key_show_dismiss_now</string>
@@ -54,6 +55,9 @@
     <string name="key_notifyclean_status_bar" translatable="false">key_notifyclean_status_bar</string>
     <string name="key_notifyclean_recent_task" translatable="false">key_notifyclean_recent_task</string>
     <string name="key_notifyclean_app_info" translatable="false">key_notifyclean_app_info</string>
+    <string name="key_lightningwall_status_bar" translatable="false">key_lightningwall_status_bar</string>
+    <string name="key_lightningwall_recent_task" translatable="false">key_lightningwall_recent_task</string>
+    <string name="key_lightningwall_app_info" translatable="false">key_lightningwall_app_info</string>
     <string name="key_xhalofloatingwindow_status_bar" translatable="false">key_xhalofloatingwindow_status_bar</string>
     <string name="key_xhalofloatingwindow_recent_task" translatable="false">key_xhalofloatingwindow_recent_task</string>
     <string name="key_xhalofloatingwindow_app_info" translatable="false">key_xhalofloatingwindow_app_info</string>
@@ -81,6 +85,8 @@
     <string name="title_appinfo">View in default app info screen</string>
     <string name="summary_notifyclean">Add view in NotifyClean button in the system</string>
     <string name="title_notifyclean">View in NotifyClean</string>
+    <string name="summary_lightningwall">Add view in LightningWall button in the system</string>
+    <string name="title_lightningwall">View in LightningWall</string>
     <string name="summary_xhalofloatingwindow">Add view in XHaloFloatingWindow button in the system</string>
     <string name="title_xhalofloatingwindow">View in XHaloFloatingWindow</string>
     <string name="summary_xhalofloatingwindow_show_button_now">Show XHaloFloatingWindow button immediately when recent task screen show up</string>

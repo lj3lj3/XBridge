@@ -24,6 +24,7 @@ import daylemk.xposed.xbridge.action.AppInfoAction;
 import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
+import daylemk.xposed.xbridge.action.LightningWallAction;
 import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
@@ -49,6 +50,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference xPrivacyPreference;
     private SwitchPreference appInfoPreference;
     private SwitchPreference notifyCleanPreference;
+    private SwitchPreference lightningWallPreference;
     private SwitchPreference xhaloFloatingWindowPreference;
 
     private String keyXda;
@@ -85,6 +87,8 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         xPrivacyPreference = (SwitchPreference) this.findPreference(XPrivacyAction.keyShow);
         appInfoPreference = (SwitchPreference) this.findPreference(AppInfoAction.keyShow);
         notifyCleanPreference = (SwitchPreference) this.findPreference(NotifyCleanAction.keyShow);
+        lightningWallPreference = (SwitchPreference) this.findPreference(LightningWallAction
+                .keyShow);
         xhaloFloatingWindowPreference = (SwitchPreference) this.findPreference
                 (XHaloFloatingWindowAction.keyShow);
 
@@ -96,6 +100,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         xPrivacyPreference.setOnPreferenceChangeListener(this);
         appInfoPreference.setOnPreferenceChangeListener(this);
         notifyCleanPreference.setOnPreferenceChangeListener(this);
+        lightningWallPreference.setOnPreferenceChangeListener(this);
         xhaloFloatingWindowPreference.setOnPreferenceChangeListener(this);
         CharSequence summary = xhaloFloatingWindowPreference.getSummary();
         // if the summary does not contain the experimental string, then add it
@@ -124,6 +129,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             xPrivacyPreference.setChecked(XPrivacyAction.isShow);
             appInfoPreference.setChecked(AppInfoAction.isShow);
             notifyCleanPreference.setChecked(NotifyCleanAction.isShow);
+            lightningWallPreference.setChecked(LightningWallAction.isShow);
             xhaloFloatingWindowPreference.setChecked(XHaloFloatingWindowAction.isShow);
             Log.d(TAG, "values:" +
                     "PlayAction:" + PlayAction.isShow +
@@ -182,6 +188,10 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_notifyclean);
             fragment = NotifyCleanFragment.getFragment(bundle);
             tag = NotifyCleanFragment.TAG;
+        } else if (LightningWallAction.keyShow.equals(prefKey)) {
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_lightningwall);
+            fragment = LightningWallFragment.getFragment(bundle);
+            tag = LightningWallFragment.TAG;
         } else if (XHaloFloatingWindowAction.keyShow.equals(prefKey)) {
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_xhalofloatingwindow);
             fragment = XHaloFloatingWindowFragment.getFragment(bundle);
@@ -275,6 +285,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         //        Drawable iconSearch;
         Drawable iconXPrivacy;
         Drawable iconNotifyClean;
+        Drawable iconLightningWall;
         Drawable iconXHaloFloatingWindow;
 
         @Override
@@ -288,12 +299,14 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
 //            iconSearch = SearchFragment.getPkgIcon(getResources(),packageManager);
             iconXPrivacy = XPrivacyFragment.getPkgIcon(packageManager);
             iconNotifyClean = NotifyCleanFragment.getPkgIcon(packageManager);
+            iconLightningWall = LightningWallFragment.getPkgIcon(packageManager);
             iconXHaloFloatingWindow = XHaloFloatingWindowFragment.getPkgIcon(packageManager);
             Log.d(TAG, "load icons done:" + "iconInfo:" + iconInfo + ",iconAppOps:" + iconAppOps
                     + ",iconAppSettings:" + iconAppSettings +
 //                    ",iconClipBoard:" + iconClipBoard +
                     ",iconPlay:" + iconPlay +
                     ",iconNotifyClean:" + iconNotifyClean +
+                    ",iconLightningWall:" + iconLightningWall +
                     ",iconXHaloFloatingWindow:" + iconXHaloFloatingWindow +
 //                    ",iconSearch:" + iconSearch +
                     ",iconXPrivacy:" + iconXPrivacy);
@@ -310,6 +323,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             xPrivacyPreference.setIcon(iconXPrivacy);
             appInfoPreference.setIcon(iconInfo);
             notifyCleanPreference.setIcon(iconNotifyClean);
+            lightningWallPreference.setIcon(iconLightningWall);
             xhaloFloatingWindowPreference.setIcon(iconXHaloFloatingWindow);
             super.onPostExecute(o);
         }

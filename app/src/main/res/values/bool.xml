@@ -25,6 +25,10 @@
     <bool name="notifyclean_status_bar_default">true</bool>
     <bool name="notifyclean_app_info_default">true</bool>
     <bool name="notifyclean_recent_task_default">true</bool>
+    <bool name="lightningwall_default">true</bool>
+    <bool name="lightningwall_status_bar_default">true</bool>
+    <bool name="lightningwall_app_info_default">true</bool>
+    <bool name="lightningwall_recent_task_default">true</bool>
     <bool name="xhalofloatingwindow_default">true</bool>
     <bool name="xhalofloatingwindow_status_bar_default">true</bool>
     <bool name="xhalofloatingwindow_app_info_default">true</bool>

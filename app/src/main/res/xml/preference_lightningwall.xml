@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="@bool/lightningwall_status_bar_default"
+        android:key="@string/key_lightningwall_status_bar"
+        android:summary="@string/summary_show_in_status_bar"
+        android:title="@string/title_show_in_status_bar"
+        >
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/lightningwall_recent_task_default"
+        android:key="@string/key_lightningwall_recent_task"
+        android:summary="@string/summary_show_in_recent_task"
+        android:title="@string/title_show_in_recent_task">
+    </SwitchPreference>
+    <SwitchPreference
+        android:defaultValue="@bool/lightningwall_app_info_default"
+        android:key="@string/key_lightningwall_app_info"
+        android:summary="@string/summary_show_in_app_info"
+        android:title="@string/title_show_in_app_info">
+    </SwitchPreference>
+
+</PreferenceScreen>

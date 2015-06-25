@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
+import daylemk.xposed.xbridge.action.LightningWallAction;
 import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
@@ -104,6 +105,10 @@ public class AppInfoHook extends Hook {
         }
         if (NotifyCleanAction.isShow && NotifyCleanAction.isShowInAppInfo) {
             final Action action = new NotifyCleanAction();
+            addMenuAndSetAction(menu, action, context, pkgName);
+        }
+        if (LightningWallAction.isShow && LightningWallAction.isShowInAppInfo) {
+            final Action action = new LightningWallAction();
             addMenuAndSetAction(menu, action, context, pkgName);
         }
         if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInAppInfo) {
