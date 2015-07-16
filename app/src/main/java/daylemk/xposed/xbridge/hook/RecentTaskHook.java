@@ -100,7 +100,8 @@ public class RecentTaskHook extends Hook {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Log.d(TAG, "onFinishInflate hook");
-                if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                        .isShowInRecentTask) {
                     FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
                     Context context = taskViewHeader.getContext();
                     Resources res = context.getResources();
@@ -124,7 +125,8 @@ public class RecentTaskHook extends Hook {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         Log.d(TAG, "startLaunchTaskDismissAnimation hook");
-                        if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                        if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                                .isShowInRecentTask) {
                             FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
                             View xHalo = taskViewHeader.findViewById(Action.getViewId
                                     (XHaloFloatingWindowAction.class));
@@ -168,7 +170,8 @@ public class RecentTaskHook extends Hook {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         Log.d(TAG, "startNoUserInteractionAnimation hook");
-                        if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                        if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                                .isShowInRecentTask) {
                             FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
                             View xHalo = taskViewHeader.findViewById(Action.getViewId
                                     (XHaloFloatingWindowAction.class));
@@ -211,7 +214,8 @@ public class RecentTaskHook extends Hook {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         Log.d(TAG, "startNoUserInteractionAnimation hook");
-                        if (XHaloFloatingWindowAction.isShowInRecentTask) {
+                        if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                                .isShowInRecentTask) {
                             FrameLayout taskViewHeader = (FrameLayout) param.thisObject;
                             View xHalo = taskViewHeader.findViewById(Action.getViewId
                                     (XHaloFloatingWindowAction.class));
@@ -242,8 +246,9 @@ public class RecentTaskHook extends Hook {
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
                     Log.d(TAG, "reset method hook");
-                    if (ForceStopAction.isShowDismissButtonNow || XHaloFloatingWindowAction
-                            .isShowButtonNow) {
+                    if (ForceStopAction.isShowDismissButtonNow || (XHaloFloatingWindowAction
+                            .isShow && XHaloFloatingWindowAction
+                            .isShowButtonNow)) {
                         FrameLayout taskViewObject = (FrameLayout) param.thisObject;
                         View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
                                 "mHeaderView");
@@ -259,7 +264,8 @@ public class RecentTaskHook extends Hook {
                                     Log.d(TAG, "dismiss view is null at reset");
                                 }
                             }
-                            if (XHaloFloatingWindowAction.isShowButtonNow) {
+                            if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                                    .isShowButtonNow) {
                                 View xhalo = mHeaderView.findViewById(Action.getViewId
                                         (XHaloFloatingWindowAction.class));
                                 if (xhalo != null) {
@@ -288,8 +294,10 @@ public class RecentTaskHook extends Hook {
                 if (Action.isActionsShowInRecentTask()) {
                     isRecentShow = true;
                 }
+                // add XHaloFloatingWindowAction.isShow in this
                 if (!(isRecentShow || ForceStopAction.isShow || ForceStopAction
-                        .isShowDismissButtonNow || XHaloFloatingWindowAction.isShowButtonNow)) {
+                        .isShowDismissButtonNow || (XHaloFloatingWindowAction.isShow &&
+                        XHaloFloatingWindowAction.isShowButtonNow))) {
                     // the recent and force stop action is not active
                     // call the original method
                     param.getResult();
@@ -331,13 +339,15 @@ public class RecentTaskHook extends Hook {
                         dismissView.setVisibility(View.VISIBLE);
                     }
                 }
-                if (XHaloFloatingWindowAction.isShowInRecentTask && mHeaderView != null) {
+                if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                        .isShowInRecentTask && mHeaderView != null) {
                     Action action = new XHaloFloatingWindowAction();
                     Intent baseIntent = getTaskBaseIntent(taskViewObject);
                     resetAction(taskViewObject.getContext(), action, mHeaderView, getPackageName
                             (baseIntent), baseIntent);
                 }
-                if (XHaloFloatingWindowAction.isShowButtonNow && mHeaderView != null) {
+                if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowButtonNow
+                        && mHeaderView != null) {
                     Log.d(TAG, "show xhalo button now");
                     View xHaloView = mHeaderView.findViewById(Action.getViewId
                             (XHaloFloatingWindowAction.class));
@@ -361,7 +371,9 @@ public class RecentTaskHook extends Hook {
                         if (Action.isActionsShowInRecentTask()) {
                             isRecentShow = true;
                         }
-                        if (!(isRecentShow || ForceStopAction.isShow)) {
+                        if (!(isRecentShow || ForceStopAction.isShow ||
+                                (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                                        .isShowInRecentTask))) {
                             // the recent and force stop action is not active
                             // call the original method
                             param.getResult();
@@ -393,7 +405,8 @@ public class RecentTaskHook extends Hook {
                             mHeaderView.findViewById(idDismiss).setOnLongClickListener(null);
                         }
 
-                        if (XHaloFloatingWindowAction.isShowInRecentTask && mHeaderView != null) {
+                        if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
+                                .isShowInRecentTask && mHeaderView != null) {
                             ImageView xHaloView = (ImageView) mHeaderView.findViewById(Action
                                     .getViewId
                                             (XHaloFloatingWindowAction
@@ -445,6 +458,7 @@ public class RecentTaskHook extends Hook {
                             Throwable {
                         if (!(Action.isActionsShowInRecentTask() || ForceStopAction.isShow)) {
                             // the recent and force stop action is not active
+                            // EDIT:here we don't need to check the xhalo
                             return;
                         }
 
