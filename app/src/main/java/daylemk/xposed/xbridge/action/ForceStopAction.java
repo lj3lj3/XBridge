@@ -6,19 +6,22 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Vibrator;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.utils.BashOperation;
 import daylemk.xposed.xbridge.utils.Log;
+import daylemk.xposed.xbridge.utils.XBridgeToast;
 
 /**
  * Created by DayLemK on 2015/5/21.
  * Force stop a package, require SU permission through handleData method
  * AND include dismiss button mod
  */
-public class ForceStopAction extends Action {
+public class ForceStopAction extends Action implements BashOperation.OnOperationInterface {
     public static final String TAG = "ForceStopAction";
+    public static final long PERIOD_VIBRATION = 35L;
 
     /* the key should the sub class overwrite ------------begin */
     public static String keyShow;
@@ -81,10 +84,12 @@ public class ForceStopAction extends Action {
     @Override
     public void handleData(final Context context, final String pkgName) {
 //        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        mContext = context;
+        mPkgName = pkgName;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                BashOperation.forceStopPackage(context, pkgName);
+                BashOperation.forceStopPackage(context, pkgName, ForceStopAction.this);
             }
         }).start();
     }
@@ -97,5 +102,21 @@ public class ForceStopAction extends Action {
     @Override
     public String getMenuTitle() {
         return null;
+    }
+
+    @Override
+    public void onOperationDone(boolean result) {
+        // show toast
+        Context xBridgeContext = Hook.getXBridgeContext(mContext);
+        final String forceStop = (result ? "" : xBridgeContext.getString(R.string.error)) +
+                xBridgeContext.getString(R.string.force_stop) +
+                mPkgName;
+        XBridgeToast.showToastOnHandler(mContext, forceStop);
+        // add vibration
+        if (result) {
+            Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(PERIOD_VIBRATION);
+        }
+        // maybe release context here?
     }
 }

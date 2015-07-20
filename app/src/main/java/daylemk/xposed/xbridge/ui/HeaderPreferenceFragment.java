@@ -33,7 +33,8 @@ import daylemk.xposed.xbridge.utils.Log;
 public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragment implements
         SwitchBar
                 .OnSwitchChangeListener, Preference
-        .OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+        .OnPreferenceChangeListener, Preference.OnPreferenceClickListener, BashOperation
+        .OnOperationInterface {
     public static final String TAG = "HeaderPreferenceFragment";
     public static final String ARGS_TITLE = "title";
 
@@ -161,7 +162,7 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
                                     new Thread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            BashOperation.restartSystemUI();
+                                            BashOperation.restartSystemUI(HeaderPreferenceFragment.this);
                                         }
                                     }).start();
                                 }
@@ -179,5 +180,10 @@ public abstract class HeaderPreferenceFragment extends AbstractPreferenceFragmen
             this.getFragmentManager().popBackStack();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onOperationDone(boolean result) {
+        // nothing here for now
     }
 }
