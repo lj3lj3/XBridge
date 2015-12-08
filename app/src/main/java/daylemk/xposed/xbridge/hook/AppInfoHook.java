@@ -12,6 +12,7 @@ import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.LightningWallAction;
+import daylemk.xposed.xbridge.action.MyAndroidToolsAction;
 import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
@@ -113,6 +114,10 @@ public class AppInfoHook extends Hook {
         }
         if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInAppInfo) {
             final Action action = new XHaloFloatingWindowAction();
+            addMenuAndSetAction(menu, action, context, pkgName);
+        }
+        if (MyAndroidToolsAction.isShow && MyAndroidToolsAction.isShowInAppInfo) {
+            final Action action = new MyAndroidToolsAction();
             addMenuAndSetAction(menu, action, context, pkgName);
         }
     }

@@ -10,17 +10,19 @@ import android.graphics.drawable.Drawable;
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.utils.Log;
+import de.robv.android.xposed.XposedBridge;
 
 /**
  * Created by DayLemK on 2015/6/10.
- * the action of package: de.defim.apk.lightningwall
+ * the action of package: de.defim.apk.myandroidtools
  */
-public class LightningWallAction extends Action {
-    public static final String TAG = "LightningwallAction";
-    public static final String STR_DESC = "View in LightningWall";
-    public static final String PKG_NAME = "de.defim.apk.lightningwall";
-    public static final String ACTION_NAME = "de.defim.apk.lightningwall.action.NOTIFY";
-    public static final String ARG_PKG_NAME = "pkg";
+public class MyAndroidToolsAction extends Action {
+    public static final String TAG = "MyAndroidToolsAction";
+    public static final String STR_DESC = "View in MyAndroidTools";
+    public static final String PKG_NAME = "cn.wq.myandroidtools";
+    public static final String PKG_PRO_NAME = "cn.wq.myandroidtoolspro";
+    public static final String ACTION_NAME = "cn.wq.myandroidtools.SHOW_APP_INFO";
+    public static final String ARG_PKG_NAME = "packageName";
 
     /* the key should the sub class overwrite ------------begin */
     public static String keyShowInStatusBar;
@@ -45,15 +47,15 @@ public class LightningWallAction extends Action {
      * @param sModRes the module resource of package
      */
     public static void loadPreferenceKeys(Resources sModRes) {
-        keyShow = sModRes.getString(R.string.key_lightningwall);
-        keyShowInAppInfo = sModRes.getString(R.string.key_lightningwall_app_info);
-        keyShowInRecentTask = sModRes.getString(R.string.key_lightningwall_recent_task);
-        keyShowInStatusBar = sModRes.getString(R.string.key_lightningwall_status_bar);
+        keyShow = sModRes.getString(R.string.key_myandroidtools);
+        keyShowInAppInfo = sModRes.getString(R.string.key_myandroidtools_app_info);
+        keyShowInRecentTask = sModRes.getString(R.string.key_myandroidtools_recent_task);
+        keyShowInStatusBar = sModRes.getString(R.string.key_myandroidtools_status_bar);
         // get the default value of this action
-        showInStatusBarDefault = sModRes.getBoolean(R.bool.lightningwall_status_bar_default);
-        showInRecentTaskDefault = sModRes.getBoolean(R.bool.lightningwall_recent_task_default);
-        showInAppInfoDefault = sModRes.getBoolean(R.bool.lightningwall_app_info_default);
-        showDefault = sModRes.getBoolean(R.bool.lightningwall_default);
+        showInStatusBarDefault = sModRes.getBoolean(R.bool.myandroidtools_status_bar_default);
+        showInRecentTaskDefault = sModRes.getBoolean(R.bool.myandroidtools_recent_task_default);
+        showInAppInfoDefault = sModRes.getBoolean(R.bool.myandroidtools_app_info_default);
+        showDefault = sModRes.getBoolean(R.bool.myandroidtools_default);
     }
 
     public static void loadPreference(SharedPreferences preferences) {
@@ -100,7 +102,7 @@ public class LightningWallAction extends Action {
     @Override
     public void handleData(Context context, String pkgName) {
         Intent intent = new Intent(ACTION_NAME);
-        intent.setPackage(PKG_NAME);
+        //intent.setPackage(PKG_NAME);
         intent.putExtra(ARG_PKG_NAME, pkgName);
         Log.d(TAG, "send broadcast:" + intent + ", pkg: " + pkgName);
         context.sendBroadcast(intent);
@@ -108,7 +110,15 @@ public class LightningWallAction extends Action {
 
     @Override
     public Drawable getIcon(PackageManager packageManager) {
-        return getPackageIcon(packageManager, PKG_NAME);
+        String pkgName = PKG_NAME;
+        try {
+            packageManager.getPackageInfo(PKG_PRO_NAME, 0);
+            pkgName = PKG_PRO_NAME;
+        } catch (PackageManager.NameNotFoundException e) {
+            XposedBridge.log(e);
+            Log.d(TAG, "Did not found the pro package");
+        }
+        return getPackageIcon(packageManager, pkgName);
     }
 
     @Override

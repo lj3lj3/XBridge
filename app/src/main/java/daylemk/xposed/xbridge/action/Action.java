@@ -91,6 +91,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
         NotifyCleanAction.loadPreferenceKeys(sModRes);
         LightningWallAction.loadPreferenceKeys(sModRes);
         XHaloFloatingWindowAction.loadPreferenceKeys(sModRes);
+        MyAndroidToolsAction.loadPreferenceKeys(sModRes);
         Log.d(TAG, "load preference key done");
     }
 
@@ -110,6 +111,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
         NotifyCleanAction.loadPreference(preferences);
         LightningWallAction.loadPreference(preferences);
         XHaloFloatingWindowAction.loadPreference(preferences);
+        MyAndroidToolsAction.loadPreference(preferences);
         Log.d(TAG, "load preference done");
     }
 
@@ -126,6 +128,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                     LightningWallAction.onReceiveNewValue(key, value) ||
                     XHaloFloatingWindowAction.onReceiveNewValue(key, value) ||
                     SizeInputFragment.onReceiveNewValue(key, value) ||
+                    MyAndroidToolsAction.onReceiveNewValue(key, value) ||
                     SearchAction.onReceiveNewValue(key, value))) {
                 // check if the debug value
                 if (key.equals(Log.keyDebug)) {
@@ -148,6 +151,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 || NotifyCleanAction.isShow && NotifyCleanAction.isShowInAppInfo
                 || LightningWallAction.isShow && LightningWallAction.isShowInAppInfo
                 || XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInAppInfo
+                || MyAndroidToolsAction.isShow && MyAndroidToolsAction.isShowInAppInfo
 //                || AppInfoAction.isShow && AppInfoAction.isShowInAppInfo
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo;
 
@@ -162,6 +166,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 || AppInfoAction.isShow && AppInfoAction.isShowInRecentTask
                 || NotifyCleanAction.isShow && NotifyCleanAction.isShowInRecentTask
                 || LightningWallAction.isShow && LightningWallAction.isShowInRecentTask
+                || MyAndroidToolsAction.isShow && MyAndroidToolsAction.isShowInRecentTask
                 // remove XHalo recent task, 'cause it's different
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInRecentTask;
 
@@ -177,6 +182,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 || NotifyCleanAction.isShow && NotifyCleanAction.isShowInStatusBar
                 || LightningWallAction.isShow && LightningWallAction.isShowInStatusBar
                 || XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction.isShowInStatusBar
+                || MyAndroidToolsAction.isShow && MyAndroidToolsAction.isShowInStatusBar
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInStatusBar;
 
     }

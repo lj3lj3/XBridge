@@ -51,6 +51,13 @@
         android:title="@string/title_xhalofloatingwindow">
     </SwitchPreference>
     <SwitchPreference
+        android:defaultValue="@bool/myandroidtools_default"
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/key_myandroidtools"
+        android:summary="@string/summary_myandroidtools"
+        android:title="@string/title_myandroidtools">
+    </SwitchPreference>
+    <SwitchPreference
         android:defaultValue="@bool/appinfo_default"
         android:icon="@mipmap/ic_launcher"
         android:key="@string/key_appinfo"

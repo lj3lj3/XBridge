@@ -26,6 +26,7 @@ import daylemk.xposed.xbridge.action.AppOpsAction;
 import daylemk.xposed.xbridge.action.AppSettingsAction;
 import daylemk.xposed.xbridge.action.ClipBoardAction;
 import daylemk.xposed.xbridge.action.LightningWallAction;
+import daylemk.xposed.xbridge.action.MyAndroidToolsAction;
 import daylemk.xposed.xbridge.action.NotifyCleanAction;
 import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
@@ -53,6 +54,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference notifyCleanPreference;
     private SwitchPreference lightningWallPreference;
     private SwitchPreference xhaloFloatingWindowPreference;
+    private SwitchPreference myAndroidToolsPreference;
     private Preference sizeOfIconInNotiPreference;
 
     private String keySizeOfIconInNoti;
@@ -96,6 +98,8 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
                 .keyShow);
         xhaloFloatingWindowPreference = (SwitchPreference) this.findPreference
                 (XHaloFloatingWindowAction.keyShow);
+        myAndroidToolsPreference = (SwitchPreference) this.findPreference
+                (MyAndroidToolsAction.keyShow);
         sizeOfIconInNotiPreference = this.findPreference(keySizeOfIconInNoti);
 
         playPreference.setOnPreferenceChangeListener(this);
@@ -108,6 +112,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         notifyCleanPreference.setOnPreferenceChangeListener(this);
         lightningWallPreference.setOnPreferenceChangeListener(this);
         xhaloFloatingWindowPreference.setOnPreferenceChangeListener(this);
+        myAndroidToolsPreference.setOnPreferenceChangeListener(this);
         CharSequence summary = xhaloFloatingWindowPreference.getSummary();
         // if the summary does not contain the experimental string, then add it
         if (!summary.toString().contains(sExperimental)) {
@@ -144,6 +149,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         notifyCleanPreference.setChecked(NotifyCleanAction.isShow);
         lightningWallPreference.setChecked(LightningWallAction.isShow);
         xhaloFloatingWindowPreference.setChecked(XHaloFloatingWindowAction.isShow);
+        myAndroidToolsPreference.setChecked(MyAndroidToolsAction.isShow);
         sizeOfIconInNotiPreference.setSummary(SizeInputFragment.size + "%");
         Log.d(TAG, "values:" +
                 "PlayAction:" + PlayAction.isShow +
@@ -208,6 +214,10 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_xhalofloatingwindow);
             fragment = XHaloFloatingWindowFragment.getFragment(bundle);
             tag = XHaloFloatingWindowFragment.TAG;
+        } else if (MyAndroidToolsAction.keyShow.equals(prefKey)) {
+            bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_myandroidtools);
+            fragment = MyAndroidToolsFragment.getFragment(bundle);
+            tag = MyAndroidToolsFragment.TAG;
         } else if (keySizeOfIconInNoti.equals(prefKey)) {
             dialogFragment = SizeInputFragment.getDialogFragment(bundle);
             tag = SizeInputFragment.TAG;
@@ -309,6 +319,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         Drawable iconNotifyClean;
         Drawable iconLightningWall;
         Drawable iconXHaloFloatingWindow;
+        Drawable iconMyAndroidTools;
 
         @Override
         protected Object doInBackground(Object[] params) {
@@ -323,6 +334,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             iconNotifyClean = NotifyCleanFragment.getPkgIcon(packageManager);
             iconLightningWall = LightningWallFragment.getPkgIcon(packageManager);
             iconXHaloFloatingWindow = XHaloFloatingWindowFragment.getPkgIcon(packageManager);
+            iconMyAndroidTools = MyAndroidToolsFragment.getPkgIcon(packageManager);
             Log.d(TAG, "load icons done:" + "iconInfo:" + iconInfo + ",iconAppOps:" + iconAppOps
                     + ",iconAppSettings:" + iconAppSettings +
 //                    ",iconClipBoard:" + iconClipBoard +
@@ -330,6 +342,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
                     ",iconNotifyClean:" + iconNotifyClean +
                     ",iconLightningWall:" + iconLightningWall +
                     ",iconXHaloFloatingWindow:" + iconXHaloFloatingWindow +
+                    ",iconMyAndroidTools:" + iconMyAndroidTools +
 //                    ",iconSearch:" + iconSearch +
                     ",iconXPrivacy:" + iconXPrivacy);
             return null;
@@ -347,6 +360,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             notifyCleanPreference.setIcon(iconNotifyClean);
             lightningWallPreference.setIcon(iconLightningWall);
             xhaloFloatingWindowPreference.setIcon(iconXHaloFloatingWindow);
+            myAndroidToolsPreference.setIcon(iconMyAndroidTools);
             super.onPostExecute(o);
         }
     }

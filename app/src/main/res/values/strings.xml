@@ -18,6 +18,7 @@
     <string name="key_appinfo" translatable="false">key_appinfo</string>
     <string name="key_notifyclean" translatable="false">key_notifyclean</string>
     <string name="key_lightningwall" translatable="false">key_lightningwall</string>
+    <string name="key_myandroidtools" translatable="false">key_myandroidtools</string>
     <string name="key_xhalofloatingwindow" translatable="false">key_xhalofloatingwindow</string>
     <string name="key_forcestop" translatable="false">key_forcestop</string>
     <string name="key_show_dismiss_now" translatable="false">key_show_dismiss_now</string>
@@ -58,6 +59,9 @@
     <string name="key_lightningwall_status_bar" translatable="false">key_lightningwall_status_bar</string>
     <string name="key_lightningwall_recent_task" translatable="false">key_lightningwall_recent_task</string>
     <string name="key_lightningwall_app_info" translatable="false">key_lightningwall_app_info</string>
+    <string name="key_myandroidtools_status_bar" translatable="false">key_myandroidtools_status_bar</string>
+    <string name="key_myandroidtools_recent_task" translatable="false">key_myandroidtools_recent_task</string>
+    <string name="key_myandroidtools_app_info" translatable="false">key_myandroidtools_app_info</string>
     <string name="key_xhalofloatingwindow_status_bar" translatable="false">key_xhalofloatingwindow_status_bar</string>
     <string name="key_xhalofloatingwindow_recent_task" translatable="false">key_xhalofloatingwindow_recent_task</string>
     <string name="key_xhalofloatingwindow_app_info" translatable="false">key_xhalofloatingwindow_app_info</string>
@@ -88,6 +92,8 @@
     <string name="title_notifyclean">View in NotifyClean</string>
     <string name="summary_lightningwall">Add view in LightningWall button in the system</string>
     <string name="title_lightningwall">View in LightningWall</string>
+    <string name="summary_myandroidtools">Add view in MyAndroidTools button in the system</string>
+    <string name="title_myandroidtools">View in MyAndroidTools</string>
     <string name="summary_xhalofloatingwindow">Add view in XHaloFloatingWindow button in the system</string>
     <string name="title_xhalofloatingwindow">View in XHaloFloatingWindow</string>
     <string name="summary_xhalofloatingwindow_show_button_now">Show XHaloFloatingWindow button immediately when recent task screen show up</string>
