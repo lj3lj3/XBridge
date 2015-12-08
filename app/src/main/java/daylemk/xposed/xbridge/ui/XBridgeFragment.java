@@ -71,6 +71,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.preference_xbridge);
+        addRebootPreference(this);
         // get xda key
         keyXda = getString(R.string.key_xda);
         sExperimental = getString(R.string.experimental);
