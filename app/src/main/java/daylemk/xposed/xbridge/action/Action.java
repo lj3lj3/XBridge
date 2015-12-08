@@ -30,6 +30,7 @@ import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.hook.AppInfoHook;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.hook.StatusBarHook;
+import daylemk.xposed.xbridge.ui.SizeInputFragment;
 import daylemk.xposed.xbridge.utils.Log;
 import daylemk.xposed.xbridge.utils.XBridgeToast;
 import de.robv.android.xposed.XposedBridge;
@@ -124,6 +125,7 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                     NotifyCleanAction.onReceiveNewValue(key, value) ||
                     LightningWallAction.onReceiveNewValue(key, value) ||
                     XHaloFloatingWindowAction.onReceiveNewValue(key, value) ||
+                    SizeInputFragment.onReceiveNewValue(key, value) ||
                     SearchAction.onReceiveNewValue(key, value))) {
                 // check if the debug value
                 if (key.equals(Log.keyDebug)) {

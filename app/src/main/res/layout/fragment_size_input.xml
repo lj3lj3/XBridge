@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingEnd="@dimen/dialog_padding_material"
+              android:paddingStart="@dimen/dialog_padding_material"
+              android:paddingTop="@dimen/dialog_padding_material"
+              tools:context="daylemk.xposed.xbridge.ui.SizeInputFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/message_size_input"/>
+
+    <EditText
+        android:id="@+id/edit_text_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"/>
+
+</LinearLayout>

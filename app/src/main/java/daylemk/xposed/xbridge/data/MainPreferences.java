@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
 import daylemk.xposed.xbridge.action.Action;
+import daylemk.xposed.xbridge.ui.SizeInputFragment;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XSharedPreferences;
@@ -37,7 +38,7 @@ public class MainPreferences {
 
     /**
      * get the xBridge shared preference
-     * NOTE: this only used to get the preference from teh xposed init
+     * NOTE: this only used to get the preference from the xposed init
      */
     public static XSharedPreferences getSharedPreference() {
         if (sharedPreferences == null) {
@@ -60,7 +61,7 @@ public class MainPreferences {
         preferenceManager.setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
     }
 
-    public static void setOnPreferenceChanged(Context context, PreferenceManager
+    public static void setOnPreferenceChangedLis(Context context, PreferenceManager
             preferenceManager) {
         if (listener == null) {
             listener = new OnMainPreferenceChangedListener(context);
@@ -69,7 +70,7 @@ public class MainPreferences {
         Log.d(TAG, "register on shared preference changed listener");
     }
 
-    public static void unSetOnPreferenceChanged(PreferenceManager preferenceManager) {
+    public static void unsetOnPreferenceChangedLis(PreferenceManager preferenceManager) {
         if (listener != null) {
             preferenceManager.getSharedPreferences().unregisterOnSharedPreferenceChangeListener
                     (listener);
@@ -90,6 +91,7 @@ public class MainPreferences {
     public static void loadPreferenceKeys(Resources resources) {
         Log.d(TAG, "load preference keys");
         Action.loadPreferenceKeys(resources);
+        SizeInputFragment.loadPreferenceKeys(resources);
     }
 
     /**
@@ -102,6 +104,7 @@ public class MainPreferences {
         }
         // load action preference
         Action.loadPreference(sharedPreferences);
+        SizeInputFragment.loadPreference(sharedPreferences);
     }
 
     /**
@@ -112,5 +115,6 @@ public class MainPreferences {
             getEditablePreferences(preferenceManager);
         }
         Action.loadPreference(editablePreferences);
+        SizeInputFragment.loadPreference(editablePreferences);
     }
 }

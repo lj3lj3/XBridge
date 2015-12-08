@@ -1,6 +1,7 @@
 package daylemk.xposed.xbridge.ui;
 
 import android.app.ActionBar;
+import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -52,11 +53,13 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
     private SwitchPreference notifyCleanPreference;
     private SwitchPreference lightningWallPreference;
     private SwitchPreference xhaloFloatingWindowPreference;
+    private Preference sizeOfIconInNotiPreference;
 
+    private String keySizeOfIconInNoti;
     private String keyXda;
     private String sExperimental;
 
-    private boolean need2Load = false;
+    private boolean need2Load = true;
 
     public static XBridgeFragment getFragment(Bundle bundle) {
         XBridgeFragment fragment = new XBridgeFragment();
@@ -71,6 +74,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         // get xda key
         keyXda = getString(R.string.key_xda);
         sExperimental = getString(R.string.experimental);
+        keySizeOfIconInNoti = getString(R.string.key_size_of_icon_in_noti);
     }
 
 
@@ -91,6 +95,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
                 .keyShow);
         xhaloFloatingWindowPreference = (SwitchPreference) this.findPreference
                 (XHaloFloatingWindowAction.keyShow);
+        sizeOfIconInNotiPreference = this.findPreference(keySizeOfIconInNoti);
 
         playPreference.setOnPreferenceChangeListener(this);
         appOpsPreference.setOnPreferenceChangeListener(this);
@@ -120,30 +125,35 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             actionBar.setTitle(R.string.app_name);
         }
         if (need2Load) {
-            // here should set the preference value???
-            playPreference.setChecked(PlayAction.isShow);
-            appOpsPreference.setChecked(AppOpsAction.isShow);
-            appSettingsPreference.setChecked(AppSettingsAction.isShow);
-            clipBoardPreference.setChecked(ClipBoardAction.isShow);
-            searchPreference.setChecked(SearchAction.isShow);
-            xPrivacyPreference.setChecked(XPrivacyAction.isShow);
-            appInfoPreference.setChecked(AppInfoAction.isShow);
-            notifyCleanPreference.setChecked(NotifyCleanAction.isShow);
-            lightningWallPreference.setChecked(LightningWallAction.isShow);
-            xhaloFloatingWindowPreference.setChecked(XHaloFloatingWindowAction.isShow);
-            Log.d(TAG, "values:" +
-                    "PlayAction:" + PlayAction.isShow +
-                    ",AppOpsAction:" + AppOpsAction.isShow +
-                    ",AppSettingsAction:" + AppSettingsAction.isShow +
-                    ",ClipBoardAction:" + ClipBoardAction.isShow +
-                    ",SearchAction:" + SearchAction.isShow +
-                    ",XPrivacyAction:" + XPrivacyAction.isShow +
-                    ",AppInfoAction:" + AppInfoAction.isShow +
-                    ",XHaloFloatingWindowAction:" + XHaloFloatingWindowAction.isShow +
-                    ",NotifyCleanAction:" + NotifyCleanAction.isShow);
+            loadPreferenceValue();
             need2Load = false;
         }
         new IconLoader().execute();
+    }
+
+    public void loadPreferenceValue() {
+        // here should set the preference value???
+        playPreference.setChecked(PlayAction.isShow);
+        appOpsPreference.setChecked(AppOpsAction.isShow);
+        appSettingsPreference.setChecked(AppSettingsAction.isShow);
+        clipBoardPreference.setChecked(ClipBoardAction.isShow);
+        searchPreference.setChecked(SearchAction.isShow);
+        xPrivacyPreference.setChecked(XPrivacyAction.isShow);
+        appInfoPreference.setChecked(AppInfoAction.isShow);
+        notifyCleanPreference.setChecked(NotifyCleanAction.isShow);
+        lightningWallPreference.setChecked(LightningWallAction.isShow);
+        xhaloFloatingWindowPreference.setChecked(XHaloFloatingWindowAction.isShow);
+        sizeOfIconInNotiPreference.setSummary(SizeInputFragment.size + "%");
+        Log.d(TAG, "values:" +
+                "PlayAction:" + PlayAction.isShow +
+                ",AppOpsAction:" + AppOpsAction.isShow +
+                ",AppSettingsAction:" + AppSettingsAction.isShow +
+                ",ClipBoardAction:" + ClipBoardAction.isShow +
+                ",SearchAction:" + SearchAction.isShow +
+                ",XPrivacyAction:" + XPrivacyAction.isShow +
+                ",AppInfoAction:" + AppInfoAction.isShow +
+                ",XHaloFloatingWindowAction:" + XHaloFloatingWindowAction.isShow +
+                ",NotifyCleanAction:" + NotifyCleanAction.isShow);
     }
 
     @Override
@@ -154,6 +164,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
 
         Log.d(TAG, "clicked preference: " + prefKey);
         PreferenceFragment fragment = null;
+        DialogFragment dialogFragment = null;
         String tag = null;
         Bundle bundle = new Bundle();
         if (PlayAction.keyShow.equals(prefKey)) {
@@ -196,12 +207,22 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
             bundle.putInt(HeaderPreferenceFragment.ARGS_TITLE, R.string.title_xhalofloatingwindow);
             fragment = XHaloFloatingWindowFragment.getFragment(bundle);
             tag = XHaloFloatingWindowFragment.TAG;
+        } else if (keySizeOfIconInNoti.equals(prefKey)) {
+            dialogFragment = SizeInputFragment.getDialogFragment(bundle);
+            tag = SizeInputFragment.TAG;
         } else if (keyXda.equals(prefKey)) {
             Action.viewInXda(this.getActivity().getApplicationContext());
             return true;
         }
 
-        if (fragment != null) {
+        if (dialogFragment != null) {
+            Log.d(TAG, "dialog fragment is ok: " + dialogFragment);
+            dialogFragment.show(this.getFragmentManager(), tag);
+//            this.getFragmentManager().beginTransaction().add(dialogFragment, tag).addToBackStack
+//                    (tag).commit();
+//            // start transactions now
+//            this.getFragmentManager().executePendingTransactions();
+        } else if (fragment != null) {
             Log.d(TAG, "fragment is ok: " + fragment);
             this.getFragmentManager().beginTransaction().replace(
                     R.id.container, fragment, tag).setTransition(FragmentTransaction

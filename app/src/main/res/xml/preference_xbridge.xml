@@ -83,6 +83,11 @@
             android:title="@string/title_forcestop">
         </SwitchPreference>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_settings">
+        <Preference
+            android:key="@string/key_size_of_icon_in_noti"
+            android:title="@string/title_size_of_icon_in_noti"/>
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/title_about">
         <Preference

@@ -34,13 +34,13 @@ public abstract class AbstractPreferenceFragment extends PreferenceFragment {
     @Override
     public void onStart() {
         super.onStart();
-        MainPreferences.setOnPreferenceChanged(this.getActivity().getApplicationContext(),
+        MainPreferences.setOnPreferenceChangedLis(this.getActivity().getApplicationContext(),
                 getPreferenceManager());
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        MainPreferences.unSetOnPreferenceChanged(getPreferenceManager());
+        MainPreferences.unsetOnPreferenceChangedLis(getPreferenceManager());
     }
 }

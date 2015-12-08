@@ -30,6 +30,7 @@ import daylemk.xposed.xbridge.action.XHaloFloatingWindowAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
 import daylemk.xposed.xbridge.data.OnPreferenceChangedReceiver;
 import daylemk.xposed.xbridge.data.StaticData;
+import daylemk.xposed.xbridge.ui.SizeInputFragment;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -278,8 +279,9 @@ public class StatusBarHook extends Hook {
                     .getLayoutParams());
             // set the width to the 3/4 of the original width
             // EDIT: 3/4 is just fine
-            inspectLayoutParams.width = inspectLayoutParams.width * 3 / 4;
-
+            //inspectLayoutParams.width = inspectLayoutParams.width * 3 / 2;
+            // EDIT: use size
+            inspectLayoutParams.width = inspectLayoutParams.width * SizeInputFragment.size / 100;
             Log.d(TAG, "image button inspect: " + StatusBarHook.this.inspectLayoutParams
                     .toString());
         }
