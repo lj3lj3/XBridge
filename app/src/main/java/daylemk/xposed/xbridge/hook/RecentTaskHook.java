@@ -338,6 +338,8 @@ public class RecentTaskHook extends Hook {
                     }
                     if (dismissView != null) {
                         dismissView.setVisibility(View.VISIBLE);
+                        // FIXED dismiss button does not show on >= 5.1
+                        dismissView.setAlpha(1f);
                     }
                 }
                 if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
@@ -503,14 +505,16 @@ public class RecentTaskHook extends Hook {
         // long click on the header view
         Log.d(TAG, "begin long click handle");
         // the guts view
-        FrameLayout headerGutsView;
+        FrameLayout headerGutsView = null;
         ViewGroup headerParent;
         final Context context = taskViewObject.getContext();
         final Resources res = context.getResources();
         // init the view ids
         initViewIds(res);
-        headerGutsView = (FrameLayout) ((ViewGroup) mHeaderView.getParent
-                ()).findViewById(ID_GUTS);
+        View viewGuts = ((ViewGroup) mHeaderView.getParent()).findViewById(ID_GUTS);
+        if (viewGuts != null) {
+            headerGutsView = (FrameLayout) viewGuts;
+        }
         Log.d(TAG, "get the headerGutsView: " + headerGutsView);
         // move header parent here
         headerParent = (ViewGroup) mHeaderView.getParent();
@@ -909,7 +913,7 @@ public class RecentTaskHook extends Hook {
         if (headerGutsView.getWindowToken() == null) return;
 
         // use header view width and height
-        Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() +
+        Log.d(TAG, "headerGutsView,w,h: " + headerGutsView.getWidth() +
                 ", " +
                 headerGutsView.getHeight());
         Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
@@ -944,7 +948,7 @@ public class RecentTaskHook extends Hook {
         if (headerGutsView.getWindowToken() == null) return;
 
         // use header view width and height
-        Log.d(TAG, "mHeaderView,w,h: " + headerGutsView.getWidth() + ", " +
+        Log.d(TAG, "headerGutsView,w,h: " + headerGutsView.getWidth() + ", " +
                 headerGutsView.getHeight());
         Log.d(TAG, "point: " + listener.getX() + ", " + listener.getY());
         final double horz = Math.max(headerGutsView.getRight() - listener.getX(),

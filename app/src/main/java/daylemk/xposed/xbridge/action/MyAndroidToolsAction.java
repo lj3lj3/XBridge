@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.utils.Log;
-import de.robv.android.xposed.XposedBridge;
 
 /**
  * Created by DayLemK on 2015/6/10.
@@ -115,7 +114,6 @@ public class MyAndroidToolsAction extends Action {
             packageManager.getPackageInfo(PKG_PRO_NAME, 0);
             pkgName = PKG_PRO_NAME;
         } catch (PackageManager.NameNotFoundException e) {
-            XposedBridge.log(e);
             Log.d(TAG, "Did not found the pro package");
         }
         return getPackageIcon(packageManager, pkgName);
