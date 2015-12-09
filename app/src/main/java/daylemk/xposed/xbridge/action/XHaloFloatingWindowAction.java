@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
+import java.lang.reflect.Field;
+
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.hook.Hook;
 import daylemk.xposed.xbridge.hook.RecentTaskHook;
@@ -22,6 +24,7 @@ public class XHaloFloatingWindowAction extends Action {
     public static final String TAG = "XHaloFloatingWindowAction";
     public static final String STR_DESC = "View in XHalo floating window";
     public static final String PKG_NAME = "com.zst.xposed.halo.floatingwindow";
+    public static final String STR_FLAG_FLOATING_WINDOW = "FLAG_FLOATING_WINDOW";
     public static final int FLAG_FLOATING_WINDOW = 0x00002000;
 
     /* the key should the sub class overwrite ------------begin */
@@ -48,6 +51,8 @@ public class XHaloFloatingWindowAction extends Action {
     public static Drawable sIcon = null;
     //public static View.OnClickListener sOnClickListener = null;
     // EDIT: the on click listener should be different
+
+    private int flagFloatingWindow = 0;
 
     /**
      * load the key from the string resource
@@ -140,14 +145,31 @@ public class XHaloFloatingWindowAction extends Action {
                     (pkgName);
         }
         if (intent != null) {
+            getFloatingWindowFlag();
             // the floating window flag
-            intent.addFlags(FLAG_FLOATING_WINDOW | Intent.FLAG_ACTIVITY_MULTIPLE_TASK |
+            intent.addFlags(flagFloatingWindow | Intent.FLAG_ACTIVITY_MULTIPLE_TASK |
                     Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_ACTIVITY_NEW_TASK);
         } else {
             Log.w(TAG, "the launcher for: " + pkgName + " is not available");
         }
 
         return intent;
+    }
+
+    // Get the floating window flag from the system
+    private void getFloatingWindowFlag() {
+        // Get the flag
+        if (flagFloatingWindow == 0) {
+            try {
+                Field f = Intent.class.getField(STR_FLAG_FLOATING_WINDOW);
+                flagFloatingWindow = f.getInt(null);
+            } catch (Exception e) {
+                Log.w(TAG, "Did not found the floating window flag");
+                // Did not found the floating flag, use default one
+                flagFloatingWindow = FLAG_FLOATING_WINDOW;
+            }
+        }
+        Log.d(TAG, "Floating window flag:" + Integer.toOctalString(flagFloatingWindow));
     }
 
     /**

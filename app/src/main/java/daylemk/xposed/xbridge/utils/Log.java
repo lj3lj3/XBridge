@@ -18,7 +18,7 @@ public final class Log {
     }
 
     private static String getFormattedTag(String tag) {
-        return TAG + "[" + tag + "]: ";
+        return TAG + "[" + tag + "]";
     }
 
     private static void xposedLog(String tag, String msg) {

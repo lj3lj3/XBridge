@@ -59,7 +59,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
 
     private String keySizeOfIconInNoti;
     private String keyXda;
-    private String sExperimental;
+    //private String sExperimental;
 
     private boolean need2Load = true;
 
@@ -76,7 +76,7 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         addRebootPreference(this);
         // get xda key
         keyXda = getString(R.string.key_xda);
-        sExperimental = getString(R.string.experimental);
+        //sExperimental = getString(R.string.experimental);
         keySizeOfIconInNoti = getString(R.string.key_size_of_icon_in_noti);
     }
 
@@ -113,11 +113,11 @@ public class XBridgeFragment extends AbstractPreferenceFragment implements Prefe
         lightningWallPreference.setOnPreferenceChangeListener(this);
         xhaloFloatingWindowPreference.setOnPreferenceChangeListener(this);
         myAndroidToolsPreference.setOnPreferenceChangeListener(this);
-        CharSequence summary = xhaloFloatingWindowPreference.getSummary();
+        //CharSequence summary = xhaloFloatingWindowPreference.getSummary();
         // if the summary does not contain the experimental string, then add it
-        if (!summary.toString().contains(sExperimental)) {
-            xhaloFloatingWindowPreference.setSummary(summary + "(" + sExperimental + ")");
-        }
+        //if (!summary.toString().contains(sExperimental)) {
+        //    xhaloFloatingWindowPreference.setSummary(summary + "(" + sExperimental + ")");
+        //}
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }

@@ -94,9 +94,9 @@
     <string name="title_lightningwall">View in LightningWall</string>
     <string name="summary_myandroidtools">Add view in MyAndroidTools button in the system</string>
     <string name="title_myandroidtools">View in MyAndroidTools</string>
-    <string name="summary_xhalofloatingwindow">Add view in XHaloFloatingWindow button in the system</string>
-    <string name="title_xhalofloatingwindow">View in XHaloFloatingWindow</string>
-    <string name="summary_xhalofloatingwindow_show_button_now">Show XHaloFloatingWindow button immediately when recent task screen show up</string>
+    <string name="summary_xhalofloatingwindow">Add view in XHaloFloatingWindow(Or native floating mode) button in the system</string>
+    <string name="title_xhalofloatingwindow">View in XHaloFloatingWindow(Or native floating mode)</string>
+    <string name="summary_xhalofloatingwindow_show_button_now">Show XHaloFloatingWindow(Or native floating mode) button immediately when recent task screen show up</string>
     <string name="title_xhalofloatingwindow_show_button_now">Show button immediately</string>
     <string name="summary_xhalofloatingwindow_show_in_recent_task">Show in the header alongside of dismiss button in the recent task screen</string>
     <string name="title_xda">XDA thread</string>
