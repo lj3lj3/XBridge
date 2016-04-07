@@ -13,6 +13,7 @@ import android.widget.Switch;
 
 import daylemk.xposed.xbridge.R;
 import daylemk.xposed.xbridge.action.XHaloFloatingWindowAction;
+import daylemk.xposed.xbridge.data.*;
 
 /**
  * Created by DayLemK on 2015/5/14.
@@ -25,6 +26,7 @@ public class XHaloFloatingWindowFragment extends HeaderPreferenceFragment {
     private SwitchPreference preferenceRecentTask;
     private SwitchPreference preferenceAppInfo;
     private SwitchPreference preferenceShowButtonNow;
+	private IntListPreference preferenceFloatingFlag;
 
     // every sub class should has this method
     public static Drawable getPkgIcon(PackageManager pm) {
@@ -55,17 +57,19 @@ public class XHaloFloatingWindowFragment extends HeaderPreferenceFragment {
                 .keyShowInAppInfo);
         preferenceShowButtonNow = (SwitchPreference) this.findPreference(XHaloFloatingWindowAction
                 .keyShowButtonNow);
+		preferenceFloatingFlag = (IntListPreference) this.findPreference(XHaloFloatingWindowAction.keyFloatingFlag);
         preferenceStatusBar.setOnPreferenceChangeListener(this);
         preferenceRecentTask.setOnPreferenceChangeListener(this);
         preferenceAppInfo.setOnPreferenceChangeListener(this);
         preferenceShowButtonNow.setOnPreferenceClickListener(this);
+		preferenceFloatingFlag.setOnPreferenceChangeListener(this);
         // set values
 //        preferenceStatusBar.setChecked(PlayAction.isShowInStatusBar);
 //        preferenceRecentTask.setChecked(PlayAction.isShowInRecentTask);
 //        preferenceAppInfo.setChecked(PlayAction.isShowInAppInfo);
 
         addPreferences2TheList(preferenceStatusBar, preferenceRecentTask, preferenceAppInfo,
-                preferenceShowButtonNow);
+                preferenceShowButtonNow, preferenceFloatingFlag);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
