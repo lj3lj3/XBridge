@@ -25,14 +25,16 @@ public class XHaloFloatingWindowAction extends Action {
     public static final String STR_DESC = "View in XHalo floating window";
     public static final String PKG_NAME = "com.zst.xposed.halo.floatingwindow";
     public static final String STR_FLAG_FLOATING_WINDOW = "FLAG_FLOATING_WINDOW";
-    public static final int FLAG_FLOATING_WINDOW = 0x00002000;
-
+    public static int FLAG_FLOATING_WINDOW = 0x2000;
+	public static int FLAG_FLOATING_WINDOW_Default = 0x2000;
+	
     /* the key should the sub class overwrite ------------begin */
     public static String keyShowInStatusBar;
     public static String keyShowInRecentTask;
     public static String keyShowInAppInfo;
     public static String keyShow;
     public static String keyShowButtonNow;
+	public static String keyFloatingFlag;
 
     public static boolean showInStatusBarDefault = true;
     public static boolean showInRecentTaskDefault = true;
@@ -45,6 +47,7 @@ public class XHaloFloatingWindowAction extends Action {
     public static boolean isShowInAppInfo = true;
     public static boolean isShow = true;
     public static boolean isShowButtonNow = true;
+	
     /* the key should the sub class overwrite ------------end */
     // just need to init the icon and listener once
     // EDIT: maybe the icon is already one instance in the system
@@ -65,6 +68,7 @@ public class XHaloFloatingWindowAction extends Action {
         keyShowInRecentTask = sModRes.getString(R.string.key_xhalofloatingwindow_recent_task);
         keyShowInStatusBar = sModRes.getString(R.string.key_xhalofloatingwindow_status_bar);
         keyShowButtonNow = sModRes.getString(R.string.key_xhalofloatingwindow_show_button_now);
+		keyFloatingFlag = sModRes.getString(R.string.key_xhalofloatingwindow_floating_flag);
         // get the default value of this action
         showInStatusBarDefault = sModRes.getBoolean(R.bool.xhalofloatingwindow_status_bar_default);
         showInRecentTaskDefault = sModRes.getBoolean(R.bool
@@ -86,6 +90,7 @@ public class XHaloFloatingWindowAction extends Action {
                 showDefault);
         isShowButtonNow = preferences.getBoolean(keyShowButtonNow,
                 showButtonNowDefault);
+		FLAG_FLOATING_WINDOW = preferences.getInt(keyFloatingFlag, FLAG_FLOATING_WINDOW_Default);
         Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
                 "isShowInRecentTask:" + isShowInRecentTask + "isShowInAppInfo:" + isShowInAppInfo
                 + "isShow:" + isShow + "isShowButtonNow:" + isShowButtonNow);
@@ -103,6 +108,8 @@ public class XHaloFloatingWindowAction extends Action {
             isShowInStatusBar = Boolean.valueOf(value);
         } else if (key.equals(keyShowButtonNow)) {
             isShowButtonNow = Boolean.valueOf(value);
+		} else if (key.equals(keyFloatingFlag)) {
+            FLAG_FLOATING_WINDOW = Integer.valueOf(value);
         } else {
             // if not found it, return false
             result = false;

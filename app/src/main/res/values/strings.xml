@@ -65,6 +65,7 @@
     <string name="key_xhalofloatingwindow_status_bar" translatable="false">key_xhalofloatingwindow_status_bar</string>
     <string name="key_xhalofloatingwindow_recent_task" translatable="false">key_xhalofloatingwindow_recent_task</string>
     <string name="key_xhalofloatingwindow_app_info" translatable="false">key_xhalofloatingwindow_app_info</string>
+	<string name="key_xhalofloatingwindow_floating_flag" translatable="false">key_xhalofloatingwindow_floating_flag</string>
     <string name="key_xhalofloatingwindow_show_button_now" translatable="false">key_xhalofloatingwindow_show_button_now</string>
     <string name="key_size_of_icon_in_noti" translatable="false">key_size_of_icon_in_noti</string>
 
@@ -117,5 +118,7 @@
     <string name="title_size_of_icon_in_noti">Size of icon in notification</string>
 
     <string name="message_size_input">From 1 to 1000</string>
-
+	<string name="floating_flags">Floating flag system id</string>
+    <string name="floating_flags_summary">This flag is attached to windows so the systems knows their status.\nChoose the original style with old xHaloFloatingWindow. Use 0x2001 with XHFW3 mod.</string>
+	
 </resources>

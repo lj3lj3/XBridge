@@ -19,6 +19,13 @@
         android:summary="@string/summary_show_in_app_info"
         android:title="@string/title_show_in_app_info">
     </SwitchPreference>
+	<daylemk.xposed.xbridge.data.IntListPreference
+	android:defaultValue="8192"
+	android:entries="@array/option_floating_flags"
+	android:entryValues="@array/option_floating_flags_values"
+	android:key="@string/key_xhalofloatingwindow_floating_flag"
+	android:summary="@string/floating_flags_summary"
+	android:title="@string/floating_flags" />
     <PreferenceCategory android:title="@string/title_enhance">
         <SwitchPreference
             android:defaultValue="@bool/xhalofloatingwindow_show_button_now_default"

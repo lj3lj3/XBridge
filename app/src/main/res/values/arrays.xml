@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="option_floating_flags">
+        <item>Original XHFW (0x2000)</item>
+        <item>New XHFW3 mod (0x2001)</item>
+        <item>Omni/SlimRom (0x3000)</item>
+    </string-array>
+
+    <string-array name="option_floating_flags_values">
+        <item>8192</item>
+        <item>8193</item>
+        <item>12288</item>
+    </string-array>
+
+</resources>

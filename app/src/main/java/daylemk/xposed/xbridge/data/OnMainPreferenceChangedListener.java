@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.ui.SizeInputFragment;
 import daylemk.xposed.xbridge.utils.Log;
+import daylemk.xposed.xbridge.action.*;
 
 /**
  * Created by DayLemK on 2015/5/22.
@@ -30,7 +31,7 @@ public class OnMainPreferenceChangedListener implements SharedPreferences
         // if the value is String, let's get it.
         if (key.equals(SearchAction.keyUrl)) {
             value = sharedPreferences.getString(key, null);
-        } else if (key.equals(SizeInputFragment.keySize)) {
+        } else if (key.equals(SizeInputFragment.keySize)||key.equals(XHaloFloatingWindowAction.keyFloatingFlag)) {
             value = String.valueOf(sharedPreferences.getInt(key, 0));
         } else {
             value = String.valueOf(sharedPreferences.getBoolean(key, false));
