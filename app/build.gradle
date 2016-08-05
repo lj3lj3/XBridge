@@ -27,8 +27,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/XposedBridgeApi-20150213.jar')
+    provided files('libs/XposedBridgeApi-20150213.jar')
     compile project(':switchbar')
     compile 'com.android.support:support-annotations:22.1.1'
 }
