@@ -26,29 +26,30 @@ public final class Log {
     }
 
     public static void i(String tag, String msg) {
-        xposedLog(tag, msg);
+        // FIXED: now is not available for App to log to the xposed
+        //xposedLog(tag, msg);
         android.util.Log.i(getFormattedTag(tag), msg);
     }
 
     public static void v(String tag, String msg) {
-        xposedLog(tag, msg);
+        //xposedLog(tag, msg);
         android.util.Log.v(getFormattedTag(tag), msg);
     }
 
     public static void d(String tag, String msg) {
         if (debug) {
-            xposedLog(tag, msg);
+            //xposedLog(tag, msg);
             android.util.Log.d(getFormattedTag(tag), msg);
         }
     }
 
     public static void w(String tag, String msg) {
-        xposedLog(tag, msg);
+        //xposedLog(tag, msg);
         android.util.Log.w(getFormattedTag(tag), msg);
     }
 
     public static void e(String tag, String msg) {
-        xposedLog(tag, msg);
+        //xposedLog(tag, msg);
         android.util.Log.e(getFormattedTag(tag), msg);
     }
 }
