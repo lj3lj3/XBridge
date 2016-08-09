@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
@@ -78,8 +79,9 @@ public class RecentTaskHook extends Hook {
 
     private Interpolator fastOutSlowInInterpolator;
     private Interpolator fastOutLinearInInterpolator;
-    private int taskBarExitAnimDuration = 0;
-    private int taskBarEnterAnimDuration = 0;
+    private int xHaloLaunchTashAnimDuration = 0;
+    private int xHaloNoUserInteractionAnimDuration = 0;
+
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -141,21 +143,28 @@ public class RecentTaskHook extends Hook {
                                                     XposedHelpers.getObjectField(mConfig,
                                                             "fastOutSlowInInterpolator");
                                         }
-                                        if (taskBarExitAnimDuration == 0) {
-                                            taskBarExitAnimDuration = XposedHelpers.getIntField
-                                                    (mConfig, "taskBarExitAnimDuration");
+                                        String durationName = "taskBarExitAnimDuration";
+                                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                                            durationName = "taskViewExitToAppDuration";
+                                        }
+                                        if (xHaloLaunchTashAnimDuration == 0) {
+                                            xHaloLaunchTashAnimDuration = XposedHelpers.getIntField
+                                                    (mConfig, durationName);
                                         }
                                     } else {
                                         Log.w(TAG, "the mConfig is null???");
                                     }
                                     xHalo.animate().cancel();
-                                    xHalo.animate()
+                                    ViewPropertyAnimator viewPropertyAnimator = xHalo.animate()
                                             .alpha(0f)
                                             .setStartDelay(0)
                                             .setInterpolator(fastOutSlowInInterpolator)
-                                            .setDuration(taskBarExitAnimDuration)
-                                            .withLayer()
-                                            .start();
+                                            .setDuration(xHaloLaunchTashAnimDuration);
+                                    // withLayer on L
+                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                                        viewPropertyAnimator.withLayer();
+                                    }
+                                    viewPropertyAnimator.start();
                                 }
                             } else {
                                 Log.w(TAG, "the xhalo button is null??? at " +
@@ -177,30 +186,39 @@ public class RecentTaskHook extends Hook {
                             View xHalo = taskViewHeader.findViewById(Action.getViewId
                                     (XHaloFloatingWindowAction.class));
                             if (xHalo != null) {
-                                Object mConfig = XposedHelpers.getObjectField(taskViewHeader,
-                                        "mConfig");
-                                if (mConfig != null) {
-                                    if (fastOutLinearInInterpolator == null) {
-                                        fastOutLinearInInterpolator = (Interpolator)
-                                                XposedHelpers.getObjectField(mConfig,
-                                                        "fastOutLinearInInterpolator");
+                                if (xHalo.getVisibility() != View.VISIBLE) {
+                                    Object mConfig = XposedHelpers.getObjectField(taskViewHeader,
+                                            "mConfig");
+                                    if (mConfig != null) {
+                                        if (fastOutLinearInInterpolator == null) {
+                                            fastOutLinearInInterpolator = (Interpolator)
+                                                    XposedHelpers.getObjectField(mConfig,
+                                                            "fastOutLinearInInterpolator");
+                                        }
+                                        String durationName = "taskBarEnterAnimDuration";
+                                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                                            durationName = "taskViewEnterFromAppDuration";
+                                        }
+                                        if (xHaloNoUserInteractionAnimDuration == 0) {
+                                            xHaloNoUserInteractionAnimDuration = XposedHelpers.getIntField
+                                                    (mConfig, durationName);
+                                        }
+                                    } else {
+                                        Log.w(TAG, "the mConfig is null???");
                                     }
-                                    if (taskBarEnterAnimDuration == 0) {
-                                        taskBarEnterAnimDuration = XposedHelpers.getIntField
-                                                (mConfig, "taskBarEnterAnimDuration");
+                                    xHalo.setVisibility(View.VISIBLE);
+                                    xHalo.setAlpha(0f);
+                                    ViewPropertyAnimator viewPropertyAnimator = xHalo.animate()
+                                            .alpha(1f)
+                                            .setStartDelay(0)
+                                            .setInterpolator(fastOutLinearInInterpolator)
+                                            .setDuration(xHaloNoUserInteractionAnimDuration);
+                                    // withLayer on L
+                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                                        viewPropertyAnimator.withLayer();
                                     }
-                                } else {
-                                    Log.w(TAG, "the mConfig is null???");
+                                    viewPropertyAnimator.start();
                                 }
-                                xHalo.setVisibility(View.VISIBLE);
-                                xHalo.setAlpha(0f);
-                                xHalo.animate()
-                                        .alpha(1f)
-                                        .setStartDelay(0)
-                                        .setInterpolator(fastOutLinearInInterpolator)
-                                        .setDuration(taskBarEnterAnimDuration)
-                                        .withLayer()
-                                        .start();
                             } else {
                                 Log.w(TAG, "the xhalo button is null??? at " +
                                         "startNoUserInteractionAnimation");
@@ -233,6 +251,8 @@ public class RecentTaskHook extends Hook {
                         }
                     }
                 });
+
+        // EDIT: should hook into the resetNoUserInteractionState method later
 
         Class<?> taskViewClass = XposedHelpers.findClass(StaticData.PKG_NAME_SYSTEMUI + ".recents" +
                         ".views" +
@@ -270,10 +290,10 @@ public class RecentTaskHook extends Hook {
                                 View xhalo = mHeaderView.findViewById(Action.getViewId
                                         (XHaloFloatingWindowAction.class));
                                 if (xhalo != null) {
+                                    xhalo.setVisibility(View.VISIBLE);
+
                                     Log.d(TAG, "xhalo after reset visible:" + xhalo.getVisibility
                                             ());
-
-                                    xhalo.setVisibility(View.VISIBLE);
                                 } else {
                                     Log.d(TAG, "dismiss view is null at reset");
                                 }
@@ -481,16 +501,17 @@ public class RecentTaskHook extends Hook {
                                         "mHeaderView");
                         Log.d(TAG, "hearView: " + mHeaderView);
                         initViewIds(taskViewObject.getResources());
-                        final View mDissmissButton = mHeaderView.findViewById(idDismiss);
+                        final View mDismissButton = mHeaderView.findViewById(idDismiss);
                         // don't need to check, 'cause we do in the onLoadData
                         if (longClickedView == mHeaderView) {
                             handleHeaderLongClick(loadPackageParam, param, taskViewObject,
                                     mHeaderView);
-                        } else if (longClickedView == mDissmissButton) {
+                        } else if (longClickedView == mDismissButton) {
                             Log.d(TAG, "long clicked dismiss button");
                             handleDismissLongClick(taskViewObject);
                             param.setResult(true);
                         } else {
+                            Log.d(TAG, "not the mHeaderView and mDismissButton???");
                             // set the original result back which is false
                             param.setResult(false);
                         }
