@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -95,7 +96,12 @@ public class StatusBarHook extends Hook {
         final Class<?> baseStatusBarClass = XposedHelpers.findClass(StaticData.PKG_NAME_SYSTEMUI +
                 ".statusbar.BaseStatusBar", loadPackageParam.classLoader);
         Log.d(TAG, "BaseStatusBar: " + baseStatusBarClass);
-        XposedBridge.hookAllMethods(baseStatusBarClass, "inflateGuts", new XC_MethodHook() {
+        String methodName = "inflateGuts";
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            // Why change the name of method ???
+            methodName = "bindGuts";
+        }
+        XposedBridge.hookAllMethods(baseStatusBarClass, methodName, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!Action.isActionsShowInStatusBar()) {
