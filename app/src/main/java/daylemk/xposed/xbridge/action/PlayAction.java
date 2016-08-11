@@ -80,8 +80,8 @@ public class PlayAction extends Action {
                 showDefault);
         isMarket = preferences.getBoolean(keyIsMarket, isMarketDefault);
         Log.d(TAG, "load preference: " + "isShowInStatusBar:" + isShowInStatusBar +
-                "isShowInRecentTask:" + isShowInRecentTask + "isShowInAppInfo:" + isShowInAppInfo
-                + "isShow:" + isShow + "isMarket:" + isMarket);
+                ",isShowInRecentTask:" + isShowInRecentTask + ",isShowInAppInfo:" + isShowInAppInfo
+                + ",isShow:" + isShow + ",isMarket:" + isMarket);
     }
 
     public static boolean onReceiveNewValue(String key, String value) {

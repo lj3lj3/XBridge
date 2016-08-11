@@ -94,8 +94,8 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
 
     private void preload() {
         if (sModRes == null) {
+            Log.i(TAG, "sModRes is null, modulePath: " + modulePath);
             sModRes = XModuleResources.createInstance(modulePath, null);
-            Log.i(TAG, "sModRes is null");
         }
         MainPreferences.loadPreferenceKeys(sModRes);
         MainPreferences.loadPreference();

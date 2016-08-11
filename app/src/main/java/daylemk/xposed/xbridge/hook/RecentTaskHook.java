@@ -79,7 +79,7 @@ public class RecentTaskHook extends Hook {
 
     private Interpolator fastOutSlowInInterpolator;
     private Interpolator fastOutLinearInInterpolator;
-    private int xHaloLaunchTashAnimDuration = 0;
+    private int xHaloLaunchTaskAnimDuration = 0;
     private int xHaloNoUserInteractionAnimDuration = 0;
 
 
@@ -147,8 +147,8 @@ public class RecentTaskHook extends Hook {
                                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                                             durationName = "taskViewExitToAppDuration";
                                         }
-                                        if (xHaloLaunchTashAnimDuration == 0) {
-                                            xHaloLaunchTashAnimDuration = XposedHelpers.getIntField
+                                        if (xHaloLaunchTaskAnimDuration == 0) {
+                                            xHaloLaunchTaskAnimDuration = XposedHelpers.getIntField
                                                     (mConfig, durationName);
                                         }
                                     } else {
@@ -159,7 +159,7 @@ public class RecentTaskHook extends Hook {
                                             .alpha(0f)
                                             .setStartDelay(0)
                                             .setInterpolator(fastOutSlowInInterpolator)
-                                            .setDuration(xHaloLaunchTashAnimDuration);
+                                            .setDuration(xHaloLaunchTaskAnimDuration);
                                     // withLayer on L
                                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                                         viewPropertyAnimator.withLayer();
@@ -268,8 +268,7 @@ public class RecentTaskHook extends Hook {
                     super.afterHookedMethod(param);
                     Log.d(TAG, "reset method hook");
                     if (ForceStopAction.isShowDismissButtonNow || (XHaloFloatingWindowAction
-                            .isShow && XHaloFloatingWindowAction
-                            .isShowButtonNow)) {
+                            .isShow)) {
                         FrameLayout taskViewObject = (FrameLayout) param.thisObject;
                         View mHeaderView = (View) XposedHelpers.getObjectField(taskViewObject,
                                 "mHeaderView");
@@ -277,20 +276,25 @@ public class RecentTaskHook extends Hook {
                             if (ForceStopAction.isShowDismissButtonNow) {
                                 View dismissView = mHeaderView.findViewById(idDismiss);
                                 if (dismissView != null) {
+                                    dismissView.setVisibility(View.VISIBLE);
+
                                     Log.d(TAG, "dismiss view after reset visible:" + dismissView
                                             .getVisibility());
-
-                                    dismissView.setVisibility(View.VISIBLE);
                                 } else {
                                     Log.d(TAG, "dismiss view is null at reset");
                                 }
                             }
-                            if (XHaloFloatingWindowAction.isShow && XHaloFloatingWindowAction
-                                    .isShowButtonNow) {
+                            if (XHaloFloatingWindowAction.isShow) {
                                 View xhalo = mHeaderView.findViewById(Action.getViewId
                                         (XHaloFloatingWindowAction.class));
                                 if (xhalo != null) {
-                                    xhalo.setVisibility(View.VISIBLE);
+                                    if (XHaloFloatingWindowAction.isShowButtonNow) {
+                                        xhalo.setVisibility(View.VISIBLE);
+                                    } else {
+                                        // need set the button to the invisible
+                                        xhalo.setVisibility(View.INVISIBLE);
+                                        Log.d(TAG, "set xhalo invisible");
+                                    }
 
                                     Log.d(TAG, "xhalo after reset visible:" + xhalo.getVisibility
                                             ());
@@ -301,6 +305,8 @@ public class RecentTaskHook extends Hook {
                         } else {
                             Log.d(TAG, "mHeaderView is null at reset");
                         }
+                    } else {
+                        Log.d(TAG, "reset method hook not called, isShowDismissButtonNow, isShow, isShowButtonNow:" + ForceStopAction.isShowDismissButtonNow + ", " + XHaloFloatingWindowAction.isShow + ", " + XHaloFloatingWindowAction.isShowButtonNow);
                     }
                 }
             });

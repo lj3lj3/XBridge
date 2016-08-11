@@ -77,6 +77,8 @@ public class AppInfoHook extends Hook {
     }
 
     private void handleAllAction(Menu menu, Context context, String pkgName) {
+        // log the settings
+        Action.logActionsShowInAppInfo();
         if (PlayAction.isShow && PlayAction.isShowInAppInfo) {
             final Action action = new PlayAction();
             addMenuAndSetAction(menu, action, context, pkgName);

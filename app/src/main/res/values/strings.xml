@@ -117,7 +117,7 @@
     <string name="title_settings">Settings</string>
     <string name="title_size_of_icon_in_noti">Size of icon in notification</string>
 
-    <string name="message_size_input">From 1 to 1000</string>
+    <string name="message_size_input">From 1 to 1000 (Default 75)</string>
 	<string name="floating_flags">Floating flag system id</string>
     <string name="floating_flags_summary">This flag is attached to windows so the systems knows their status.\nChoose the original style with old xHaloFloatingWindow. Use 0x2001 with XHFW3 mod.</string>
 	
