@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -155,6 +156,10 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
 //                || AppInfoAction.isShow && AppInfoAction.isShowInAppInfo
                 || ClipBoardAction.isShow && ClipBoardAction.isShowInAppInfo;
 
+    }
+
+    public static void logActionsShowInAppInfo() {
+        Log.d(TAG, "PlayAction.isShow, PlayAction.isShowInAppInfo, AppSettingsAction.isShow, AppSettingsAction.isShowInAppInfo, SearchAction.isShow, SearchAction.isShowInAppInfo, XPrivacyAction.isShow, XPrivacyAction.isShowInAppInfo, NotifyCleanAction.isShow, NotifyCleanAction.isShowInAppInfo, LightningWallAction.isShow, LightningWallAction.isShowInAppInfo, XHaloFloatingWindowAction.isShow, XHaloFloatingWindowAction.isShowInAppInfo, MyAndroidToolsAction.isShow, MyAndroidToolsAction.isShowInAppInfo, ClipBoardAction.isShow, ClipBoardAction.isShowInAppInfo:" + PlayAction.isShow + ", " + PlayAction.isShowInAppInfo + ", " + AppSettingsAction.isShow + ", " + AppSettingsAction.isShowInAppInfo + ", " + SearchAction.isShow + ", " + SearchAction.isShowInAppInfo + ", " + XPrivacyAction.isShow + ", " + XPrivacyAction.isShowInAppInfo + ", " + NotifyCleanAction.isShow + ", " + NotifyCleanAction.isShowInAppInfo + ", " + LightningWallAction.isShow + ", " + LightningWallAction.isShowInAppInfo + ", " + XHaloFloatingWindowAction.isShow + ", " + XHaloFloatingWindowAction.isShowInAppInfo + ", " + MyAndroidToolsAction.isShow + ", " + MyAndroidToolsAction.isShowInAppInfo + ", " + ClipBoardAction.isShow + ", " + ClipBoardAction.isShowInAppInfo);
     }
 
     public static boolean isActionsShowInRecentTask() {
@@ -393,16 +398,26 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
                 Log.d(TAG, "on click action is: " + Action.this.getClass() + ", hook: " + hook);
                 mIntent = getFinalIntent(hook, context, pkgName);
                 if (hook instanceof AppInfoHook && mIntent != null) {
-                    try {
-                        // no need to start as user, 'cause when the appInfo screen is called, it
-                        // already signed to a user
-                        context.startActivity(mIntent);
-                    } catch (Exception e) {
-                        XposedBridge.log(e);
-                        Log.e(TAG, "start intent error, intent: " + mIntent);
+                    // FIXED: for the market:// data
+                    List<ResolveInfo> queryIntentActivities = context.getPackageManager().queryIntentActivities(mIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                    Log.d(TAG, "queryIntentActivities: " + queryIntentActivities.size());
+                    if (queryIntentActivities.isEmpty()) {
+                        Log.e(TAG, "start intent as user error, intent: " + mIntent);
+                        // show toast
+                        XBridgeToast.showToastOnHandler(context, Hook.getXBridgeContext(context).getString
+                                (R.string.error) + mIntent.getData());
+                    } else {
+                        try {
+                            // no need to start as user, 'cause when the appInfo screen is called, it
+                            // already signed to a user
+                            context.startActivity(mIntent);
+                        } catch (Exception e) {
+                            XposedBridge.log(e);
+                            Log.e(TAG, "start intent error, intent: " + mIntent);
 
-                        XBridgeToast.showToast(context, Hook.getXBridgeContext(context).getString
-                                (R.string.error) + mIntent.getComponent().getPackageName());
+                            XBridgeToast.showToast(context, Hook.getXBridgeContext(context).getString
+                                    (R.string.error) + mIntent.getComponent().getPackageName());
+                        }
                     }
                 } else {
                     startIntentOrHandleData();
@@ -481,6 +496,19 @@ public abstract class Action implements StatusBarHook.OnDismissKeyguardAction {
 
             return;
         }
+
+        // FIXED: for the market:// data
+        List<ResolveInfo> queryIntentActivities = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        Log.d(TAG, "queryIntentActivities: " + queryIntentActivities.size());
+        if (queryIntentActivities.isEmpty()) {
+            Log.e(TAG, "start intent as user error, intent: " + intent);
+            // show toast
+            XBridgeToast.showToastOnHandler(context, Hook.getXBridgeContext(context).getString
+                    (R.string.error) + intent.getData());
+
+            return;
+        }
+
         Log.d(TAG, "taskStackBuilder: " + taskStackBuilder);
 
         int userId = (int) XposedHelpers.callStaticMethod(UserHandle
