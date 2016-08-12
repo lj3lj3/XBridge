@@ -553,7 +553,9 @@ public class RecentTaskHook extends Hook {
             headerGutsView = createHeaderGutsView(context, mHeaderView);
             // add view to the last position, and with layoutParams
             headerParent.addView(headerGutsView,
-                    headerParent.getChildCount(), headerViewLayoutParams);
+//                    headerParent.getChildCount(), headerViewLayoutParams);
+                    -1, headerViewLayoutParams);
+            Log.d(TAG, "created header guts: w, h: " + headerViewLayoutParams.width + ", " + headerViewLayoutParams.height);
         } else {
             // the guts view is already added
             // check if visible, if so, just invisible it
@@ -782,6 +784,7 @@ public class RecentTaskHook extends Hook {
                             .getLayoutParams();
             Log.d(TAG, "get the header view layout params, w, h: " + headerViewLayoutParams.width + ", " + headerViewLayoutParams.height);
         }
+        Log.d(TAG, "header view layout params, w, h: " + headerViewLayoutParams.width + ", " + headerViewLayoutParams.height);
         View dismissTaskView = mHeaderView.findViewById(idDismiss);
         Log.d(TAG, "dismiss guts view: " + dismissTaskView);
         // set the layout params
@@ -997,6 +1000,13 @@ public class RecentTaskHook extends Hook {
                 super.onAnimationEnd(animation);
 //                                    mHeaderView.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "show animation done");
+                if (headerGutsView.getHeight() == 0) {
+                    // after show, the height is still 0
+                    headerGutsView.setLayoutParams(headerViewLayoutParams);
+                    Log.w(TAG, "after show, the height of guts view is still 0, set layout params manually: w, h: " + headerGutsView.getWidth() + ", " + headerGutsView.getHeight());
+                    Log.d(TAG, "headerGutsView: " + headerGutsView);
+                    Log.d(TAG, "headerGutsView parents: " + headerGutsView.getParent());
+                }
             }
         });
         a.setInterpolator(interpolator);
