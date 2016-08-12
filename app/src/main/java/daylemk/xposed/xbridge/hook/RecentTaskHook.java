@@ -774,11 +774,13 @@ public class RecentTaskHook extends Hook {
     }
 
     private void getLayoutParams(View mHeaderView) {
-        if (headerViewLayoutParams == null) {
+        // check if the w and h are 0, if so, reload params
+        if (headerViewLayoutParams == null || headerViewLayoutParams.width == 0 || headerViewLayoutParams.height == 0) {
             // add the guts to the headerParent
             headerViewLayoutParams = (FrameLayout.LayoutParams)
                     mHeaderView
                             .getLayoutParams();
+            Log.d(TAG, "get the header view layout params, w, h: " + headerViewLayoutParams.width + ", " + headerViewLayoutParams.height);
         }
         View dismissTaskView = mHeaderView.findViewById(idDismiss);
         Log.d(TAG, "dismiss guts view: " + dismissTaskView);
