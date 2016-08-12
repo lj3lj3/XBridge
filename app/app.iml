@@ -42,12 +42,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMeDebug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMeDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMeDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/xbridgeForMe/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/xbridgeForMe/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMeDebug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMeDebug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMeDebug/assets" type="java-test-resource" />
@@ -56,6 +50,12 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMeDebug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMeDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMeDebug/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/xbridgeForMe/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/xbridgeForMe/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/xbridgeForMe/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMe/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMe/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMe/assets" type="java-resource" />
@@ -64,14 +64,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMe/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMe/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/xbridgeForMe/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMe/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMe/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMe/assets" type="java-test-resource" />
@@ -80,6 +72,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMe/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMe/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testXbridgeForMe/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestXbridgeForMe/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
