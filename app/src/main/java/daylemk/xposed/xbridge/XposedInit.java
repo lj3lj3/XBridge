@@ -98,7 +98,8 @@ public class XposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit
             sModRes = XModuleResources.createInstance(modulePath, null);
         }
         MainPreferences.loadPreferenceKeys(sModRes);
-        MainPreferences.loadPreference();
+        // EDIT: RemotePreference need context, so load preferences in the hook method
+        //MainPreferences.loadPreference();
         // move behind the preference load, so we can log.
         FrameworksHook.getDefaultIcons(sModRes);
     }

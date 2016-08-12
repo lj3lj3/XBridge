@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
+import com.crossbowffs.remotepreferences.RemotePreferences;
+
 import daylemk.xposed.xbridge.action.Action;
 import daylemk.xposed.xbridge.ui.SizeInputFragment;
 import daylemk.xposed.xbridge.utils.Log;
@@ -23,7 +25,7 @@ public class MainPreferences {
 
     //    private static XModuleResources sModRes;
     // the hook pref show be PREF_SHOW_IN_STATUS_BAR + Hook.class
-    private static XSharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
     private static SharedPreferences editablePreferences;
     private static OnMainPreferenceChangedListener listener;
 
@@ -40,14 +42,35 @@ public class MainPreferences {
      * get the xBridge shared preference
      * NOTE: this only used to get the preference from the xposed init
      */
-    public static XSharedPreferences getSharedPreference() {
+    public static SharedPreferences getSharedPreference() {
         if (sharedPreferences == null) {
             Log.w(TAG, "sharedPreference is null, init it");
             sharedPreferences = new XSharedPreferences(StaticData
                     .THIS_PACKAGE_NAME, NAME_PREFERENCE);
         }
-        // call reload when the data has changed
-        sharedPreferences.reload();
+        // reload only on XSharedPreferences
+        if (sharedPreferences instanceof XSharedPreferences) {
+            // call reload when the data has changed
+            ((XSharedPreferences) sharedPreferences).reload();
+        }
+
+        return sharedPreferences;
+    }
+
+    /**
+     * get the xBridge shared preferences use the remote preferences
+     * NOTE: this only used to get the preference from the xposed init
+     */
+    public static SharedPreferences getSharedPreference(Context context) {
+        if (sharedPreferences == null) {
+            Log.w(TAG, "sharedPreference is null, init it");
+            sharedPreferences = new RemotePreferences(context, XBridgePreferencesProvider.NAME_AUTHORITY, MainPreferences.NAME_PREFERENCE);
+        }
+        // reload only on XSharedPreferences
+        if (sharedPreferences instanceof XSharedPreferences) {
+            // call reload when the data has changed
+            ((XSharedPreferences) sharedPreferences).reload();
+        }
         return sharedPreferences;
     }
 
@@ -58,7 +81,9 @@ public class MainPreferences {
      */
     public static void setSharedPreferences(PreferenceManager preferenceManager) {
         preferenceManager.setSharedPreferencesName(NAME_PREFERENCE);
-        preferenceManager.setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
+        // preferenceManager.setSharedPreferencesMode(Context.MODE_WORLdD_READABLE);
+        // EDIT: use remote preferences, set permission to private
+        preferenceManager.setSharedPreferencesMode(Context.MODE_PRIVATE);
     }
 
     public static void setOnPreferenceChangedLis(Context context, PreferenceManager
@@ -101,6 +126,21 @@ public class MainPreferences {
         Log.d(TAG, "load preference");
         if (sharedPreferences == null) {
             getSharedPreference();
+        }
+        // load action preference
+        // TODO: maybe just load preferences for the first time
+        Action.loadPreference(sharedPreferences);
+        SizeInputFragment.loadPreference(sharedPreferences);
+    }
+
+    /**
+     * load preference use the remote preference
+     * this CAN'T be called within the activity cycle, use loadPreference(PreferenceManager) instead
+     */
+    public static void loadPreference(Context context) {
+        Log.d(TAG, "load preference");
+        if (sharedPreferences == null) {
+            getSharedPreference(context);
         }
         // load action preference
         Action.loadPreference(sharedPreferences);

@@ -30,6 +30,7 @@ import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.action.XHaloFloatingWindowAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.data.OnPreferenceChangedReceiver;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.ui.SizeInputFragment;
@@ -90,6 +91,8 @@ public class StatusBarHook extends Hook {
                 Log.d(TAG, "app: " + app);
                 app.registerReceiver(new OnPreferenceChangedReceiver(), new IntentFilter
                         (StaticData.ACTION_PREFERENCE_CHANGED));
+                // load preference for the systemUI process here
+                MainPreferences.loadPreference(app);
             }
         });
 

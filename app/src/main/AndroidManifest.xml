@@ -30,6 +30,11 @@
                 <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
             </intent-filter>
         </activity>
+        <!-- This is for the remote preferences -->
+        <provider
+            android:authorities="daylemk.xposed.xbridge.preferences"
+            android:name=".data.XBridgePreferencesProvider"
+            android:exported="true" />
     </application>
 
 </manifest>

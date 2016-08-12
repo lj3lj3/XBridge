@@ -18,6 +18,7 @@ import daylemk.xposed.xbridge.action.PlayAction;
 import daylemk.xposed.xbridge.action.SearchAction;
 import daylemk.xposed.xbridge.action.XHaloFloatingWindowAction;
 import daylemk.xposed.xbridge.action.XPrivacyAction;
+import daylemk.xposed.xbridge.data.MainPreferences;
 import daylemk.xposed.xbridge.data.StaticData;
 import daylemk.xposed.xbridge.utils.Log;
 import de.robv.android.xposed.XC_MethodHook;
@@ -46,24 +47,29 @@ public class AppInfoHook extends Hook {
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        Log.d(TAG, "after onCreateOptionsMenu hooked");
+
+                        // Load preferences first
+                        final Object installedAppDetails = param.thisObject;
+                        final Activity activity = (Activity) XposedHelpers.callMethod
+                                (installedAppDetails,
+                                        "getActivity");
+                        // load preferences before original method get called
+                        MainPreferences.loadPreference(activity);
+                        super.afterHookedMethod(param);
+
                         if (!Action.isActionsShowInAppInfo()) {
                             // do nothing
                             return;
                         }
 
-                        Log.d(TAG, "after onCreateOptionsMenu hooked");
-                        super.afterHookedMethod(param);
 
-                        final Object installedAppDetails = param.thisObject;
                         // get the package manager
                         PackageManager pm = (PackageManager) XposedHelpers.getObjectField
                                 (installedAppDetails, "mPm");
                         final PackageInfo pkgInfo = (PackageInfo) XposedHelpers.getObjectField
                                 (installedAppDetails,
                                         "mPackageInfo");
-                        final Activity activity = (Activity) XposedHelpers.callMethod
-                                (installedAppDetails,
-                                        "getActivity");
                         final String pkgName = pkgInfo.packageName;
                         final Context context = activity.getApplicationContext();
 
