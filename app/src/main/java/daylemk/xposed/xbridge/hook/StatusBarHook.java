@@ -97,7 +97,7 @@ public class StatusBarHook extends Hook {
                 ".statusbar.BaseStatusBar", loadPackageParam.classLoader);
         Log.d(TAG, "BaseStatusBar: " + baseStatusBarClass);
         String methodName = "inflateGuts";
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Why change the name of method ???
             methodName = "bindGuts";
         }
@@ -109,7 +109,7 @@ public class StatusBarHook extends Hook {
                     return;
                 }
 
-                Log.v(TAG, "after inflateGuts method hooked");
+                Log.v(TAG, "after inflateGuts/bindGuts method hooked");
                 super.afterHookedMethod(param);
                 // set the statusBar everytime
                 if (!param.thisObject.equals(statusBarObject)) {
@@ -310,7 +310,14 @@ public class StatusBarHook extends Hook {
         action.setAction(StatusBarHook.this, context, pkgName, xBridgeButton);
         // add the view to the last-1
         // EDIT: move to last one, 'cause some notification has more than one icon
-        linearLayout.addView(xBridgeButton, linearLayout.getChildCount());
+        // EDIT: check if the first layout is linearLayout, is so, go child. eg: poweramp notification
+        if (linearLayout.getChildAt(0) instanceof LinearLayout) {
+            Log.d(TAG, "the first layout is a linearLayout, add to the child of first layout");
+            LinearLayout childLinearLayout = (LinearLayout) linearLayout.getChildAt(0);
+            childLinearLayout.addView(xBridgeButton, childLinearLayout.getChildCount());
+        } else {
+            linearLayout.addView(xBridgeButton, linearLayout.getChildCount());
+        }
     }
 
     private ImageButton createXBridgeButton(Context context, ViewGroup.LayoutParams layoutParams) {
